@@ -1,4 +1,4 @@
-const CACHE = 'wirdi-v5';
+const CACHE = 'wirdi-v7';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png'];
 
 self.addEventListener('install', e => {

@@ -1,7 +1,7 @@
 {
-  "name": "Wirdî · Adhkâr du matin et du soir",
+  "name": "Wirdî · Invocations du matin et du soir",
   "short_name": "Wirdî",
-  "description": "Les adhkâr du matin et du soir : arabe vocalisé, translittération, traduction et compteur. Par Alatec.",
+  "description": "Les invocations (adhkâr) du matin et du soir : arabe vocalisé, translittération, traduction et compteur. Par Alatec.",
   "lang": "fr",
   "dir": "auto",
   "start_url": "./",
