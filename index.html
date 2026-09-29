@@ -155,6 +155,42 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .sess-title .a{font-family:var(--kufi);font-weight:700;font-size:20px;color:var(--green)}
 .sess-title .f{font-family:var(--lat);font-style:italic;font-size:14px;color:var(--gold)}
 .is-home .sess-title{display:none}
+
+.hero{position:relative;overflow:hidden;border-radius:26px;padding:26px 22px 22px;text-align:center;color:var(--ink);background:var(--card);border:1px solid var(--line)}
+.hero::before{content:"";position:absolute;inset:0;opacity:.07;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3E%3Cg fill='none' stroke='%231D5C4A' stroke-width='1.4'%3E%3Cpath d='M28 6l6.4 15.6L50 28l-15.6 6.4L28 50l-6.4-15.6L6 28l15.6-6.4z'/%3E%3Crect x='16' y='16' width='24' height='24' transform='rotate(45 28 28)'/%3E%3Ccircle cx='28' cy='28' r='5'/%3E%3C/g%3E%3C/svg%3E");background-size:56px 56px}
+.hero>*{position:relative}
+.hero-ar{margin:0;font-family:var(--ar);font-weight:700;font-size:40px;line-height:1.5;color:var(--green)}
+.hero-fr{margin:2px 0 0;font-family:var(--lat);font-style:italic;font-size:18px;color:var(--gold)}
+.hero-date{margin:12px 0 0;font-size:14px;color:var(--muted);display:flex;justify-content:center;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.hero-date [lang=ar]{font-family:var(--ar);font-size:17px}
+.hero-date .dot{opacity:.5}
+.sess2{position:relative;overflow:hidden;width:100%;min-height:196px;border-radius:26px;padding:18px 20px 18px;display:flex;flex-direction:column;justify-content:space-between;gap:14px;text-align:left;box-shadow:0 10px 28px -14px rgba(20,30,40,.45);transition:transform .15s}
+.sess2:active{transform:scale(.985)}
+.sess2.matin{background:linear-gradient(160deg,#FFE7B3 0%,#F6B872 45%,#E07E57 100%);color:#3B2314}
+.sess2.soir{background:linear-gradient(160deg,#34427A 0%,#1E2750 55%,#121833 100%);color:#F7F1E3}
+.sess2 .art{position:absolute;right:-26px;top:-18px;width:210px;height:210px;pointer-events:none}
+.sess2>span{position:relative}
+.s-top{display:flex;min-height:24px}
+.chip{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:rgba(255,255,255,.28);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:1px solid rgba(255,255,255,.45)}
+.sess2.soir .chip{background:rgba(243,211,139,.18);border-color:rgba(243,211,139,.5);color:#F3D38B}
+.s-t{display:flex;flex-direction:column;gap:2px;max-width:70%}
+.s-ar{font-family:var(--ar);font-weight:700;font-size:34px;line-height:1.5;direction:rtl;text-align:left;unicode-bidi:plaintext}
+.s-fr{font-family:var(--lat);font-style:italic;font-size:19px;opacity:.85}
+.s-bot{display:flex;align-items:center;gap:12px}
+.ringw{position:relative;width:46px;height:46px;flex-shrink:0}
+.ringw svg{transform:rotate(-90deg)}
+.ringw .rb{stroke:rgba(255,255,255,.35)}
+.sess2.matin .ringw .rb{stroke:rgba(59,35,20,.15)}
+.ringw .rf{stroke:currentColor;transition:stroke-dashoffset .4s}
+.ringw .rn{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+.s-st{flex:1;display:flex;flex-direction:column;line-height:1.25}
+.s-st b{font-size:16px}
+.s-st small{font-size:13px;opacity:.75}
+.go{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,.3);border:1px solid rgba(255,255,255,.5)}
+.sess2.soir .go{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}
+.credit small{font-size:13px}
+.credit [lang=ar]{font-family:var(--ar);font-size:18px}
+.sess2 .art{overflow:visible}
 </style>
 </head>
 <body>
@@ -188,7 +224,6 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
   </footer>
 </div>
 
-<label id="hapt" aria-hidden="true" style="position:fixed;left:-100px;top:0;width:1px;height:1px;opacity:0;overflow:hidden;pointer-events:none"><input type="checkbox" switch tabindex="-1"></label>
 <div class="sheet-bg" id="sheetBg"></div>
 <div class="sheet" id="sheetList" role="dialog" aria-label="Sommaire">
   <div class="sheet-h"><span>Sommaire</span><button class="icon-btn" data-close aria-label="Fermer">✕</button></div>
@@ -201,6 +236,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
     <div class="set"><span>Traduction française</span><button class="sw" id="swFr" role="switch" aria-label="Traduction française"></button></div>
     <div class="set"><span>Taille du texte</span><div class="steps"><button class="step" id="sMinus" aria-label="Réduire">A−</button><button class="step" id="sPlus" aria-label="Agrandir">A+</button></div></div>
     <div class="set"><span>Vibration au comptage</span><button class="sw" id="swVib" role="switch" aria-label="Vibration"></button></div>
+    <div class="set"><span>Son au comptage</span><button class="sw" id="swSnd" role="switch" aria-label="Son"></button></div>
     <div class="set"><span>Progression du jour</span><button class="btn ghost" id="bReset">Recommencer</button></div>
     <div class="set"><span>Wirdî · version 1.0</span><span style="font-family:var(--lat);color:var(--muted)">par Alatec</span></div>
     <p class="note"><b>Installer sur le téléphone :</b> sur iPhone, touchez Partager puis « Sur l'écran d'accueil ». Sur Android, ouvrez le menu ⋮ de Chrome puis « Ajouter à l'écran d'accueil ».</p>
@@ -224,7 +260,7 @@ const store = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
 
-let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true}, store.get("wirdi-prefs", {}));
+let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false}, store.get("wirdi-prefs", {}));
 const progs = {};
 function loadProg(k){
   let p = store.get("wirdi-prog-" + k, null);
@@ -255,23 +291,52 @@ function applyPrefs(){
   $("swTr").setAttribute("aria-checked", prefs.tr);
   $("swFr").setAttribute("aria-checked", prefs.fr);
   $("swVib").setAttribute("aria-checked", prefs.vib);
+  $("swSnd").setAttribute("aria-checked", prefs.snd);
 }
 
+const PATTERN = "url('data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"><path d="M32 6l7 19 19 7-19 7-7 19-7-19-19-7 19-7z"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/></g></svg>') + "')";
+const ILLU = {
+  matin: '<svg class="illu" viewBox="0 0 200 160" aria-hidden="true"><path d="M78 150V88c0-22 18-38 42-56 24 18 42 34 42 56v62" fill="rgba(255,255,255,.07)" stroke="#F1CC7A" stroke-width="4" stroke-linejoin="round"/><path d="M92 118a28 28 0 0 1 56 0z" fill="#F4C766"/><g stroke="#F4C766" stroke-width="4" stroke-linecap="round"><path d="M120 70v12M96 80l6 8M144 80l-6 8M86 100l9 3M154 100l-9 3"/></g><path d="M64 118h112" stroke="#F1CC7A" stroke-width="4" stroke-linecap="round"/><path d="M96 132h48M108 144h24" stroke="rgba(255,255,255,.45)" stroke-width="3.5" stroke-linecap="round"/></svg>',
+  soir: '<svg class="illu" viewBox="0 0 200 160" aria-hidden="true"><path d="M134 28a34 34 0 1 0 24 58 28 28 0 0 1-24-58z" fill="#F4C766"/><g fill="#fff"><circle cx="72" cy="36" r="2.2"/><circle cx="176" cy="30" r="1.8"/><circle cx="92" cy="92" r="1.6"/><circle cx="182" cy="104" r="2"/><circle cx="58" cy="118" r="1.4"/></g><path d="M166 58l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#F4C766" opacity=".9"/></svg>'
+};
+function frDate(){
+  const d = new Date();
+  let g = "", h = "";
+  try { g = new Intl.DateTimeFormat("fr-FR", {weekday: "long", day: "numeric", month: "long"}).format(d); } catch(e){}
+  try { h = new Intl.DateTimeFormat("fr-FR-u-ca-islamic-umalqura", {day: "numeric", month: "long", year: "numeric"}).format(d).replace(/\s?AH$/i, " H"); } catch(e){}
+  return (g ? g.charAt(0).toUpperCase() + g.slice(1) : "") + (h ? " · " + h : "");
+}
+function hijri(){
+  try { return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-arab", {day:"numeric", month:"long", year:"numeric"}).format(new Date()); } catch(e){ return ""; }
+}
+function greg(){
+  try { const s = new Intl.DateTimeFormat("fr-FR", {weekday:"long", day:"numeric", month:"long"}).format(new Date()); return s.charAt(0).toUpperCase() + s.slice(1); } catch(e){ return ""; }
+}
+const ART = {
+  matin: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gS" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".55" stop-color="#FFE08A"/><stop offset="1" stop-color="#F7B955"/></radialGradient></defs><circle cx="120" cy="120" r="92" fill="#FFF3D6" opacity=".35"/><circle cx="120" cy="120" r="62" fill="#FFF3D6" opacity=".45"/><g stroke="#FFF6DE" stroke-width="6" stroke-linecap="round" opacity=".9"><path d="M120 30v16M58 58l11 11M182 58l-11 11M30 120h16M194 120h-16"/></g><circle cx="120" cy="120" r="40" fill="url(#gS)"/></svg>',
+  soir: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="118" cy="96" r="80" fill="#8FA6E0" opacity=".08"/><circle cx="118" cy="96" r="54" fill="#8FA6E0" opacity=".1"/><path d="M132 44a52 52 0 1 0 36 88A44 44 0 0 1 132 44z" fill="#F3D38B"/><g fill="#FFF5DC"><circle cx="40" cy="40" r="2.2"/><circle cx="70" cy="22" r="1.5"/><circle cx="180" cy="36" r="2.4"/><circle cx="60" cy="96" r="1.6"/><circle cx="190" cy="150" r="1.8"/><circle cx="30" cy="140" r="1.4"/><path d="M178 88l2.6 6.2 6.4.6-4.9 4.2 1.5 6.3-5.6-3.4-5.6 3.4 1.5-6.3-4.9-4.2 6.4-.6z"/></g></svg>'
+};
 function renderHome(){
   const h = new Date().getHours();
   const suggest = h < 14 ? "matin" : "soir";
-  let s = '<div class="home"><p class="home-h">As-salâmu \'alaykum. Choisissez vos adhkâr :</p>';
+  const hj = hijri(), gd = greg();
+  let s = '<div class="home">';
+  s += '<section class="hero"><p class="hero-ar" lang="ar">السَّلَامُ عَلَيْكُمْ</p><p class="hero-fr">As-salâmu \'alaykum</p>'
+     + '<p class="hero-date">' + esc(gd) + (hj ? ' <span class="dot">·</span> <span lang="ar" dir="rtl">' + esc(hj) + '</span>' : '') + '</p></section>';
   for (const k of ["matin", "soir"]){
     const n = doneCountK(k), tot = SESS[k].items.length, fin = n === tot;
-    s += '<button class="sess ' + (k === "matin" ? "m" : "s") + '" data-k="' + k + '">'
-      + (k === suggest && !fin ? '<span class="badge">Maintenant</span>' : '')
-      + '<span class="ic">' + (k === "matin" ? SUN : MOON) + '</span>'
-      + '<span class="tx"><span class="ta" dir="rtl" style="text-align:left">' + SESS[k].ar + '</span><span class="tf">' + SESS[k].fr + '</span>'
-      + '<span class="pg"><span class="bar"><i style="width:' + (100 * n / tot) + '%"></i></span><span>' + (fin ? "Terminé ✓" : n + " / " + tot) + '</span></span></span></button>';
+    const R = 19, CC = 2 * Math.PI * R;
+    const status = fin ? "Terminé" : (n ? "Continuer" : "Commencer");
+    s += '<button class="sess2 ' + k + (k === suggest ? ' now' : '') + '" data-k="' + k + '">' + ART[k]
+      + '<span class="s-top">' + (k === suggest && !fin ? '<span class="chip">' + (k === "matin" ? "C'est le moment" : "C'est le moment") + '</span>' : '<span></span>') + '</span>'
+      + '<span class="s-t"><span class="s-ar" lang="ar">' + SESS[k].ar + '</span><span class="s-fr">' + SESS[k].fr + '</span></span>'
+      + '<span class="s-bot"><span class="ringw"><svg viewBox="0 0 46 46" width="46" height="46"><circle cx="23" cy="23" r="' + R + '" fill="none" stroke-width="4" class="rb"/><circle cx="23" cy="23" r="' + R + '" fill="none" stroke-width="4" stroke-linecap="round" class="rf" style="stroke-dasharray:' + CC + ';stroke-dashoffset:' + (CC * (1 - n / tot)) + '"/></svg><span class="rn">' + (fin ? "✓" : n) + '</span></span>'
+      + '<span class="s-st"><b>' + status + '</b><small>' + n + ' / ' + tot + ' invocations</small></span>'
+      + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   }
-  s += '<p class="credit">Wirdî · وِرْدِي<br>Conçu par <b>Alatec</b></p></div>';
+  s += '<p class="credit"><span lang="ar">وِرْدِي</span> · Wirdî<br><small>Conçu par <b>Alatec</b></small></p></div>';
   main.innerHTML = s;
-  main.querySelectorAll(".sess").forEach(b => b.onclick = () => openSession(b.dataset.k));
+  main.querySelectorAll(".sess2").forEach(b => b.onclick = () => openSession(b.dataset.k));
 }
 
 function renderCard(i){
@@ -341,13 +406,42 @@ function updateCounter(){
 }
 
 let advTimer = null;
-// Vibration : API standard (Android) ; sur iPhone (iOS 18+), retour haptique via un interrupteur natif caché
-function buzz(strong){
-  if (!prefs.vib) return;
-  if (navigator.vibrate && navigator.vibrate(strong ? [30, 60, 30] : 15)) return;
-  const h = $("hapt"); if (!h) return;
-  try { h.click(); if (strong) setTimeout(() => h.click(), 140); } catch(e){}
+// Retour au comptage : vibration (Android), haptique iOS 18+ (interrupteur natif), son optionnel
+function iosHaptic(){
+  try {
+    const label = document.createElement("label");
+    label.setAttribute("aria-hidden", "true");
+    label.style.display = "none";
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.setAttribute("switch", "");
+    label.appendChild(input);
+    document.head.appendChild(label);
+    label.click();
+    document.head.removeChild(label);
+  } catch(e){}
 }
+let actx = null;
+function tick(strong){
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === "suspended") actx.resume();
+    const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
+    o.type = "sine"; o.frequency.value = strong ? 660 : 880;
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + (strong ? 0.25 : 0.08));
+    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.3);
+  } catch(e){}
+}
+function buzz(strong){
+  if (prefs.snd) tick(strong);
+  if (!prefs.vib) return;
+  if (typeof navigator.vibrate === "function"){ try { if (navigator.vibrate(strong ? [40, 70, 40] : 25)) return; } catch(e){} }
+  iosHaptic();
+  if (strong) setTimeout(iosHaptic, 150);
+}
+
 function tap(){
   if (cur === null || idx >= items().length) return;
   const it = items()[idx];
@@ -423,7 +517,8 @@ $("bSet").onclick = () => {
 };
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
 $("swFr").onclick = () => { prefs.fr = !prefs.fr; savePrefs(); applyPrefs(); };
-$("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); };
+$("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); if (prefs.vib) buzz(false); };
+$("swSnd").onclick = () => { prefs.snd = !prefs.snd; savePrefs(); applyPrefs(); if (prefs.snd) tick(false); };
 $("sMinus").onclick = () => { prefs.scale = Math.max(0.8, +(prefs.scale - 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("sPlus").onclick = () => { prefs.scale = Math.min(1.6, +(prefs.scale + 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("bReset").onclick = () => {
