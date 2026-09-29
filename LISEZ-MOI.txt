@@ -19,11 +19,11 @@ L'icône Wirdî apparaît. Après une première ouverture avec connexion, l'app 
 Mettre à jour
 -------------
 Remplacez les fichiers dans le dossier, puis redéposez-le sur Netlify (onglet « Deploys » de votre site).
-Si vous modifiez index.html, changez aussi 'wirdi-v2' en 'wirdi-v3' dans sw.js pour forcer la mise à jour chez les utilisateurs.
+Si vous modifiez index.html, changez aussi 'wirdi-v3' en 'wirdi-v4' dans sw.js pour forcer la mise à jour chez les utilisateurs.
 
 Contenu du dossier
 ------------------
 index.html            l'application
 manifest.webmanifest  nom, couleurs et icônes de l'app
 sw.js                 mode hors-ligne
-icons/                logo Wirdî (PNG)
+icon-*.png, maskable-512.png   logo Wirdî (à la racine, pas dans un sous-dossier)
