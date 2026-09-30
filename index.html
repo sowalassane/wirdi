@@ -2,6 +2,8 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; media-src 'self' https://www.hisnmuslim.com https://cdn.islamic.app https://cdn.islamic.network; connect-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'self'; form-action 'none'">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
@@ -245,6 +247,80 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .qcredit{text-align:center;font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0 0}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1E2B27;color:#F7F1E3;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:all .25s;z-index:20;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.tabbar{display:none;border-top:1px solid var(--line);background:var(--bg);padding:6px 6px 4px}
+.show-tabs .tabbar{display:flex}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 2px;color:var(--muted);font-size:11px;font-weight:600;border-radius:12px}
+.tabbar button.on{color:var(--green)}
+.tabbar button.on svg{stroke-width:2.4}
+.top-level #bBack{display:none}
+.is-learn footer,.is-learn .hint,.is-learn .prog,.is-learn #bList{display:none}
+.lwrap{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
+.lhero{border-radius:22px;padding:22px 20px;background:linear-gradient(160deg,#6B4A8A 0%,#4A3470 55%,#2F2150 100%);color:#F7F1E3}
+.lh-ar{margin:0;font-family:var(--ar);font-weight:700;font-size:34px;line-height:1.5}
+.lh-fr{margin:2px 0 14px;font-family:var(--lat);font-size:17px;opacity:.9;line-height:1.4}
+.lprog{display:flex;align-items:center;gap:10px;font-size:13px}
+.lprog .bar{flex:1;height:6px;border-radius:99px;background:rgba(127,127,127,.25);overflow:hidden}
+.lprog .bar i{display:block;height:100%;background:var(--gold);border-radius:99px}
+.lhero .lprog{color:#F7F1E3;opacity:.95}
+.lsec{margin:10px 2px 0;font-size:14px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.lrow{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--card);text-align:left;width:100%}
+.lrow:active{transform:scale(.99)}
+.li{width:52px;height:52px;flex-shrink:0;border-radius:14px;background:var(--virtue-bg);color:var(--green);display:flex;align-items:center;justify-content:center;font-family:var(--ar);font-size:20px;font-weight:700}
+.lt{flex:1;display:flex;flex-direction:column;gap:2px;min-width:0}
+.lt b{font-size:16px;color:var(--ink)}
+.lt small{font-size:13px;color:var(--muted)}
+.lgo{font-size:24px;color:var(--gold)}
+.lintro{margin:0;font-family:var(--lat);font-size:17px;line-height:1.5;color:var(--ink)}
+.lnote{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+.lgrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.lcell{display:flex;flex-direction:column;align-items:center;gap:2px;padding:12px 4px 10px;border-radius:14px;border:1px solid var(--line);background:var(--card)}
+.lcell.seen{border-color:var(--gold);background:var(--virtue-bg)}
+.lc-ar{font-family:var(--ar);font-size:36px;line-height:1.3;color:var(--ink)}
+.lc-n{font-size:12px;color:var(--muted);direction:ltr;unicode-bidi:isolate}
+.lbig{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+.lb-ar{font-family:var(--ar);font-size:110px;line-height:1.25;color:var(--green)}
+.lb-name{font-size:17px;color:var(--ink)}.lb-name [lang=ar]{font-family:var(--ar);font-size:22px}
+.lb-snd{font-size:15px;color:var(--muted)}.lb-snd b{color:var(--gold);font-size:18px}
+.ltip{margin:0;font-family:var(--lat);font-size:18px;line-height:1.5;color:var(--ink);padding:0 2px}
+.lforms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.lf{display:flex;flex-direction:column;align-items:center;gap:2px;padding:10px 2px;border-radius:14px;background:var(--virtue-bg)}
+.lf-ar{font-family:var(--ar);font-size:40px;line-height:1.4;color:var(--ink)}
+.lf small{font-size:12px;color:var(--muted)}
+.lex{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.lex-ar{font-family:var(--ar);font-size:40px;line-height:1.5;color:var(--green)}
+.lex-t{display:flex;flex-direction:column}.lex-t b{font-size:18px}.lex-t small{color:var(--muted);font-size:14px}
+.lpick{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;-webkit-overflow-scrolling:touch}
+.lpick button{flex-shrink:0;width:44px;height:44px;border-radius:12px;border:1px solid var(--line);background:var(--card);font-family:var(--ar);font-size:22px;color:var(--ink)}
+.lpick button.on{background:var(--green);color:var(--green-ink);border-color:var(--green)}
+.vtable{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}
+.vrow{display:flex;align-items:center;gap:14px;padding:10px 14px;border-bottom:1px solid var(--line)}
+.vrow:last-child{border-bottom:0}
+.v-ar{width:70px;flex-shrink:0;text-align:center;font-family:var(--ar);font-size:38px;line-height:1.6;color:var(--green)}
+.v-t{display:flex;flex-direction:column;gap:2px}.v-t b{font-size:15px}.v-t small{font-size:13px;color:var(--muted);line-height:1.45}
+.scard{display:flex;flex-direction:column;align-items:center;gap:8px;padding:30px 20px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+.sy-ar{font-family:var(--ar);font-size:72px;line-height:1.5;color:var(--green)}
+.sy-tr{font-size:20px;font-family:var(--lat);color:var(--ink);text-align:center}.sy-tr small{display:block;font-size:14px;color:var(--muted)}
+.qchoices{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.qc{padding:16px 10px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);font-size:16px;font-weight:600;color:var(--ink)}
+.qc small{font-weight:400;color:var(--muted)}
+.qc.ok{border-color:#2E8B57;background:rgba(46,139,87,.15)}
+.qc.ko{border-color:#C0392B;background:rgba(192,57,43,.12)}
+.plist{display:grid;grid-template-columns:1fr;gap:10px}
+.pcard{display:flex;flex-direction:column;align-items:center;gap:2px;padding:16px;border-radius:16px;border:1px solid var(--line);background:var(--card);text-align:center;width:100%}
+.p-ar{font-family:var(--ar);font-size:30px;line-height:1.6;color:var(--green)}
+.p-tr{font-family:var(--lat);font-size:17px;font-weight:600;color:var(--ink)}
+.p-fr{font-family:var(--lat);font-style:italic;font-size:16px;color:var(--muted)}
+.pcard.flip .p-tr,.pcard.flip .p-fr{visibility:hidden}
+.pcard.flip.open .p-tr,.pcard.flip.open .p-fr{visibility:visible}
+.rlist{display:flex;flex-direction:column;gap:10px}
+.rrow{display:flex;gap:12px;align-items:flex-start;padding:12px;border-radius:16px;background:var(--card);border:1px solid var(--line)}
+.rplay{width:42px;height:42px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--green);color:var(--green);font-size:15px}
+.rplay.playing{background:var(--green);color:var(--green-ink)}
+.rplay.err{border-color:var(--line);color:var(--muted)}
+.rtx{flex:1;min-width:0}
+.r-ar{margin:0;font-family:'Amiri Quran',var(--ar);font-size:calc(26px*var(--scale));line-height:2.1;direction:rtl;text-align:right}
+.r-tr{margin:2px 0 0;font-family:var(--lat);font-size:16px;color:var(--green);line-height:1.4}
+.lf small{direction:ltr;unicode-bidi:isolate}
 </style>
 </head>
 <body>
@@ -276,6 +352,12 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
     </button>
     <button class="nav" id="bNext" aria-label="Suivant"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   </footer>
+  <nav class="tabbar" id="tabbar" aria-label="Navigation">
+    <button data-tab="adhkar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16a7 7 0 0 1 14 0"/><path d="M2 16h20M12 4v3M5.5 7.5l2 2M18.5 7.5l-2 2"/></svg><span>Invocations</span></button>
+    <button data-tab="coran"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.6 3.5 5v12.5c3.5-.4 6.5 0 8.5 1.5 2-1.5 5-1.9 8.5-1.5V5C17 4.6 14 5 12 6.5z"/><path d="M12 6.5V19"/></svg><span>Coran</span></button>
+    <button data-tab="apprendre"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4.5L21 9l-9 4.5z"/><path d="M7 11v4.5c1.5 1.5 3 2 5 2s3.5-.5 5-2V11"/></svg><span>Apprendre</span></button>
+    <button data-tab="reglages"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Réglages</span></button>
+  </nav>
 </div>
 
 <div class="sheet-bg" id="sheetBg"></div>
@@ -300,531 +382,6 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
   </div>
 </div>
 
-<script>
-const DATA = {"matin": [{"ar": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ إِنِّي أَسْأَلُكَ خَيْرَ مَا فِي هَذَا الْيَوْمِ وَخَيْرَ مَا بَعْدَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذَا الْيَوْمِ وَشَرِّ مَا بَعْدَهُ، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.", "tr": "Asbahnâ wa asbaha-l-mulku lillâh, wa-l-hamdu lillâh, lâ ilâha illa-llâhu wahdahu lâ sharîka lah, lahu-l-mulku wa lahu-l-hamdu wa huwa 'alâ kulli shay'in qadîr. Rabbi innî as'aluka khayra mâ fî hâdha-l-yawmi wa khayra mâ ba'dah, wa a'ûdhu bika min sharri mâ fî hâdha-l-yawmi wa sharri mâ ba'dah. Rabbi a'ûdhu bika mina-l-kasali wa sû'i-l-kibar. Rabbi a'ûdhu bika min 'adhâbin fi-n-nâri wa 'adhâbin fi-l-qabr.", "fr": "Nous voici au matin et la royauté appartient à Allah. Louange à Allah. Nul ne mérite d'être adoré en dehors d'Allah, Seul, sans associé. À Lui la royauté, à Lui la louange, et Il est capable de toute chose. Seigneur, je Te demande le bien de ce jour et le bien de ce qui le suit, et je cherche refuge auprès de Toi contre le mal de ce jour et le mal de ce qui le suit. Seigneur, je cherche refuge auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche refuge auprès de Toi contre un châtiment dans le Feu et un châtiment dans la tombe.", "src": ["مسلم", "Muslim"], "n": 1, "a": {"hm": 77}}, {"ar": "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ النُّشُورُ.", "tr": "Allâhumma bika asbahnâ, wa bika amsaynâ, wa bika nahyâ, wa bika namûtu, wa ilayka-n-nushûr.", "fr": "Ô Allah, c'est par Toi que nous atteignons le matin et par Toi que nous atteignons le soir, par Toi que nous vivons et par Toi que nous mourons, et c'est vers Toi qu'est la résurrection.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1, "a": {"hm": 78}}, {"ar": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", "tr": "Allâhumma anta rabbî lâ ilâha illâ ant, khalaqtanî wa ana 'abduk, wa ana 'alâ 'ahdika wa wa'dika ma-stata't, a'ûdhu bika min sharri mâ sana't, abû'u laka bi ni'matika 'alayy, wa abû'u bi dhanbî fa-ghfir lî, fa innahu lâ yaghfiru-dh-dhunûba illâ ant.", "fr": "Ô Allah, Tu es mon Seigneur, nul ne mérite d'être adoré en dehors de Toi. Tu m'as créé et je suis Ton serviteur. Je tiens mon engagement et ma promesse envers Toi autant que je le peux. Je cherche refuge auprès de Toi contre le mal que j'ai commis. Je reconnais Ton bienfait envers moi et je reconnais mon péché : pardonne-moi, car nul ne pardonne les péchés en dehors de Toi.", "src": ["البخاري", "al-Bukhârî"], "n": 1, "v": "مَنْ قَالَهَا مُوقِنًا بِهَا حِينَ يُصْبِحُ فَمَاتَ مِنْ يَوْمِهِ دَخَلَ الْجَنَّةَ، وَمَنْ قَالَهَا مُوقِنًا بِهَا حِينَ يُمْسِي فَمَاتَ مِنْ لَيْلَتِهِ دَخَلَ الْجَنَّةَ.", "vf": "Celui qui la dit le matin avec certitude et meurt ce jour-là entre au Paradis ; et celui qui la dit le soir avec certitude et meurt cette nuit-là entre au Paradis.", "a": {"hm": 79}}, {"ar": "اللَّهُمَّ إِنِّي أَصْبَحْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ.", "tr": "Allâhumma innî asbahtu ush-hiduka, wa ush-hidu hamalata 'arshika, wa malâ'ikataka, wa jamî'a khalqika, annaka anta-llâhu lâ ilâha illâ anta wahdaka lâ sharîka lak, wa anna Muhammadan 'abduka wa rasûluk.", "fr": "Ô Allah, en ce matin je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toutes Tes créatures, que Tu es Allah, nul ne mérite d'être adoré en dehors de Toi, Seul, sans associé, et que Muhammad est Ton serviteur et Ton messager.", "src": ["أبو داود", "Abû Dâwûd"], "n": 4, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ أَوْ يُمْسِي أَرْبَعَ مَرَّاتٍ أَعْتَقَهُ اللَّهُ مِنَ النَّارِ.", "vf": "Celui qui la dit quatre fois le matin ou le soir, Allah l'affranchit du Feu.", "nl": ["٤ مرات", "4 fois"], "a": {"hm": 80}}, {"ar": "اللَّهُمَّ مَا أَصْبَحَ بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.", "tr": "Allâhumma mâ asbaha bî min ni'matin aw bi ahadin min khalqika fa minka wahdaka lâ sharîka lak, fa laka-l-hamdu wa laka-sh-shukr.", "fr": "Ô Allah, tout bienfait dont je jouis ce matin, moi ou l'une de Tes créatures, vient de Toi Seul, sans associé. À Toi la louange et à Toi la gratitude.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ فَقَدْ أَدَّى شُكْرَ يَوْمِهِ، وَمَنْ قَالَهَا حِينَ يُمْسِي فَقَدْ أَدَّى شُكْرَ لَيْلَتِهِ.", "vf": "Celui qui la dit le matin s'est acquitté de la gratitude de sa journée, et celui qui la dit le soir, de celle de sa nuit.", "a": {"hm": 81}}, {"ar": "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ.", "tr": "Allâhumma 'âfinî fî badanî, Allâhumma 'âfinî fî sam'î, Allâhumma 'âfinî fî basarî, lâ ilâha illâ ant. Allâhumma innî a'ûdhu bika mina-l-kufri wa-l-faqr, wa a'ûdhu bika min 'adhâbi-l-qabr, lâ ilâha illâ ant.", "fr": "Ô Allah, préserve mon corps. Ô Allah, préserve mon ouïe. Ô Allah, préserve ma vue. Nul ne mérite d'être adoré en dehors de Toi. Ô Allah, je cherche refuge auprès de Toi contre la mécréance et la pauvreté, et contre le châtiment de la tombe. Nul ne mérite d'être adoré en dehors de Toi.", "src": ["أحمد", "Ahmad"], "n": 3, "a": {"hm": 82}, "nl": ["٣ مَرَّاتٍ", "3 fois"]}, {"ar": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ.", "tr": "Allâhumma innî a'ûdhu bika mina-l-hammi wa-l-hazan, wa a'ûdhu bika mina-l-'ajzi wa-l-kasal, wa a'ûdhu bika mina-l-jubni wa-l-bukhl, wa a'ûdhu bika min ghalabati-d-dayni wa qahri-r-rijâl.", "fr": "Ô Allah, je cherche refuge auprès de Toi contre le souci et la tristesse, contre l'impuissance et la paresse, contre la lâcheté et l'avarice, contre le poids des dettes et la domination des hommes.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1}, {"ar": "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.", "tr": "Hasbiya-llâhu lâ ilâha illâ huwa, 'alayhi tawakkaltu wa huwa rabbu-l-'arshi-l-'azîm.", "fr": "Allah me suffit, nul ne mérite d'être adoré en dehors de Lui. En Lui je place ma confiance, et Il est le Seigneur du Trône immense.", "src": ["ابن السني", "Ibn as-Sunnî"], "n": 7, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ وَحِينَ يُمْسِي سَبْعَ مَرَّاتٍ كَفَاهُ اللَّهُ مَا أَهَمَّهُ مِنْ أَمْرِ الدُّنْيَا وَالْآخِرَةِ.", "vf": "Celui qui la dit sept fois le matin et le soir, Allah lui suffit contre ce qui le préoccupe de ce monde et de l'au-delà.", "nl": ["٧ مرات", "7 fois"], "a": {"hm": 83}}, {"ar": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", "tr": "Allâhumma innî as'aluka-l-'âfiyata fi-d-dunyâ wa-l-âkhirah. Allâhumma innî as'aluka-l-'afwa wa-l-'âfiyata fî dînî wa dunyâya wa ahlî wa mâlî. Allâhumma-stur 'awrâtî, wa âmin raw'âtî. Allâhumma-hfaznî min bayni yadayya, wa min khalfî, wa 'an yamînî, wa 'an shimâlî, wa min fawqî, wa a'ûdhu bi 'azamatika an ughtâla min tahtî.", "fr": "Ô Allah, je Te demande le salut en ce monde et dans l'au-delà. Ô Allah, je Te demande le pardon et le salut dans ma religion, ma vie, ma famille et mes biens. Ô Allah, couvre mes défauts et apaise mes craintes. Ô Allah, protège-moi par-devant et par-derrière, à ma droite et à ma gauche, et d'au-dessus de moi ; et je cherche refuge dans Ta grandeur contre le fait d'être saisi par surprise d'en dessous de moi.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1, "a": {"hm": 84}}, {"ar": "اللَّهُمَّ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، عَالِمَ الْغَيْبِ وَالشَّهَادَةِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.", "tr": "Allâhumma fâtira-s-samâwâti wa-l-ard, 'âlima-l-ghaybi wa-sh-shahâdah, rabba kulli shay'in wa malîkah, ash-hadu an lâ ilâha illâ ant, a'ûdhu bika min sharri nafsî, wa min sharri-sh-shaytâni wa shirkih, wa an aqtarifa 'alâ nafsî sû'an, aw ajurrahu ilâ muslim.", "fr": "Ô Allah, Créateur des cieux et de la terre, Connaisseur de l'invisible et du visible, Seigneur et Souverain de toute chose, j'atteste que nul ne mérite d'être adoré en dehors de Toi. Je cherche refuge auprès de Toi contre le mal de mon âme, contre le mal de Satan et de son association, et contre le fait de commettre un mal contre moi-même ou de l'attirer sur un musulman.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1, "a": {"hm": 85}}, {"ar": "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.", "tr": "Bismi-llâhi-lladhî lâ yadurru ma'a-smihi shay'un fi-l-ardi wa lâ fi-s-samâ', wa huwa-s-samî'u-l-'alîm.", "fr": "Au nom d'Allah, avec le nom duquel rien ne peut nuire, ni sur la terre ni dans le ciel. Il est Celui qui entend tout et sait tout.", "src": ["ابن ماجه", "Ibn Mâjah"], "n": 3, "v": "مَنْ قَالَهَا ثَلَاثًا إِذَا أَصْبَحَ وَثَلَاثًا إِذَا أَمْسَى لَمْ يَضُرَّهُ شَيْءٌ.", "vf": "Celui qui la dit trois fois le matin et trois fois le soir, rien ne lui nuira.", "nl": ["٣ مرات", "3 fois"], "a": {"hm": 86}}, {"ar": "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.", "tr": "Radîtu bi-llâhi rabbâ, wa bi-l-islâmi dînâ, wa bi Muhammadin (ﷺ) nabiyyâ.", "fr": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète.", "src": ["أحمد", "Ahmad"], "n": 3, "v": "مَنْ قَالَهَا ثَلَاثًا حِينَ يُصْبِحُ وَثَلَاثًا حِينَ يُمْسِي كَانَ حَقًّا عَلَى اللَّهِ أَنْ يُرْضِيَهُ يَوْمَ الْقِيَامَةِ.", "vf": "Celui qui la dit trois fois le matin et trois fois le soir, Allah S'est engagé à le satisfaire le Jour de la Résurrection.", "nl": ["٣ مرات", "3 fois"], "a": {"hm": 87}}, {"ar": "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ.", "tr": "Yâ Hayyu yâ Qayyûm, bi rahmatika astaghîth, aslih lî sha'nî kullah, wa lâ takilnî ilâ nafsî tarfata 'ayn.", "fr": "Ô Vivant, Ô Celui qui subsiste par Lui-même, c'est par Ta miséricorde que j'implore secours : arrange toutes mes affaires et ne me confie pas à moi-même, ne serait-ce que le temps d'un clin d'œil.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1, "a": {"hm": 88}}, {"ar": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذَا الْيَوْمِ: فَتْحَهُ، وَنَصْرَهُ، وَنُورَهُ، وَبَرَكَتَهُ، وَهُدَاهُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهِ وَشَرِّ مَا بَعْدَهُ.", "tr": "Asbahnâ wa asbaha-l-mulku lillâhi rabbi-l-'âlamîn. Allâhumma innî as'aluka khayra hâdha-l-yawm : fathahu, wa nasrahu, wa nûrahu, wa barakatahu, wa hudâh, wa a'ûdhu bika min sharri mâ fîhi wa sharri mâ ba'dah.", "fr": "Nous voici au matin et la royauté appartient à Allah, Seigneur des mondes. Ô Allah, je Te demande le bien de ce jour : son ouverture, son secours, sa lumière, sa bénédiction et sa guidée ; et je cherche refuge auprès de Toi contre le mal qu'il contient et le mal de ce qui le suit.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1, "a": {"hm": 89}}, {"ar": "أَصْبَحْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ.", "tr": "Asbahnâ 'alâ fitrati-l-islâm, wa 'alâ kalimati-l-ikhlâs, wa 'alâ dîni nabiyyinâ Muhammad (ﷺ), wa 'alâ millati abînâ Ibrâhîma hanîfan musliman wa mâ kâna mina-l-mushrikîn.", "fr": "Nous voici au matin sur la saine nature de l'Islam, sur la parole de sincérité, sur la religion de notre Prophète Muhammad ﷺ et sur la voie de notre père Ibrâhîm, monothéiste pur et soumis, qui n'était pas du nombre des associateurs.", "src": ["أحمد", "Ahmad"], "n": 1, "a": {"hm": 90}}, {"ar": "اللَّهُمَّ إِنِّي أَسْأَلُكَ عِلْمًا نَافِعًا، وَرِزْقًا طَيِّبًا، وَعَمَلًا مُتَقَبَّلًا.", "tr": "Allâhumma innî as'aluka 'ilman nâfi'â, wa rizqan tayyibâ, wa 'amalan mutaqabbalâ.", "fr": "Ô Allah, je Te demande une science utile, une subsistance pure et des œuvres acceptées.", "src": ["ابن ماجه", "Ibn Mâjah"], "n": 1, "a": {"hm": 95}}, {"ar": "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ.", "tr": "Allâhumma salli wa sallim 'alâ nabiyyinâ Muhammad.", "fr": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui la paix.", "src": ["الطبراني", "at-Tabarânî"], "n": 10, "v": "قَالَ النَّبِيُّ ﷺ: مَنْ صَلَّى عَلَيَّ حِينَ يُصْبِحُ عَشْرًا وَحِينَ يُمْسِي عَشْرًا أَدْرَكَتْهُ شَفَاعَتِي يَوْمَ الْقِيَامَةِ.", "vf": "Le Prophète ﷺ a dit : « Celui qui prie sur moi dix fois le matin et dix fois le soir obtiendra mon intercession le Jour de la Résurrection. »", "nl": ["١٠ مرات", "10 fois"], "a": {"hm": 98}}, {"ar": "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ.", "tr": "Astaghfiru-llâha wa atûbu ilayh.", "fr": "Je demande pardon à Allah et je me repens à Lui.", "src": ["البخاري", "al-Bukhârî"], "n": 100, "v": "يَقُولُهَا مِائَةَ مَرَّةٍ فِي الْيَوْمِ.", "vf": "À dire cent fois dans la journée.", "nl": ["١٠٠ مرة", "100 fois"], "a": {"hm": 96}}, {"ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ، عَدَدَ خَلْقِهِ، وَرِضَا نَفْسِهِ، وَزِنَةَ عَرْشِهِ، وَمِدَادَ كَلِمَاتِهِ.", "tr": "Subhâna-llâhi wa bi hamdih, 'adada khalqih, wa ridâ nafsih, wa zinata 'arshih, wa midâda kalimâtih.", "fr": "Gloire et louange à Allah, autant que le nombre de Ses créatures, autant qu'il Lui plaît, autant que le poids de Son Trône et autant que l'encre de Ses paroles.", "src": ["مسلم", "Muslim"], "n": 3, "v": "يَقُولُهَا ثَلَاثَ مَرَّاتٍ إِذَا أَصْبَحَ.", "vf": "À dire trois fois le matin.", "nl": ["٣ مرات", "3 fois"], "a": {"hm": 94}}, {"ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ.", "tr": "Subhâna-llâhi wa bi hamdih.", "fr": "Gloire et louange à Allah.", "src": ["مسلم", "Muslim"], "n": 100, "v": "مَنْ قَالَهَا مِائَةَ مَرَّةٍ حِينَ يُصْبِحُ وَحِينَ يُمْسِي لَمْ يَأْتِ أَحَدٌ يَوْمَ الْقِيَامَةِ بِأَفْضَلَ مِمَّا جَاءَ بِهِ، إِلَّا أَحَدٌ قَالَ مِثْلَ مَا قَالَ أَوْ زَادَ عَلَيْهِ.", "vf": "Celui qui la dit cent fois le matin et le soir, personne ne viendra le Jour de la Résurrection avec mieux que lui, sauf celui qui en aura dit autant ou davantage.", "nl": ["١٠٠ مرة", "100 fois"], "a": {"hm": 91}}, {"ar": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", "tr": "Lâ ilâha illa-llâhu wahdahu lâ sharîka lah, lahu-l-mulku wa lahu-l-hamdu wa huwa 'alâ kulli shay'in qadîr.", "fr": "Nul ne mérite d'être adoré en dehors d'Allah, Seul, sans associé. À Lui la royauté, à Lui la louange, et Il est capable de toute chose.", "src": ["أبو داود والترمذي", "Abû Dâwûd et at-Tirmidhî"], "n": 10, "v": "يَقُولُهَا عَشْرَ مَرَّاتٍ، أَوْ مَرَّةً وَاحِدَةً عِنْدَ الْكَسَلِ. وَمَنْ قَالَهَا مِائَةَ مَرَّةٍ فِي يَوْمٍ كَانَتْ لَهُ عَدْلَ عَشْرِ رِقَابٍ، وَكُتِبَتْ لَهُ مِائَةُ حَسَنَةٍ، وَمُحِيَتْ عَنْهُ مِائَةُ سَيِّئَةٍ، وَكَانَتْ لَهُ حِرْزًا مِنَ الشَّيْطَانِ يَوْمَهُ ذَلِكَ حَتَّى يُمْسِيَ، وَلَمْ يَأْتِ أَحَدٌ بِأَفْضَلَ مِمَّا جَاءَ بِهِ إِلَّا أَحَدٌ عَمِلَ أَكْثَرَ مِنْ ذَلِكَ.", "vf": "À dire dix fois, ou une fois en cas de paresse. Celui qui la dit cent fois dans la journée obtient l'équivalent de l'affranchissement de dix esclaves ; cent bonnes actions lui sont inscrites, cent péchés effacés, et elle le protège de Satan ce jour-là jusqu'au soir. Nul n'apporte mieux que lui, sauf celui qui en a fait davantage.", "nl": ["١٠ أو ١٠٠ مرة", "10 ou 100 fois"], "a": {"hm": 92}}, {"title": ["آيَةُ الْكُرْسِيِّ", "Âyat al-Kursî"], "n": 1, "ar": "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ ۝", "tr": "Allâhu lâ ilâha illâ huwa-l-hayyu-l-qayyûm, lâ ta'khudhuhu sinatun wa lâ nawm, lahu mâ fi-s-samâwâti wa mâ fi-l-ard, man dha-lladhî yashfa'u 'indahu illâ bi-idhnih, ya'lamu mâ bayna aydîhim wa mâ khalfahum, wa lâ yuhîtûna bi shay'in min 'ilmihi illâ bimâ shâ', wasi'a kursiyyuhu-s-samâwâti wa-l-ard, wa lâ ya'ûduhu hifzhuhumâ, wa huwa-l-'aliyyu-l-'azîm.", "fr": "Allah ! Nulle divinité en dehors de Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient tout ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il connaît ce qui est devant eux et ce qui est derrière eux, et ils n'embrassent de Sa science que ce qu'Il veut. Son Kursî s'étend sur les cieux et la terre, dont la garde ne Lui coûte aucune peine. Et Il est le Très-Haut, l'Immense.", "src": ["البقرة ٢٥٥", "Sourate al-Baqara, verset 255"], "q": true, "a": {"q": [262]}}, {"title": ["سُورَةُ الْإِخْلَاصِ", "Sourate al-Ikhlâs"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul huwa-llâhu ahad. Allâhu-s-samad. Lam yalid wa lam yûlad. Wa lam yakun lahu kufuwan ahad.", "fr": "Dis : « Il est Allah, Unique. Allah, Celui vers qui l'on se tourne en tout besoin. Il n'engendre pas et n'a pas été engendré, et nul n'est égal à Lui. »", "src": ["سورة ١١٢", "Sourate 112"], "q": true, "a": {"q": [1, 6222, 6223, 6224, 6225]}}, {"title": ["سُورَةُ الْفَلَقِ", "Sourate al-Falaq"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul a'ûdhu bi rabbi-l-falaq. Min sharri mâ khalaq. Wa min sharri ghâsiqin idhâ waqab. Wa min sharri-n-naffâthâti fi-l-'uqad. Wa min sharri hâsidin idhâ hasad.", "fr": "Dis : « Je cherche refuge auprès du Seigneur de l'aube naissante, contre le mal de ce qu'Il a créé, contre le mal de l'obscurité quand elle s'étend, contre le mal de celles qui soufflent sur les nœuds, et contre le mal de l'envieux quand il envie. »", "src": ["سورة ١١٣", "Sourate 113"], "q": true, "a": {"q": [1, 6226, 6227, 6228, 6229, 6230]}}, {"title": ["سُورَةُ النَّاسِ", "Sourate an-Nâs"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul a'ûdhu bi rabbi-n-nâs. Maliki-n-nâs. Ilâhi-n-nâs. Min sharri-l-waswâsi-l-khannâs. Alladhî yuwaswisu fî sudûri-n-nâs. Mina-l-jinnati wa-n-nâs.", "fr": "Dis : « Je cherche refuge auprès du Seigneur des hommes, Souverain des hommes, Dieu des hommes, contre le mal du tentateur furtif, qui souffle le mal dans les poitrines des hommes, qu'il soit djinn ou humain. »", "src": ["سورة ١١٤", "Sourate 114"], "q": true, "a": {"q": [1, 6231, 6232, 6233, 6234, 6235, 6236]}}, {"title": ["دُعَاءُ الْخِتَامِ", "Du'â de clôture"], "n": 1, "ar": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ.", "tr": "Subhânaka-llâhumma wa bi hamdik, ash-hadu an lâ ilâha illâ ant, astaghfiruka wa atûbu ilayk.", "fr": "Gloire et pureté à Toi, ô Allah, et louange à Toi. J'atteste que nul ne mérite d'être adoré en dehors de Toi. Je Te demande pardon et je me repens à Toi.", "src": null, "q": true}], "soir": [{"ar": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ، رَبِّ أَسْأَلُكَ خَيْرَ مَا فِي هَذِهِ اللَّيْلَةِ وَخَيْرَ مَا بَعْدَهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِي هَذِهِ اللَّيْلَةِ وَشَرِّ مَا بَعْدَهَا، رَبِّ أَعُوذُ بِكَ مِنَ الْكَسَلِ وَسُوءِ الْكِبَرِ، رَبِّ أَعُوذُ بِكَ مِنْ عَذَابٍ فِي النَّارِ وَعَذَابٍ فِي الْقَبْرِ.", "tr": "Amsaynâ wa amsa-l-mulku lillâh, wa-l-hamdu lillâh, lâ ilâha illa-llâhu wahdahu lâ sharîka lah, lahu-l-mulku wa lahu-l-hamdu wa huwa 'alâ kulli shay'in qadîr. Rabbi as'aluka khayra mâ fî hâdhihi-l-laylati wa khayra mâ ba'dahâ, wa a'ûdhu bika min sharri mâ fî hâdhihi-l-laylati wa sharri mâ ba'dahâ. Rabbi a'ûdhu bika mina-l-kasali wa sû'i-l-kibar. Rabbi a'ûdhu bika min 'adhâbin fi-n-nâri wa 'adhâbin fi-l-qabr.", "fr": "Nous voici au soir et la royauté appartient à Allah. Louange à Allah. Nul ne mérite d'être adoré en dehors d'Allah, Seul, sans associé. À Lui la royauté, à Lui la louange, et Il est capable de toute chose. Seigneur, je Te demande le bien de cette nuit et le bien de ce qui la suit, et je cherche refuge auprès de Toi contre le mal de cette nuit et le mal de ce qui la suit. Seigneur, je cherche refuge auprès de Toi contre la paresse et les maux de la vieillesse. Seigneur, je cherche refuge auprès de Toi contre un châtiment dans le Feu et un châtiment dans la tombe.", "src": ["مسلم", "Muslim"], "n": 1}, {"ar": "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ.", "tr": "Allâhumma bika amsaynâ, wa bika asbahnâ, wa bika nahyâ, wa bika namûtu, wa ilayka-l-masîr.", "fr": "Ô Allah, c'est par Toi que nous atteignons le soir et par Toi que nous atteignons le matin, par Toi que nous vivons et par Toi que nous mourons, et c'est vers Toi qu'est le retour.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1}, {"ar": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ، أَعُوذُ بِكَ مِنْ شَرِّ مَا صَنَعْتُ، أَبُوءُ لَكَ بِنِعْمَتِكَ عَلَيَّ، وَأَبُوءُ بِذَنْبِي فَاغْفِرْ لِي، فَإِنَّهُ لَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ.", "tr": "Allâhumma anta rabbî lâ ilâha illâ ant, khalaqtanî wa ana 'abduk, wa ana 'alâ 'ahdika wa wa'dika ma-stata't, a'ûdhu bika min sharri mâ sana't, abû'u laka bi ni'matika 'alayy, wa abû'u bi dhanbî fa-ghfir lî, fa innahu lâ yaghfiru-dh-dhunûba illâ ant.", "fr": "Ô Allah, Tu es mon Seigneur, nul ne mérite d'être adoré en dehors de Toi. Tu m'as créé et je suis Ton serviteur. Je tiens mon engagement et ma promesse envers Toi autant que je le peux. Je cherche refuge auprès de Toi contre le mal que j'ai commis. Je reconnais Ton bienfait envers moi et je reconnais mon péché : pardonne-moi, car nul ne pardonne les péchés en dehors de Toi.", "src": ["البخاري", "al-Bukhârî"], "n": 1, "v": "مَنْ قَالَهَا مُوقِنًا بِهَا حِينَ يُصْبِحُ فَمَاتَ مِنْ يَوْمِهِ دَخَلَ الْجَنَّةَ، وَمَنْ قَالَهَا مُوقِنًا بِهَا حِينَ يُمْسِي فَمَاتَ مِنْ لَيْلَتِهِ دَخَلَ الْجَنَّةَ.", "vf": "Celui qui la dit le matin avec certitude et meurt ce jour-là entre au Paradis ; et celui qui la dit le soir avec certitude et meurt cette nuit-là entre au Paradis.", "a": {"hm": 79}}, {"ar": "اللَّهُمَّ إِنِّي أَمْسَيْتُ أُشْهِدُكَ، وَأُشْهِدُ حَمَلَةَ عَرْشِكَ، وَمَلَائِكَتَكَ، وَجَمِيعَ خَلْقِكَ، أَنَّكَ أَنْتَ اللَّهُ لَا إِلَهَ إِلَّا أَنْتَ وَحْدَكَ لَا شَرِيكَ لَكَ، وَأَنَّ مُحَمَّدًا عَبْدُكَ وَرَسُولُكَ.", "tr": "Allâhumma innî amsaytu ush-hiduka, wa ush-hidu hamalata 'arshika, wa malâ'ikataka, wa jamî'a khalqika, annaka anta-llâhu lâ ilâha illâ anta wahdaka lâ sharîka lak, wa anna Muhammadan 'abduka wa rasûluk.", "fr": "Ô Allah, en ce soir je Te prends à témoin, ainsi que les porteurs de Ton Trône, Tes anges et toutes Tes créatures, que Tu es Allah, nul ne mérite d'être adoré en dehors de Toi, Seul, sans associé, et que Muhammad est Ton serviteur et Ton messager.", "src": ["أبو داود", "Abû Dâwûd"], "n": 4, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ أَوْ يُمْسِي أَرْبَعَ مَرَّاتٍ أَعْتَقَهُ اللَّهُ مِنَ النَّارِ.", "vf": "Celui qui la dit quatre fois le matin ou le soir, Allah l'affranchit du Feu.", "nl": ["٤ مرات", "4 fois"]}, {"ar": "اللَّهُمَّ مَا أَمْسَى بِي مِنْ نِعْمَةٍ أَوْ بِأَحَدٍ مِنْ خَلْقِكَ فَمِنْكَ وَحْدَكَ لَا شَرِيكَ لَكَ، فَلَكَ الْحَمْدُ وَلَكَ الشُّكْرُ.", "tr": "Allâhumma mâ amsâ bî min ni'matin aw bi ahadin min khalqika fa minka wahdaka lâ sharîka lak, fa laka-l-hamdu wa laka-sh-shukr.", "fr": "Ô Allah, tout bienfait dont je jouis ce soir, moi ou l'une de Tes créatures, vient de Toi Seul, sans associé. À Toi la louange et à Toi la gratitude.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ فَقَدْ أَدَّى شُكْرَ يَوْمِهِ، وَمَنْ قَالَهَا حِينَ يُمْسِي فَقَدْ أَدَّى شُكْرَ لَيْلَتِهِ.", "vf": "Celui qui la dit le matin s'est acquitté de la gratitude de sa journée, et celui qui la dit le soir, de celle de sa nuit."}, {"ar": "اللَّهُمَّ عَافِنِي فِي بَدَنِي، اللَّهُمَّ عَافِنِي فِي سَمْعِي، اللَّهُمَّ عَافِنِي فِي بَصَرِي، لَا إِلَهَ إِلَّا أَنْتَ. اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْكُفْرِ وَالْفَقْرِ، وَأَعُوذُ بِكَ مِنْ عَذَابِ الْقَبْرِ، لَا إِلَهَ إِلَّا أَنْتَ.", "tr": "Allâhumma 'âfinî fî badanî, Allâhumma 'âfinî fî sam'î, Allâhumma 'âfinî fî basarî, lâ ilâha illâ ant. Allâhumma innî a'ûdhu bika mina-l-kufri wa-l-faqr, wa a'ûdhu bika min 'adhâbi-l-qabr, lâ ilâha illâ ant.", "fr": "Ô Allah, préserve mon corps. Ô Allah, préserve mon ouïe. Ô Allah, préserve ma vue. Nul ne mérite d'être adoré en dehors de Toi. Ô Allah, je cherche refuge auprès de Toi contre la mécréance et la pauvreté, et contre le châtiment de la tombe. Nul ne mérite d'être adoré en dehors de Toi.", "src": ["أحمد", "Ahmad"], "n": 3, "a": {"hm": 82}, "nl": ["٣ مَرَّاتٍ", "3 fois"]}, {"ar": "اللَّهُمَّ إِنِّي أَعُوذُ بِكَ مِنَ الْهَمِّ وَالْحَزَنِ، وَأَعُوذُ بِكَ مِنَ الْعَجْزِ وَالْكَسَلِ، وَأَعُوذُ بِكَ مِنَ الْجُبْنِ وَالْبُخْلِ، وَأَعُوذُ بِكَ مِنْ غَلَبَةِ الدَّيْنِ وَقَهْرِ الرِّجَالِ.", "tr": "Allâhumma innî a'ûdhu bika mina-l-hammi wa-l-hazan, wa a'ûdhu bika mina-l-'ajzi wa-l-kasal, wa a'ûdhu bika mina-l-jubni wa-l-bukhl, wa a'ûdhu bika min ghalabati-d-dayni wa qahri-r-rijâl.", "fr": "Ô Allah, je cherche refuge auprès de Toi contre le souci et la tristesse, contre l'impuissance et la paresse, contre la lâcheté et l'avarice, contre le poids des dettes et la domination des hommes.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1}, {"ar": "حَسْبِيَ اللَّهُ لَا إِلَهَ إِلَّا هُوَ، عَلَيْهِ تَوَكَّلْتُ وَهُوَ رَبُّ الْعَرْشِ الْعَظِيمِ.", "tr": "Hasbiya-llâhu lâ ilâha illâ huwa, 'alayhi tawakkaltu wa huwa rabbu-l-'arshi-l-'azîm.", "fr": "Allah me suffit, nul ne mérite d'être adoré en dehors de Lui. En Lui je place ma confiance, et Il est le Seigneur du Trône immense.", "src": ["ابن السني", "Ibn as-Sunnî"], "n": 7, "v": "مَنْ قَالَهَا حِينَ يُصْبِحُ وَحِينَ يُمْسِي سَبْعَ مَرَّاتٍ كَفَاهُ اللَّهُ مَا أَهَمَّهُ مِنْ أَمْرِ الدُّنْيَا وَالْآخِرَةِ.", "vf": "Celui qui la dit sept fois le matin et le soir, Allah lui suffit contre ce qui le préoccupe de ce monde et de l'au-delà.", "nl": ["٧ مرات", "7 fois"], "a": {"hm": 83}}, {"ar": "اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَافِيَةَ فِي الدُّنْيَا وَالْآخِرَةِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ فِي دِينِي وَدُنْيَايَ وَأَهْلِي وَمَالِي، اللَّهُمَّ اسْتُرْ عَوْرَاتِي، وَآمِنْ رَوْعَاتِي، اللَّهُمَّ احْفَظْنِي مِنْ بَيْنِ يَدَيَّ، وَمِنْ خَلْفِي، وَعَنْ يَمِينِي، وَعَنْ شِمَالِي، وَمِنْ فَوْقِي، وَأَعُوذُ بِعَظَمَتِكَ أَنْ أُغْتَالَ مِنْ تَحْتِي.", "tr": "Allâhumma innî as'aluka-l-'âfiyata fi-d-dunyâ wa-l-âkhirah. Allâhumma innî as'aluka-l-'afwa wa-l-'âfiyata fî dînî wa dunyâya wa ahlî wa mâlî. Allâhumma-stur 'awrâtî, wa âmin raw'âtî. Allâhumma-hfaznî min bayni yadayya, wa min khalfî, wa 'an yamînî, wa 'an shimâlî, wa min fawqî, wa a'ûdhu bi 'azamatika an ughtâla min tahtî.", "fr": "Ô Allah, je Te demande le salut en ce monde et dans l'au-delà. Ô Allah, je Te demande le pardon et le salut dans ma religion, ma vie, ma famille et mes biens. Ô Allah, couvre mes défauts et apaise mes craintes. Ô Allah, protège-moi par-devant et par-derrière, à ma droite et à ma gauche, et d'au-dessus de moi ; et je cherche refuge dans Ta grandeur contre le fait d'être saisi par surprise d'en dessous de moi.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1, "a": {"hm": 84}}, {"ar": "اللَّهُمَّ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ، عَالِمَ الْغَيْبِ وَالشَّهَادَةِ، رَبَّ كُلِّ شَيْءٍ وَمَلِيكَهُ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَعُوذُ بِكَ مِنْ شَرِّ نَفْسِي، وَمِنْ شَرِّ الشَّيْطَانِ وَشِرْكِهِ، وَأَنْ أَقْتَرِفَ عَلَى نَفْسِي سُوءًا، أَوْ أَجُرَّهُ إِلَى مُسْلِمٍ.", "tr": "Allâhumma fâtira-s-samâwâti wa-l-ard, 'âlima-l-ghaybi wa-sh-shahâdah, rabba kulli shay'in wa malîkah, ash-hadu an lâ ilâha illâ ant, a'ûdhu bika min sharri nafsî, wa min sharri-sh-shaytâni wa shirkih, wa an aqtarifa 'alâ nafsî sû'an, aw ajurrahu ilâ muslim.", "fr": "Ô Allah, Créateur des cieux et de la terre, Connaisseur de l'invisible et du visible, Seigneur et Souverain de toute chose, j'atteste que nul ne mérite d'être adoré en dehors de Toi. Je cherche refuge auprès de Toi contre le mal de mon âme, contre le mal de Satan et de son association, et contre le fait de commettre un mal contre moi-même ou de l'attirer sur un musulman.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1, "a": {"hm": 85}}, {"ar": "بِسْمِ اللَّهِ الَّذِي لَا يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الْأَرْضِ وَلَا فِي السَّمَاءِ وَهُوَ السَّمِيعُ الْعَلِيمُ.", "tr": "Bismi-llâhi-lladhî lâ yadurru ma'a-smihi shay'un fi-l-ardi wa lâ fi-s-samâ', wa huwa-s-samî'u-l-'alîm.", "fr": "Au nom d'Allah, avec le nom duquel rien ne peut nuire, ni sur la terre ni dans le ciel. Il est Celui qui entend tout et sait tout.", "src": ["ابن ماجه", "Ibn Mâjah"], "n": 3, "v": "مَنْ قَالَهَا ثَلَاثًا إِذَا أَصْبَحَ وَثَلَاثًا إِذَا أَمْسَى لَمْ يَضُرَّهُ شَيْءٌ.", "vf": "Celui qui la dit trois fois le matin et trois fois le soir, rien ne lui nuira.", "nl": ["٣ مرات", "3 fois"], "a": {"hm": 86}}, {"ar": "رَضِيتُ بِاللَّهِ رَبًّا، وَبِالْإِسْلَامِ دِينًا، وَبِمُحَمَّدٍ ﷺ نَبِيًّا.", "tr": "Radîtu bi-llâhi rabbâ, wa bi-l-islâmi dînâ, wa bi Muhammadin (ﷺ) nabiyyâ.", "fr": "J'agrée Allah comme Seigneur, l'Islam comme religion et Muhammad ﷺ comme Prophète.", "src": ["أحمد", "Ahmad"], "n": 3, "v": "مَنْ قَالَهَا ثَلَاثًا حِينَ يُصْبِحُ وَثَلَاثًا حِينَ يُمْسِي كَانَ حَقًّا عَلَى اللَّهِ أَنْ يُرْضِيَهُ يَوْمَ الْقِيَامَةِ.", "vf": "Celui qui la dit trois fois le matin et trois fois le soir, Allah S'est engagé à le satisfaire le Jour de la Résurrection.", "nl": ["٣ مرات", "3 fois"], "a": {"hm": 87}}, {"ar": "يَا حَيُّ يَا قَيُّومُ بِرَحْمَتِكَ أَسْتَغِيثُ، أَصْلِحْ لِي شَأْنِي كُلَّهُ، وَلَا تَكِلْنِي إِلَى نَفْسِي طَرْفَةَ عَيْنٍ.", "tr": "Yâ Hayyu yâ Qayyûm, bi rahmatika astaghîth, aslih lî sha'nî kullah, wa lâ takilnî ilâ nafsî tarfata 'ayn.", "fr": "Ô Vivant, Ô Celui qui subsiste par Lui-même, c'est par Ta miséricorde que j'implore secours : arrange toutes mes affaires et ne me confie pas à moi-même, ne serait-ce que le temps d'un clin d'œil.", "src": ["الترمذي", "at-Tirmidhî"], "n": 1, "a": {"hm": 88}}, {"ar": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ رَبِّ الْعَالَمِينَ، اللَّهُمَّ إِنِّي أَسْأَلُكَ خَيْرَ هَذِهِ اللَّيْلَةِ: فَتْحَهَا، وَنَصْرَهَا، وَنُورَهَا، وَبَرَكَتَهَا، وَهُدَاهَا، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا فِيهَا وَشَرِّ مَا بَعْدَهَا.", "tr": "Amsaynâ wa amsa-l-mulku lillâhi rabbi-l-'âlamîn. Allâhumma innî as'aluka khayra hâdhihi-l-laylah : fat-hahâ, wa nasrahâ, wa nûrahâ, wa barakatahâ, wa hudâhâ, wa a'ûdhu bika min sharri mâ fîhâ wa sharri mâ ba'dahâ.", "fr": "Nous voici au soir et la royauté appartient à Allah, Seigneur des mondes. Ô Allah, je Te demande le bien de cette nuit : son ouverture, son secours, sa lumière, sa bénédiction et sa guidée ; et je cherche refuge auprès de Toi contre le mal qu'elle contient et le mal de ce qui la suit.", "src": ["أبو داود", "Abû Dâwûd"], "n": 1}, {"ar": "أَمْسَيْنَا عَلَى فِطْرَةِ الْإِسْلَامِ، وَعَلَى كَلِمَةِ الْإِخْلَاصِ، وَعَلَى دِينِ نَبِيِّنَا مُحَمَّدٍ ﷺ، وَعَلَى مِلَّةِ أَبِينَا إِبْرَاهِيمَ حَنِيفًا مُسْلِمًا وَمَا كَانَ مِنَ الْمُشْرِكِينَ.", "tr": "Amsaynâ 'alâ fitrati-l-islâm, wa 'alâ kalimati-l-ikhlâs, wa 'alâ dîni nabiyyinâ Muhammad (ﷺ), wa 'alâ millati abînâ Ibrâhîma hanîfan musliman wa mâ kâna mina-l-mushrikîn.", "fr": "Nous voici au soir sur la saine nature de l'Islam, sur la parole de sincérité, sur la religion de notre Prophète Muhammad ﷺ et sur la voie de notre père Ibrâhîm, monothéiste pur et soumis, qui n'était pas du nombre des associateurs.", "src": ["أحمد", "Ahmad"], "n": 1}, {"ar": "أَعُوذُ بِكَلِمَاتِ اللَّهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ.", "tr": "A'ûdhu bi kalimâti-llâhi-t-tâmmâti min sharri mâ khalaq.", "fr": "Je cherche refuge dans les paroles parfaites d'Allah contre le mal de ce qu'Il a créé.", "v": "مَنْ قَالَهَا حِينَ يُمْسِي ثَلَاثَ مَرَّاتٍ لَمْ تَضُرَّهُ حُمَةٌ تِلْكَ اللَّيْلَةَ.", "vf": "Celui qui la dit trois fois le soir, aucune piqûre venimeuse ne lui nuira cette nuit-là.", "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "src": ["أحمد والترمذي", "Ahmad et at-Tirmidhî"], "a": {"hm": 97}}, {"ar": "اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى نَبِيِّنَا مُحَمَّدٍ.", "tr": "Allâhumma salli wa sallim 'alâ nabiyyinâ Muhammad.", "fr": "Ô Allah, prie sur notre Prophète Muhammad et accorde-lui la paix.", "src": ["الطبراني", "at-Tabarânî"], "n": 10, "v": "قَالَ النَّبِيُّ ﷺ: مَنْ صَلَّى عَلَيَّ حِينَ يُصْبِحُ عَشْرًا وَحِينَ يُمْسِي عَشْرًا أَدْرَكَتْهُ شَفَاعَتِي يَوْمَ الْقِيَامَةِ.", "vf": "Le Prophète ﷺ a dit : « Celui qui prie sur moi dix fois le matin et dix fois le soir obtiendra mon intercession le Jour de la Résurrection. »", "nl": ["١٠ مرات", "10 fois"], "a": {"hm": 98}}, {"ar": "أَسْتَغْفِرُ اللَّهَ وَأَتُوبُ إِلَيْهِ.", "tr": "Astaghfiru-llâha wa atûbu ilayh.", "fr": "Je demande pardon à Allah et je me repens à Lui.", "src": ["البخاري", "al-Bukhârî"], "n": 100, "v": "يَقُولُهَا مِائَةَ مَرَّةٍ فِي الْيَوْمِ.", "vf": "À dire cent fois dans la journée.", "nl": ["١٠٠ مرة", "100 fois"], "a": {"hm": 96}}, {"ar": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ.", "tr": "Subhâna-llâhi wa bi hamdih.", "fr": "Gloire et louange à Allah.", "src": ["مسلم", "Muslim"], "n": 100, "v": "مَنْ قَالَهَا مِائَةَ مَرَّةٍ حِينَ يُصْبِحُ وَحِينَ يُمْسِي لَمْ يَأْتِ أَحَدٌ يَوْمَ الْقِيَامَةِ بِأَفْضَلَ مِمَّا جَاءَ بِهِ، إِلَّا أَحَدٌ قَالَ مِثْلَ مَا قَالَ أَوْ زَادَ عَلَيْهِ.", "vf": "Celui qui la dit cent fois le matin et le soir, personne ne viendra le Jour de la Résurrection avec mieux que lui, sauf celui qui en aura dit autant ou davantage.", "nl": ["١٠٠ مرة", "100 fois"], "a": {"hm": 91}}, {"ar": "لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الْحَمْدُ وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.", "tr": "Lâ ilâha illa-llâhu wahdahu lâ sharîka lah, lahu-l-mulku wa lahu-l-hamdu wa huwa 'alâ kulli shay'in qadîr.", "fr": "Nul ne mérite d'être adoré en dehors d'Allah, Seul, sans associé. À Lui la royauté, à Lui la louange, et Il est capable de toute chose.", "src": ["أبو داود والترمذي", "Abû Dâwûd et at-Tirmidhî"], "n": 10, "v": "يَقُولُهَا عَشْرَ مَرَّاتٍ، أَوْ مَرَّةً وَاحِدَةً عِنْدَ الْكَسَلِ. وَمَنْ قَالَهَا مِائَةَ مَرَّةٍ فِي يَوْمٍ كَانَتْ لَهُ عَدْلَ عَشْرِ رِقَابٍ، وَكُتِبَتْ لَهُ مِائَةُ حَسَنَةٍ، وَمُحِيَتْ عَنْهُ مِائَةُ سَيِّئَةٍ، وَكَانَتْ لَهُ حِرْزًا مِنَ الشَّيْطَانِ يَوْمَهُ ذَلِكَ حَتَّى يُمْسِيَ، وَلَمْ يَأْتِ أَحَدٌ بِأَفْضَلَ مِمَّا جَاءَ بِهِ إِلَّا أَحَدٌ عَمِلَ أَكْثَرَ مِنْ ذَلِكَ.", "vf": "À dire dix fois, ou une fois en cas de paresse. Celui qui la dit cent fois dans la journée obtient l'équivalent de l'affranchissement de dix esclaves ; cent bonnes actions lui sont inscrites, cent péchés effacés, et elle le protège de Satan ce jour-là jusqu'au soir. Nul n'apporte mieux que lui, sauf celui qui en a fait davantage.", "nl": ["١٠ أو ١٠٠ مرة", "10 ou 100 fois"], "a": {"hm": 92}}, {"title": ["آيَةُ الْكُرْسِيِّ", "Âyat al-Kursî"], "n": 1, "ar": "اللَّهُ لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ مَنْ ذَا الَّذِي يَشْفَعُ عِنْدَهُ إِلَّا بِإِذْنِهِ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ وَلَا يُحِيطُونَ بِشَيْءٍ مِنْ عِلْمِهِ إِلَّا بِمَا شَاءَ وَسِعَ كُرْسِيُّهُ السَّمَاوَاتِ وَالْأَرْضَ وَلَا يَئُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيمُ ۝", "tr": "Allâhu lâ ilâha illâ huwa-l-hayyu-l-qayyûm, lâ ta'khudhuhu sinatun wa lâ nawm, lahu mâ fi-s-samâwâti wa mâ fi-l-ard, man dha-lladhî yashfa'u 'indahu illâ bi-idhnih, ya'lamu mâ bayna aydîhim wa mâ khalfahum, wa lâ yuhîtûna bi shay'in min 'ilmihi illâ bimâ shâ', wasi'a kursiyyuhu-s-samâwâti wa-l-ard, wa lâ ya'ûduhu hifzhuhumâ, wa huwa-l-'aliyyu-l-'azîm.", "fr": "Allah ! Nulle divinité en dehors de Lui, le Vivant, Celui qui subsiste par Lui-même. Ni somnolence ni sommeil ne Le saisissent. À Lui appartient tout ce qui est dans les cieux et sur la terre. Qui peut intercéder auprès de Lui sans Sa permission ? Il connaît ce qui est devant eux et ce qui est derrière eux, et ils n'embrassent de Sa science que ce qu'Il veut. Son Kursî s'étend sur les cieux et la terre, dont la garde ne Lui coûte aucune peine. Et Il est le Très-Haut, l'Immense.", "src": ["البقرة ٢٥٥", "Sourate al-Baqara, verset 255"], "q": true, "a": {"q": [262]}}, {"title": ["آخِرُ سُورَةِ الْبَقَرَةِ", "Fin de la sourate al-Baqara"], "n": 1, "q": true, "ar": "آمَنَ الرَّسُولُ بِمَا أُنْزِلَ إِلَيْهِ مِنْ رَبِّهِ وَالْمُؤْمِنُونَ كُلٌّ آمَنَ بِاللَّهِ وَمَلَائِكَتِهِ وَكُتُبِهِ وَرُسُلِهِ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِنْ رُسُلِهِ وَقَالُوا سَمِعْنَا وَأَطَعْنَا غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ الْمَصِيرُ ۝ لَا يُكَلِّفُ اللَّهُ نَفْسًا إِلَّا وُسْعَهَا لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا اكْتَسَبَتْ رَبَّنَا لَا تُؤَاخِذْنَا إِنْ نَسِينَا أَوْ أَخْطَأْنَا رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَا إِصْرًا كَمَا حَمَلْتَهُ عَلَى الَّذِينَ مِنْ قَبْلِنَا رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِ وَاعْفُ عَنَّا وَاغْفِرْ لَنَا وَارْحَمْنَا أَنْتَ مَوْلَانَا فَانْصُرْنَا عَلَى الْقَوْمِ الْكَافِرِينَ ۝", "tr": "Âmana-r-rasûlu bimâ unzila ilayhi min rabbihi wa-l-mu'minûn, kullun âmana bi-llâhi wa malâ'ikatihi wa kutubihi wa rusulih, lâ nufarriqu bayna ahadin min rusulih, wa qâlû sami'nâ wa ata'nâ, ghufrânaka rabbanâ wa ilayka-l-masîr. Lâ yukallifu-llâhu nafsan illâ wus'ahâ, lahâ mâ kasabat wa 'alayhâ ma-ktasabat, rabbanâ lâ tu'âkhidhnâ in nasînâ aw akhta'nâ, rabbanâ wa lâ tahmil 'alaynâ isran kamâ hamaltahu 'ala-lladhîna min qablinâ, rabbanâ wa lâ tuhammilnâ mâ lâ tâqata lanâ bih, wa-'fu 'annâ, wa-ghfir lanâ, wa-rhamnâ, anta mawlânâ fa-nsurnâ 'ala-l-qawmi-l-kâfirîn.", "fr": "Le Messager a cru en ce qu'on a fait descendre vers lui de la part de son Seigneur, ainsi que les croyants : tous ont cru en Allah, en Ses anges, en Ses Livres et en Ses messagers. « Nous ne faisons aucune distinction entre Ses messagers. » Et ils ont dit : « Nous avons entendu et obéi. Pardon, Seigneur ! C'est vers Toi qu'est le retour. » Allah n'impose à aucune âme une charge au-delà de sa capacité. Elle aura le bien qu'elle aura acquis, et supportera le mal qu'elle aura commis. « Seigneur, ne nous tiens pas rigueur de nos oublis et de nos erreurs. Seigneur, ne nous charge pas d'un fardeau comme celui dont Tu as chargé ceux qui nous ont précédés. Seigneur, ne nous impose pas ce que nous ne pouvons supporter. Efface nos fautes, pardonne-nous et fais-nous miséricorde. Tu es notre Maître : accorde-nous la victoire sur le peuple des mécréants. »", "v": "مَنْ قَرَأَ بِالْآيَتَيْنِ مِنْ آخِرِ سُورَةِ الْبَقَرَةِ فِي لَيْلَةٍ كَفَتَاهُ.", "vf": "Celui qui récite les deux derniers versets de la sourate al-Baqara pendant la nuit, ils lui suffiront.", "src": ["البقرة ٢٨٥–٢٨٦ · رواه البخاري ومسلم", "al-Baqara 285–286 · hadith rapporté par al-Bukhârî et Muslim"], "a": {"q": [292, 293]}}, {"title": ["سُورَةُ الْإِخْلَاصِ", "Sourate al-Ikhlâs"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ هُوَ اللَّهُ أَحَدٌ ۝ اللَّهُ الصَّمَدُ ۝ لَمْ يَلِدْ وَلَمْ يُولَدْ ۝ وَلَمْ يَكُنْ لَهُ كُفُوًا أَحَدٌ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul huwa-llâhu ahad. Allâhu-s-samad. Lam yalid wa lam yûlad. Wa lam yakun lahu kufuwan ahad.", "fr": "Dis : « Il est Allah, Unique. Allah, Celui vers qui l'on se tourne en tout besoin. Il n'engendre pas et n'a pas été engendré, et nul n'est égal à Lui. »", "src": ["سورة ١١٢", "Sourate 112"], "q": true, "a": {"q": [1, 6222, 6223, 6224, 6225]}}, {"title": ["سُورَةُ الْفَلَقِ", "Sourate al-Falaq"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ ۝ مِنْ شَرِّ مَا خَلَقَ ۝ وَمِنْ شَرِّ غَاسِقٍ إِذَا وَقَبَ ۝ وَمِنْ شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ ۝ وَمِنْ شَرِّ حَاسِدٍ إِذَا حَسَدَ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul a'ûdhu bi rabbi-l-falaq. Min sharri mâ khalaq. Wa min sharri ghâsiqin idhâ waqab. Wa min sharri-n-naffâthâti fi-l-'uqad. Wa min sharri hâsidin idhâ hasad.", "fr": "Dis : « Je cherche refuge auprès du Seigneur de l'aube naissante, contre le mal de ce qu'Il a créé, contre le mal de l'obscurité quand elle s'étend, contre le mal de celles qui soufflent sur les nœuds, et contre le mal de l'envieux quand il envie. »", "src": ["سورة ١١٣", "Sourate 113"], "q": true, "a": {"q": [1, 6226, 6227, 6228, 6229, 6230]}}, {"title": ["سُورَةُ النَّاسِ", "Sourate an-Nâs"], "n": 3, "nl": ["٣ مَرَّاتٍ", "3 fois"], "ar": "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ ۝ قُلْ أَعُوذُ بِرَبِّ النَّاسِ ۝ مَلِكِ النَّاسِ ۝ إِلَهِ النَّاسِ ۝ مِنْ شَرِّ الْوَسْوَاسِ الْخَنَّاسِ ۝ الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ ۝ مِنَ الْجِنَّةِ وَالنَّاسِ ۝", "tr": "Bismi-llâhi-r-rahmâni-r-rahîm. Qul a'ûdhu bi rabbi-n-nâs. Maliki-n-nâs. Ilâhi-n-nâs. Min sharri-l-waswâsi-l-khannâs. Alladhî yuwaswisu fî sudûri-n-nâs. Mina-l-jinnati wa-n-nâs.", "fr": "Dis : « Je cherche refuge auprès du Seigneur des hommes, Souverain des hommes, Dieu des hommes, contre le mal du tentateur furtif, qui souffle le mal dans les poitrines des hommes, qu'il soit djinn ou humain. »", "src": ["سورة ١١٤", "Sourate 114"], "q": true, "a": {"q": [1, 6231, 6232, 6233, 6234, 6235, 6236]}}, {"title": ["دُعَاءُ الْخِتَامِ", "Du'â de clôture"], "n": 1, "ar": "سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لَا إِلَهَ إِلَّا أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ.", "tr": "Subhânaka-llâhumma wa bi hamdik, ash-hadu an lâ ilâha illâ ant, astaghfiruka wa atûbu ilayk.", "fr": "Gloire et pureté à Toi, ô Allah, et louange à Toi. J'atteste que nul ne mérite d'être adoré en dehors de Toi. Je Te demande pardon et je me repens à Toi.", "src": null, "q": true}]};
-const SESS = {
-  matin: { items: DATA.matin, ar: "أَذْكَارُ الصَّبَاحِ", fr: "Invocations du matin", doneAr: "تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ", doneFr: "Invocations du matin terminées" },
-  soir:  { items: DATA.soir,  ar: "أَذْكَارُ الْمَسَاءِ", fr: "Invocations du soir",  doneAr: "تَقَبَّلَ اللَّهُ مِنَّا وَمِنْكُمْ", doneFr: "Invocations du soir terminées" }
-};
-const SUN = '<svg width="36" height="36" viewBox="0 0 48 48" fill="none" stroke="#E3B65E" stroke-width="2.8" stroke-linecap="round"><path d="M14 32a10 10 0 0 1 20 0"/><path d="M6 32h36M24 12v5M11 18l3.5 3.5M37 18l-3.5 3.5"/></svg>';
-const MOON = '<svg width="34" height="34" viewBox="0 0 48 48" fill="#E3B65E"><path d="M30 8a16 16 0 1 0 10 28A14 14 0 0 1 30 8z"/><circle cx="36" cy="14" r="2" fill="#F7F1E3"/></svg>';
-const AR = "٠١٢٣٤٥٦٧٨٩";
-const an = n => String(n).replace(/\d/g, d => AR[d]);
-const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const today = () => { const d = new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
-const store = {
-  get(k, def){ try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : def; } catch(e){ return def; } },
-  set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
-};
-
-let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false, auto:false, rate:1}, store.get("wirdi-prefs", {}));
-const progs = {};
-function loadProg(k){
-  let p = store.get("wirdi-prog-" + k, null);
-  if (!p || p.day !== today()) p = {day: today(), counts: {}, idx: 0};
-  progs[k] = p; return p;
-}
-loadProg("matin"); loadProg("soir");
-
-let cur = null;      // null = accueil, sinon "matin" | "soir"
-let idx = 0;
-const C = 2 * Math.PI * 52;
-const $ = id => document.getElementById(id);
-const main = $("main"), app = $("app"), root = document.documentElement;
-
-const items = () => SESS[cur].items;
-const prog = () => progs[cur];
-function save(){ if (!cur || cur === "coran") return; prog().idx = idx; store.set("wirdi-prog-" + cur, prog()); }
-function savePrefs(){ store.set("wirdi-prefs", prefs); }
-function doneOfK(k, i){ return progs[k].counts[i] || 0; }
-function isDoneK(k, i){ return doneOfK(k, i) >= SESS[k].items[i].n; }
-function doneCountK(k){ return SESS[k].items.reduce((s, _, i) => s + (isDoneK(k, i) ? 1 : 0), 0); }
-const doneOf = i => doneOfK(cur, i), isDone = i => isDoneK(cur, i), doneCount = () => doneCountK(cur);
-
-function applyPrefs(){
-  app.classList.toggle("hide-tr", !prefs.tr);
-  app.classList.toggle("hide-fr", !prefs.fr);
-  root.style.setProperty("--scale", prefs.scale);
-  $("swTr").setAttribute("aria-checked", prefs.tr);
-  $("swFr").setAttribute("aria-checked", prefs.fr);
-  $("swVib").setAttribute("aria-checked", prefs.vib);
-  $("swSnd").setAttribute("aria-checked", prefs.snd);
-  $("swAuto").setAttribute("aria-checked", prefs.auto);
-  document.querySelectorAll("[data-rate]").forEach(b => b.classList.toggle("on", +b.dataset.rate === prefs.rate));
-}
-
-const PATTERN = "url('data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><g fill="none" stroke="#fff" stroke-opacity=".07" stroke-width="1"><path d="M32 6l7 19 19 7-19 7-7 19-7-19-19-7 19-7z"/><rect x="20" y="20" width="24" height="24" transform="rotate(45 32 32)"/></g></svg>') + "')";
-const ILLU = {
-  matin: '<svg class="illu" viewBox="0 0 200 160" aria-hidden="true"><path d="M78 150V88c0-22 18-38 42-56 24 18 42 34 42 56v62" fill="rgba(255,255,255,.07)" stroke="#F1CC7A" stroke-width="4" stroke-linejoin="round"/><path d="M92 118a28 28 0 0 1 56 0z" fill="#F4C766"/><g stroke="#F4C766" stroke-width="4" stroke-linecap="round"><path d="M120 70v12M96 80l6 8M144 80l-6 8M86 100l9 3M154 100l-9 3"/></g><path d="M64 118h112" stroke="#F1CC7A" stroke-width="4" stroke-linecap="round"/><path d="M96 132h48M108 144h24" stroke="rgba(255,255,255,.45)" stroke-width="3.5" stroke-linecap="round"/></svg>',
-  soir: '<svg class="illu" viewBox="0 0 200 160" aria-hidden="true"><path d="M134 28a34 34 0 1 0 24 58 28 28 0 0 1-24-58z" fill="#F4C766"/><g fill="#fff"><circle cx="72" cy="36" r="2.2"/><circle cx="176" cy="30" r="1.8"/><circle cx="92" cy="92" r="1.6"/><circle cx="182" cy="104" r="2"/><circle cx="58" cy="118" r="1.4"/></g><path d="M166 58l3 7 7 3-7 3-3 7-3-7-7-3 7-3z" fill="#F4C766" opacity=".9"/></svg>'
-};
-function frDate(){
-  const d = new Date();
-  let g = "", h = "";
-  try { g = new Intl.DateTimeFormat("fr-FR", {weekday: "long", day: "numeric", month: "long"}).format(d); } catch(e){}
-  try { h = new Intl.DateTimeFormat("fr-FR-u-ca-islamic-umalqura", {day: "numeric", month: "long", year: "numeric"}).format(d).replace(/\s?AH$/i, " H"); } catch(e){}
-  return (g ? g.charAt(0).toUpperCase() + g.slice(1) : "") + (h ? " · " + h : "");
-}
-function hijri(){
-  try { return new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-arab", {day:"numeric", month:"long", year:"numeric"}).format(new Date()); } catch(e){ return ""; }
-}
-function greg(){
-  try { const s = new Intl.DateTimeFormat("fr-FR", {weekday:"long", day:"numeric", month:"long"}).format(new Date()); return s.charAt(0).toUpperCase() + s.slice(1); } catch(e){ return ""; }
-}
-const ART = {
-  coran: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="110" cy="100" r="62" fill="#F3D38B" opacity=".10"/><path d="M52 150 L148 70 M148 150 L52 70" stroke="#C9A25A" stroke-width="7" stroke-linecap="round"/><path d="M100 72 C84 60 62 58 44 62 V118 C62 114 84 116 100 128 Z" fill="#FBF3DF"/><path d="M100 72 C116 60 138 58 156 62 V118 C138 114 116 116 100 128 Z" fill="#F3E6C4"/><path d="M100 72 V128" stroke="#C9A25A" stroke-width="2"/><g stroke="#C9A25A" stroke-width="2" stroke-linecap="round" opacity=".8"><path d="M54 76 C68 73 80 75 92 80M54 88 C68 85 80 87 92 92M54 100 C68 97 80 99 92 104M108 80 C120 75 132 73 146 76M108 92 C120 87 132 85 146 88M108 104 C120 99 132 97 146 100"/></g></svg>',
-  matin: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gS" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".55" stop-color="#FFE08A"/><stop offset="1" stop-color="#F7B955"/></radialGradient></defs><circle cx="120" cy="120" r="62" fill="#FFF3D6" opacity=".45"/><g stroke="#FFF6DE" stroke-width="6" stroke-linecap="round" opacity=".9"><path d="M120 30v16M58 58l11 11M182 58l-11 11M30 120h16M194 120h-16"/></g><circle cx="120" cy="120" r="40" fill="url(#gS)"/></svg>',
-  soir: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="118" cy="96" r="54" fill="#8FA6E0" opacity=".1"/><path d="M132 44a52 52 0 1 0 36 88A44 44 0 0 1 132 44z" fill="#F3D38B"/><g fill="#FFF5DC"><circle cx="40" cy="40" r="2.2"/><circle cx="70" cy="22" r="1.5"/><circle cx="180" cy="36" r="2.4"/><circle cx="60" cy="96" r="1.6"/><circle cx="190" cy="150" r="1.8"/><circle cx="30" cy="140" r="1.4"/><path d="M178 88l2.6 6.2 6.4.6-4.9 4.2 1.5 6.3-5.6-3.4-5.6 3.4 1.5-6.3-4.9-4.2 6.4-.6z"/></g></svg>'
-};
-function renderHome(){
-  const h = new Date().getHours();
-  const suggest = h < 14 ? "matin" : "soir";
-  const hj = hijri(), gd = greg();
-  let s = '<div class="home">';
-  s += '<section class="hero"><p class="hero-ar" lang="ar">السَّلَامُ عَلَيْكُمْ</p><p class="hero-fr">As-salâmu \'alaykum</p>'
-     + '<p class="hero-tag">Wirdî, « ma récitation quotidienne » : les invocations du matin et du soir.</p><p class="hero-date">' + esc(gd) + (hj ? ' <span class="dot">·</span> <span lang="ar" dir="rtl">' + esc(hj) + '</span>' : '') + '</p></section>';
-  for (const k of ["matin", "soir"]){
-    const n = doneCountK(k), tot = SESS[k].items.length, fin = n === tot;
-    const R = 19, CC = 2 * Math.PI * R;
-    const status = fin ? "Terminé" : (n ? "Continuer" : "Commencer");
-    s += '<button class="sess2 ' + k + (k === suggest ? ' now' : '') + '" data-k="' + k + '">' + ART[k]
-      + '<span class="s-top">' + (k === suggest && !fin ? '<span class="chip">' + (k === "matin" ? "C'est le moment" : "C'est le moment") + '</span>' : '<span></span>') + '</span>'
-      + '<span class="s-t"><span class="s-ar" lang="ar">' + SESS[k].ar + '</span><span class="s-fr">' + SESS[k].fr + '</span></span>'
-      + '<span class="s-bot"><span class="ringw"><svg viewBox="0 0 46 46" width="46" height="46"><circle cx="23" cy="23" r="' + R + '" fill="none" stroke-width="4" class="rb"/><circle cx="23" cy="23" r="' + R + '" fill="none" stroke-width="4" stroke-linecap="round" class="rf" style="stroke-dasharray:' + CC + ';stroke-dashoffset:' + (CC * (1 - n / tot)) + '"/></svg><span class="rn">' + (fin ? "✓" : n) + '</span></span>'
-      + '<span class="s-st"><b>' + status + '</b><small>' + n + ' / ' + tot + ' invocations</small></span>'
-      + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
-  }
-  { const L = qLast();
-    s += '<button class="sess2 coran" id="bQuran">' + ART.coran
-      + '<span class="s-top"><span></span></span>'
-      + '<span class="s-t"><span class="s-ar" lang="ar">الْقُرْآنُ الْكَرِيمُ</span><span class="s-fr">Le Coran</span></span>'
-      + '<span class="s-bot"><span class="s-st"><b>' + (L ? "Reprendre la lecture" : "Ouvrir le mushaf") + '</b><small>' + (L ? esc(SURA_TR[L.s - 1]) + ' · verset ' + L.a : "114 sourates · 30 juz’") + '</small></span>'
-      + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
-  }
-  s += '<p class="credit"><span lang="ar">وِرْدِي</span> · Wirdî<br><small>Conçu par <b>Alatec</b></small></p></div>';
-  main.innerHTML = s;
-  main.querySelectorAll(".sess2[data-k]").forEach(b => b.onclick = () => openSession(b.dataset.k));
-  $("bQuran").onclick = () => { const L = qLast(); openQuran(); };
-}
-
-
-// ---------- Audio ----------
-const HM = id => ["https://www.hisnmuslim.com/audio/ar/" + id + ".mp3", "http://www.hisnmuslim.com/audio/ar/" + id + ".mp3"];
-const QA = n => ["https://cdn.islamic.app/quran/audio/ar.alafasy/" + n + ".mp3", "https://cdn.islamic.network/quran/audio/128/ar.alafasy/" + n + ".mp3"];
-const player = new Audio();
-player.preload = "none";
-let pl = {k: null, tracks: [], ti: 0, alt: 0, state: "idle"};
-let autoChain = false;
-function tracksOf(it){ if (!it || !it.a) return null; return it.a.hm ? [HM(it.a.hm)] : it.a.q.map(QA); }
-function curKey(){ return cur === null ? null : cur + ":" + idx; }
-function setAudioUI(state){
-  pl.state = state;
-  const b = $("bPlay"); if (!b || pl.k !== curKey()) { if (b) paintPlay(b, "idle"); return; }
-  paintPlay(b, state);
-}
-function paintPlay(b, state){
-  b.className = "play " + state;
-  const lab = {idle:"Écouter", loading:"Chargement…", playing:"Pause", error:"Audio indisponible"}[state];
-  b.querySelector("span").textContent = lab;
-  b.querySelector("svg").innerHTML = state === "playing" ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>' : '<path d="M8 5.5v13a1 1 0 0 0 1.5.86l10-6.5a1 1 0 0 0 0-1.72l-10-6.5A1 1 0 0 0 8 5.5z"/>';
-  b.setAttribute("aria-label", lab);
-}
-function loadTrack(){
-  player.src = pl.tracks[pl.ti][pl.alt];
-  player.playbackRate = prefs.rate;
-  setAudioUI("loading");
-  const token = pl, src = player.src;
-  const p = player.play();
-  if (p && p.catch) p.catch(e => { if (pl === token && player.src === src && e && e.name === "NotAllowedError") setAudioUI("idle"); });
-}
-function onAudioErr(){
-  if (pl.k === null) return;
-  if (pl.alt < pl.tracks[pl.ti].length - 1) { pl.alt++; loadTrack(); }
-  else setAudioUI("error");
-}
-player.addEventListener("error", onAudioErr);
-player.addEventListener("playing", () => { player.playbackRate = prefs.rate; setAudioUI("playing"); });
-player.addEventListener("waiting", () => setAudioUI("loading"));
-player.addEventListener("ended", () => {
-  if (pl.k === null) return;
-  if (pl.ti < pl.tracks.length - 1) { pl.ti++; pl.alt = 0; loadTrack(); return; }
-  setAudioUI("idle");
-  if (prefs.auto && pl.k === curKey()) autoCount();
-});
-function startAudio(){
-  const t = tracksOf(items()[idx]); if (!t) return;
-  pl = {k: curKey(), tracks: t, ti: 0, alt: 0, state: "loading"};
-  loadTrack();
-}
-function stopAudio(){
-  try { player.pause(); } catch(e){}
-  pl.k = null; setAudioUI("idle");
-}
-function toggleAudio(){
-  if (pl.k === curKey() && (pl.state === "playing" || pl.state === "loading")) { stopAudio(); autoChain = false; return; }
-  startAudio();
-}
-function autoCount(){
-  if (cur === null || idx >= items().length) return;
-  const it = items()[idx];
-  if (doneOf(idx) >= it.n) return;
-  const before = doneOf(idx);
-  tap();
-  if (doneOf(idx) < it.n) startAudio();
-  else if (before < it.n) autoChain = true;
-}
-if ("mediaSession" in navigator) { try { navigator.mediaSession.metadata = new MediaMetadata({title: "Wirdî", artist: "Invocations du matin et du soir"}); } catch(e){} }
-
-function renderCard(i){
-  const it = items()[i];
-  let h = '<article class="card">';
-  h += '<div class="meta"><span class="num">' + an(i + 1) + '</span>';
-  if (it.nl) h += '<span class="pill"><span class="a">' + esc(it.nl[0]) + '</span><span class="l">× ' + esc(it.nl[1]) + '</span></span>';
-  if (it.a) h += '<button class="play idle" id="bPlay" aria-label="Écouter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"></svg><span>Écouter</span></button>';
-  h += '</div>';
-  if (it.title) h += '<div class="title" dir="rtl">' + esc(it.title[0]) + '<small dir="ltr">' + esc(it.title[1]) + '</small></div>';
-  h += '<p class="ar" lang="ar">' + esc(it.ar) + '</p>';
-  h += '<p class="tr">' + esc(it.tr) + '</p>';
-  h += '<p class="fr">' + esc(it.fr) + '</p>';
-  if (it.v) h += '<div class="virtue"><span class="virtue-h">Mérite</span><p class="va" lang="ar">' + esc(it.v) + '</p><p class="vf">' + esc(it.vf) + '</p></div>';
-  if (it.src) h += '<div class="src"><span class="a">' + (it.q ? '' : 'رواه ') + esc(it.src[0]) + '</span><span class="l">' + (it.q ? '' : 'Rapporté par ') + esc(it.src[1]) + '</span></div>';
-  return h + '</article>';
-}
-
-function renderEnd(){
-  return '<div class="end">' + (cur === "matin" ? SUN.replace(/36/g, "84") : MOON.replace(/34/g, "80"))
-    + '<h2>' + SESS[cur].doneAr + '</h2>'
-    + '<p>' + SESS[cur].doneFr + ' : ' + doneCount() + ' sur ' + items().length + '.</p>'
-    + '<button class="btn" id="bHome">Retour à l\'accueil</button>'
-    + '<button class="btn ghost" id="bReview">Revoir les invocations</button></div>';
-}
-
-
-// ---------- Coran (texte Tanzil, fichier quran-uthmani.txt à la racine du site) ----------
-const SURA_AR = "الفاتحة|البقرة|آل عمران|النساء|المائدة|الأنعام|الأعراف|الأنفال|التوبة|يونس|هود|يوسف|الرعد|إبراهيم|الحجر|النحل|الإسراء|الكهف|مريم|طه|الأنبياء|الحج|المؤمنون|النور|الفرقان|الشعراء|النمل|القصص|العنكبوت|الروم|لقمان|السجدة|الأحزاب|سبأ|فاطر|يس|الصافات|ص|الزمر|غافر|فصلت|الشورى|الزخرف|الدخان|الجاثية|الأحقاف|محمد|الفتح|الحجرات|ق|الذاريات|الطور|النجم|القمر|الرحمن|الواقعة|الحديد|المجادلة|الحشر|الممتحنة|الصف|الجمعة|المنافقون|التغابن|الطلاق|التحريم|الملك|القلم|الحاقة|المعارج|نوح|الجن|المزمل|المدثر|القيامة|الإنسان|المرسلات|النبأ|النازعات|عبس|التكوير|الانفطار|المطففين|الانشقاق|البروج|الطارق|الأعلى|الغاشية|الفجر|البلد|الشمس|الليل|الضحى|الشرح|التين|العلق|القدر|البينة|الزلزلة|العاديات|القارعة|التكاثر|العصر|الهمزة|الفيل|قريش|الماعون|الكوثر|الكافرون|النصر|المسد|الإخلاص|الفلق|الناس".split("|");
-const SURA_TR = "Al-Fâtiha|Al-Baqara|Âl 'Imrân|An-Nisâ'|Al-Mâ'ida|Al-An'âm|Al-A'râf|Al-Anfâl|At-Tawba|Yûnus|Hûd|Yûsuf|Ar-Ra'd|Ibrâhîm|Al-Hijr|An-Nahl|Al-Isrâ'|Al-Kahf|Maryam|Tâ-Hâ|Al-Anbiyâ'|Al-Hajj|Al-Mu'minûn|An-Nûr|Al-Furqân|Ash-Shu'arâ'|An-Naml|Al-Qasas|Al-'Ankabût|Ar-Rûm|Luqmân|As-Sajda|Al-Ahzâb|Saba'|Fâtir|Yâ-Sîn|As-Sâffât|Sâd|Az-Zumar|Ghâfir|Fussilat|Ash-Shûrâ|Az-Zukhruf|Ad-Dukhân|Al-Jâthiya|Al-Ahqâf|Muhammad|Al-Fath|Al-Hujurât|Qâf|Adh-Dhâriyât|At-Tûr|An-Najm|Al-Qamar|Ar-Rahmân|Al-Wâqi'a|Al-Hadîd|Al-Mujâdala|Al-Hashr|Al-Mumtahana|As-Saff|Al-Jumu'a|Al-Munâfiqûn|At-Taghâbun|At-Talâq|At-Tahrîm|Al-Mulk|Al-Qalam|Al-Hâqqa|Al-Ma'ârij|Nûh|Al-Jinn|Al-Muzzammil|Al-Muddaththir|Al-Qiyâma|Al-Insân|Al-Mursalât|An-Naba'|An-Nâzi'ât|'Abasa|At-Takwîr|Al-Infitâr|Al-Mutaffifîn|Al-Inshiqâq|Al-Burûj|At-Târiq|Al-A'lâ|Al-Ghâshiya|Al-Fajr|Al-Balad|Ash-Shams|Al-Layl|Ad-Duhâ|Ash-Sharh|At-Tîn|Al-'Alaq|Al-Qadr|Al-Bayyina|Az-Zalzala|Al-'Âdiyât|Al-Qâri'a|At-Takâthur|Al-'Asr|Al-Humaza|Al-Fîl|Quraysh|Al-Mâ'ûn|Al-Kawthar|Al-Kâfirûn|An-Nasr|Al-Masad|Al-Ikhlâs|Al-Falaq|An-Nâs".split("|");
-const JUZ = [[1,1],[2,142],[2,253],[3,93],[4,24],[4,148],[5,82],[6,111],[7,88],[8,41],[9,93],[11,6],[12,53],[15,1],[17,1],[18,75],[21,1],[23,1],[25,21],[27,56],[29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]];
-let Q = null, qLoading = null, qErr = false;
-const qv = {mode: "list", tab: "s", s: 1, a: 1, filter: ""};
-function loadQuran(){
-  if (Q) return Promise.resolve(Q);
-  if (qLoading) return qLoading;
-  qLoading = fetch("quran-uthmani.txt", {cache: "no-cache"}).then(r => { if (!r.ok) throw new Error("absent"); return r.text(); }).then(txt => {
-    const S = Array.from({length: 115}, () => []);
-    let n = 0;
-    for (const line of txt.split(/\r?\n/)){
-      if (!line || line[0] === "#") continue;
-      const p = line.split("|"); if (p.length < 3) continue;
-      const s = +p[0], a = +p[1]; if (!(s >= 1 && s <= 114)) continue;
-      S[s][a - 1] = p.slice(2).join("|").trim(); n++;
-    }
-    if (n < 6000) throw new Error("incomplet");
-    Q = S; return Q;
-  }).catch(e => { qErr = true; qLoading = null; throw e; });
-  return qLoading;
-}
-const BASM_RE = /^(بِسْمِ\s+\S+\s+\S+\s+\S+)\s+/;
-function juzOf(s, a){ let j = 1; JUZ.forEach((x, i) => { if (s > x[0] || (s === x[0] && a >= x[1])) j = i + 1; }); return j; }
-const qLast = () => store.get("wirdi-quran-last", null);
-const qMark = () => store.get("wirdi-quran-mark", null);
-function qToast(msg){
-  let t = $("qToast"); if (!t){ t = document.createElement("div"); t.id = "qToast"; t.className = "toast"; document.body.appendChild(t); }
-  t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200);
-}
-function openQuran(){ stopAudio(); cur = "coran"; qv.mode = "list"; render(); }
-function openSura(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render(); }
-
-function renderQuran(){
-  if (!Q){
-    main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement du Coran…</p></div>';
-    loadQuran().then(() => { if (cur === "coran") render(); }).catch(() => {
-      if (cur !== "coran") return;
-      main.innerHTML = '<div class="qwrap"><div class="qmsg"><b>Le texte du Coran n’est pas disponible.</b><br>Vérifiez votre connexion. Pour l’administrateur : le fichier <code>quran-uthmani.txt</code> (Tanzil) doit se trouver à la racine du site.</div></div>';
-    });
-    return;
-  }
-  if (qv.mode === "read") return renderSura();
-  const last = qLast(), mark = qMark();
-  let h = '<div class="qwrap">';
-  if (last) h += '<button class="qresume" data-s="' + last.s + '" data-a="' + last.a + '"><span class="qr-l"><small>Reprendre la lecture</small><b>' + esc(SURA_TR[last.s - 1]) + ' · verset ' + last.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[last.s - 1] + '</span></button>';
-  if (mark) h += '<button class="qresume mark" data-s="' + mark.s + '" data-a="' + mark.a + '"><span class="qr-l"><small>🔖 Marque-page</small><b>' + esc(SURA_TR[mark.s - 1]) + ' · verset ' + mark.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[mark.s - 1] + '</span></button>';
-  h += '<div class="qtabs"><button data-tab="s" class="' + (qv.tab === "s" ? "on" : "") + '">Sourates</button><button data-tab="j" class="' + (qv.tab === "j" ? "on" : "") + '">Juz’</button></div>';
-  if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '">';
-  h += '<div class="qlist" id="qList"></div></div>';
-  main.innerHTML = h;
-  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openSura(+b.dataset.s, +b.dataset.a));
-  main.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { qv.tab = b.dataset.tab; render(); });
-  const inp = $("qSearch"); if (inp) inp.oninput = () => { qv.filter = inp.value; fillQList(); };
-  fillQList();
-}
-function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f'’\- ]/g, "").replace(/[\u064B-\u0652\u0670]/g, "").replace(/[أإآ]/g, "ا"); }
-function fillQList(){
-  const box = $("qList"); if (!box) return;
-  let h = "";
-  if (qv.tab === "s"){
-    const f = norm(qv.filter.trim());
-    for (let s = 1; s <= 114; s++){
-      if (f && !(String(s) === qv.filter.trim() || norm(SURA_TR[s - 1]).includes(f) || norm(SURA_AR[s - 1]).includes(f))) continue;
-      h += '<button class="qrow" data-s="' + s + '"><span class="qn">' + s + '</span><span class="qt"><b>' + esc(SURA_TR[s - 1]) + '</b><small>' + Q[s].length + ' versets</small></span><span class="qa" lang="ar">' + SURA_AR[s - 1] + '</span></button>';
-    }
-    if (!h) h = '<p class="qmsg">Aucune sourate trouvée.</p>';
-  } else {
-    JUZ.forEach((x, i) => {
-      h += '<button class="qrow" data-s="' + x[0] + '" data-a="' + x[1] + '"><span class="qn">' + (i + 1) + '</span><span class="qt"><b>Juz’ ' + (i + 1) + '</b><small>' + esc(SURA_TR[x[0] - 1]) + ' ' + x[0] + ':' + x[1] + '</small></span><span class="qa" lang="ar">الجزء ' + an(i + 1) + '</span></button>';
-    });
-  }
-  box.innerHTML = h;
-  box.querySelectorAll(".qrow").forEach(b => b.onclick = () => openSura(+b.dataset.s, +(b.dataset.a || 1)));
-}
-
-function renderSura(){
-  const s = qv.s, V = Q[s];
-  const mark = qMark();
-  let h = '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets · juz’ ' + juzOf(s, 1) + '</span></div>';
-  let body = "";
-  V.forEach((t, i) => {
-    let txt = t;
-    if (i === 0 && s !== 1 && s !== 9){
-      const m = txt.match(BASM_RE);
-      if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); }
-    }
-    const isMark = mark && mark.s === s && mark.a === i + 1;
-    body += '<span class="aya' + (isMark ? " marked" : "") + '" data-a="' + (i + 1) + '">' + esc(txt) + ' <span class="an">﴿' + an(i + 1) + '﴾</span></span> ';
-  });
-  if (s === 9) h += '<p class="qnote">Cette sourate ne commence pas par la basmala.</p>';
-  h += '<div class="mushaf" lang="ar" dir="rtl">' + body + '</div>';
-  h += '<div class="qnav">'
-    + (s > 1 ? '<button class="btn ghost" data-go="' + (s - 1) + '">‹ ' + esc(SURA_TR[s - 2]) + '</button>' : '<span></span>')
-    + (s < 114 ? '<button class="btn" data-go="' + (s + 1) + '">' + esc(SURA_TR[s]) + ' ›</button>' : '<span></span>') + '</div>';
-  h += '<p class="qcredit">Texte : Tanzil Quran Text (Uthmani) · tanzil.net<br>Touchez un verset pour y placer le marque-page.</p></div>';
-  main.innerHTML = h;
-  main.querySelectorAll("[data-go]").forEach(b => b.onclick = () => openSura(+b.dataset.go, 1));
-  main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
-    const a = +el.dataset.a;
-    store.set("wirdi-quran-mark", {s, a});
-    main.querySelectorAll(".aya.marked").forEach(x => x.classList.remove("marked"));
-    el.classList.add("marked");
-    qToast("🔖 Marque-page : " + SURA_TR[s - 1] + ", verset " + a);
-  });
-  const target = main.querySelector('.aya[data-a="' + qv.a + '"]');
-  if (target && qv.a > 1) requestAnimationFrame(() => { main.scrollTop = target.offsetTop - main.offsetTop - 20; });
-  else main.scrollTop = 0;
-  store.set("wirdi-quran-last", {s, a: qv.a});
-}
-let qScrollT = null;
-main.addEventListener("scroll", () => {
-  if (cur !== "coran" || qv.mode !== "read") return;
-  clearTimeout(qScrollT);
-  qScrollT = setTimeout(() => {
-    const top = main.getBoundingClientRect().top + 10;
-    for (const el of main.querySelectorAll(".aya")){
-      const r = el.getBoundingClientRect();
-      if (r.bottom > top){ const a = +el.dataset.a; qv.a = a; store.set("wirdi-quran-last", {s: qv.s, a}); break; }
-    }
-  }, 300);
-}, {passive: true});
-
-function setMode(){
-  const home = cur === null;
-  app.classList.toggle("is-home", home);
-  app.classList.toggle("not-home", !home);
-  if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
-  app.classList.toggle("is-quran", cur === "coran");
-  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : "Le Coran"; }
-  else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
-}
-
-function render(){
-  setMode();
-  if (cur === null){ renderHome(); main.scrollTop = 0; return; }
-  if (cur === "coran"){ renderQuran(); return; }
-  const list = items(), n = doneCount();
-  $("barFill").style.width = (100 * n / list.length) + "%";
-  $("progTxt").textContent = n + " / " + list.length;
-  if (idx >= list.length){
-    main.innerHTML = renderEnd();
-    $("bHome").onclick = goHome;
-    $("bReview").onclick = () => go(0);
-    $("counter").style.visibility = "hidden";
-    $("hint").textContent = "";
-    $("bPrev").disabled = false; $("bNext").disabled = true;
-    return;
-  }
-  $("counter").style.visibility = "visible";
-  main.innerHTML = renderCard(idx);
-  main.scrollTop = 0;
-  const bp = $("bPlay");
-  if (bp) { paintPlay(bp, pl.k === curKey() ? pl.state : "idle"); bp.onclick = toggleAudio; }
-  updateCounter();
-  $("bPrev").disabled = idx === 0;
-  $("bNext").disabled = false;
-}
-
-function updateCounter(){
-  const it = items()[idx], d = doneOf(idx), left = Math.max(0, it.n - d);
-  $("ring").style.strokeDasharray = C;
-  $("ring").style.strokeDashoffset = C * (1 - Math.min(d, it.n) / it.n);
-  $("counter").classList.toggle("done", left === 0);
-  if (left === 0){ $("cBig").textContent = "✓"; $("cSm").textContent = "terminé"; }
-  else if (it.n === 1){ $("cBig").textContent = "✓"; $("cSm").textContent = "valider"; }
-  else { $("cBig").textContent = left; $("cSm").textContent = "restant" + (left > 1 ? "s" : ""); }
-  $("hint").textContent = left === 0 ? "Glissez ou touchez la flèche pour continuer" : (it.n === 1 ? "Touchez le bouton une fois récité" : "Touchez le bouton à chaque répétition");
-  $("counter").setAttribute("aria-label", left === 0 ? "Terminé" : "Compter, " + left + " restant");
-}
-
-let advTimer = null;
-// Retour au comptage : vibration (Android), haptique iOS 18+ (interrupteur natif), son optionnel
-function iosHaptic(){
-  try {
-    const label = document.createElement("label");
-    label.setAttribute("aria-hidden", "true");
-    label.style.display = "none";
-    const input = document.createElement("input");
-    input.type = "checkbox";
-    input.setAttribute("switch", "");
-    label.appendChild(input);
-    document.head.appendChild(label);
-    label.click();
-    document.head.removeChild(label);
-  } catch(e){}
-}
-let actx = null;
-function tick(strong){
-  try {
-    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
-    if (actx.state === "suspended") actx.resume();
-    const o = actx.createOscillator(), g = actx.createGain(), t = actx.currentTime;
-    o.type = "sine"; o.frequency.value = strong ? 660 : 880;
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.exponentialRampToValueAtTime(0.25, t + 0.01);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + (strong ? 0.25 : 0.08));
-    o.connect(g).connect(actx.destination); o.start(t); o.stop(t + 0.3);
-  } catch(e){}
-}
-function buzz(strong){
-  if (prefs.snd) tick(strong);
-  if (!prefs.vib) return;
-  if (typeof navigator.vibrate === "function"){ try { if (navigator.vibrate(strong ? [40, 70, 40] : 25)) return; } catch(e){} }
-  iosHaptic();
-  if (strong) setTimeout(iosHaptic, 150);
-}
-
-function tap(){
-  if (cur === null || cur === "coran" || idx >= items().length) return;
-  const it = items()[idx];
-  if (doneOf(idx) >= it.n){ go(idx + 1); return; }
-  prog().counts[idx] = doneOf(idx) + 1;
-  buzz(prog().counts[idx] >= it.n);
-  save(); updateCounter();
-  const n = doneCount();
-  $("barFill").style.width = (100 * n / items().length) + "%";
-  $("progTxt").textContent = n + " / " + items().length;
-  if (prog().counts[idx] >= it.n){
-    clearTimeout(advTimer);
-    const at = idx, k = cur;
-    advTimer = setTimeout(() => { if (idx === at && cur === k) go(idx + 1); }, 700);
-  }
-}
-
-function go(i){
-  if (cur === null || cur === "coran") return;
-  clearTimeout(advTimer);
-  const chain = autoChain && prefs.auto; autoChain = false;
-  stopAudio();
-  idx = Math.max(0, Math.min(items().length, i));
-  save(); render();
-  if (chain && idx < items().length && tracksOf(items()[idx]) && doneOf(idx) < items()[idx].n) startAudio();
-}
-function openSession(k){
-  cur = k; loadProg(k);
-  idx = Math.min(prog().idx || 0, items().length);
-  if (idx >= items().length && doneCount() < items().length) idx = 0;
-  render();
-}
-function goHome(){ clearTimeout(advTimer); autoChain = false; stopAudio(); save(); cur = null; render(); }
-
-$("counter").addEventListener("click", tap);
-$("bNext").addEventListener("click", () => go(idx + 1));
-$("bPrev").addEventListener("click", () => go(idx - 1));
-function backAction(){ if (cur === "coran" && qv.mode === "read"){ qv.mode = "list"; render(); main.scrollTop = 0; } else goHome(); }
-$("bBack").addEventListener("click", backAction);
-
-let sx = null, sy = null;
-main.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
-main.addEventListener("touchend", e => {
-  if (sx === null || cur === null || cur === "coran") { sx = sy = null; return; }
-  const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-  if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(idx + (dx < 0 ? 1 : -1));
-  sx = sy = null;
-}, {passive:true});
-document.addEventListener("keydown", e => {
-  if (document.body.classList.contains("open")) { if (e.key === "Escape") closeSheets(); return; }
-  if (cur === null) return;
-  if (cur === "coran"){ if (e.key === "Escape") backAction(); return; }
-  if (e.key === "ArrowRight") go(idx + 1);
-  else if (e.key === "ArrowLeft") go(idx - 1);
-  else if (e.key === "Escape") goHome();
-});
-
-function openSheet(id){ closeSheets(); document.body.classList.add("open"); $(id).classList.add("show"); }
-function closeSheets(){ document.body.classList.remove("open"); document.querySelectorAll(".sheet").forEach(s => s.classList.remove("show")); }
-$("sheetBg").onclick = closeSheets;
-document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheets);
-
-$("bList").onclick = () => {
-  if (cur === null || cur === "coran") return;
-  let h = "";
-  items().forEach((it, i) => {
-    const label = it.title ? it.title[0] : it.ar;
-    const cnt = it.n > 1 ? Math.min(doneOf(i), it.n) + "/" + it.n : (isDone(i) ? "✓" : "");
-    h += '<button class="row' + (isDone(i) ? " ok" : "") + (i === idx ? " cur" : "") + '" data-i="' + i + '"><span class="n">' + (i + 1) + '</span><span class="t">' + esc(label) + '</span><span class="c">' + cnt + '</span></button>';
-  });
-  $("listBody").innerHTML = h;
-  $("listBody").querySelectorAll(".row").forEach(r => r.onclick = () => { closeSheets(); go(+r.dataset.i); });
-  openSheet("sheetList");
-};
-$("bSet").onclick = () => {
-  $("bReset").textContent = cur && cur !== "coran" ? "Recommencer" : "Tout recommencer";
-  openSheet("sheetSet");
-};
-$("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
-$("swFr").onclick = () => { prefs.fr = !prefs.fr; savePrefs(); applyPrefs(); };
-$("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); if (prefs.vib) buzz(false); };
-$("swAuto").onclick = () => { prefs.auto = !prefs.auto; savePrefs(); applyPrefs(); };
-document.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => { prefs.rate = +b.dataset.rate; player.playbackRate = prefs.rate; savePrefs(); applyPrefs(); });
-$("swSnd").onclick = () => { prefs.snd = !prefs.snd; savePrefs(); applyPrefs(); if (prefs.snd) tick(false); };
-$("sMinus").onclick = () => { prefs.scale = Math.max(0.8, +(prefs.scale - 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
-$("sPlus").onclick = () => { prefs.scale = Math.min(1.6, +(prefs.scale + 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
-$("bReset").onclick = () => {
-  for (const k of (cur && cur !== "coran" ? [cur] : ["matin", "soir"])){ progs[k] = {day: today(), counts: {}, idx: 0}; store.set("wirdi-prog-" + k, progs[k]); }
-  idx = 0; closeSheets(); render();
-};
-
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) return;
-  let changed = false;
-  for (const k of ["matin", "soir"]) if (progs[k].day !== today()){ loadProg(k); changed = true; }
-  if (changed){ if (cur) idx = 0; render(); }
-});
-
-applyPrefs();
-render();
-if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("sw.js").then(reg => {
-      const check = () => reg.update().catch(() => {});
-      document.addEventListener("visibilitychange", () => { if (!document.hidden) check(); });
-      setInterval(check, 30 * 60 * 1000);
-    }).catch(() => {});
-    let reloaded = false;
-    const hadController = !!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener("controllerchange", () => {
-      if (!hadController || reloaded) return;
-      reloaded = true; location.reload();
-    });
-  });
-}
-
-</script>
+<script src="app.js"></script>
 </body>
 </html>
