@@ -16,7 +16,7 @@
 <link rel="icon" type="image/png" sizes="32x32" href="icon-32.png">
 <title>Wirdî · Invocations du matin et du soir</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Reem+Kufi:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Reem+Kufi:wght@500;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#F7F1E3; --card:#FFFBF2; --ink:#1E2B27; --muted:#4A5A54; --green:#1D5C4A; --green-ink:#F7F1E3;
@@ -204,6 +204,47 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .meta .play.error{border-color:var(--line);color:var(--muted);font-weight:500}
 .step{width:auto;min-width:42px;padding:0 8px}
 .step.on{background:var(--green);color:var(--green-ink);border-color:var(--green)}
+.is-quran footer,.is-quran .hint,.is-quran .prog,.is-quran #bList{display:none}
+.sess2.coran{background:linear-gradient(160deg,#2F7A62 0%,#1D5C4A 55%,#123D31 100%);color:#F7F1E3}
+.sess2.coran .go{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}
+.qwrap{display:flex;flex-direction:column;gap:12px}
+.qmsg{padding:24px 8px;text-align:center;color:var(--muted);line-height:1.6;font-size:15px}
+.qresume{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-radius:18px;background:var(--green);color:var(--green-ink);text-align:left;width:100%}
+.qresume.mark{background:var(--virtue-bg);color:var(--virtue-ink)}
+.qr-l{display:flex;flex-direction:column;gap:2px}
+.qr-l small{font-size:12px;opacity:.85;text-transform:uppercase;letter-spacing:.05em;font-weight:600}
+.qr-l b{font-size:16px}
+.qr-ar{font-family:var(--ar);font-size:24px}
+.qtabs{display:flex;gap:6px;background:var(--virtue-bg);padding:4px;border-radius:14px}
+.qtabs button{flex:1;padding:10px;border-radius:11px;font-weight:600;color:var(--muted)}
+.qtabs button.on{background:var(--card);color:var(--green);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.qsearch{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;font-family:var(--ui)}
+.qlist{display:flex;flex-direction:column}
+.qrow{display:flex;align-items:center;gap:14px;padding:12px 6px;border-bottom:1px solid var(--line);width:100%;text-align:left}
+.qrow:active{background:var(--virtue-bg)}
+.qn{width:38px;height:38px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--green);border:1.5px solid var(--gold);border-radius:10px;transform:rotate(45deg)}
+.qn{transform:none;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%);border:0;background:var(--virtue-bg)}
+.qt{flex:1;display:flex;flex-direction:column;min-width:0}
+.qt b{font-family:var(--lat);font-size:18px;font-weight:600;color:var(--ink)}
+.qt small{font-size:13px;color:var(--muted)}
+.qa{font-family:var(--ar);font-size:22px;color:var(--green);flex-shrink:0}
+.qread{display:flex;flex-direction:column;gap:14px;padding-bottom:20px}
+.sura-head{display:flex;flex-direction:column;align-items:center;gap:4px;padding:16px 12px;border-radius:16px;border:1.5px solid var(--gold);background:var(--virtue-bg);position:relative}
+.sura-head::before,.sura-head::after{content:"۞";position:absolute;top:50%;transform:translateY(-50%);color:var(--gold);font-size:20px}
+.sura-head::before{left:14px}.sura-head::after{right:14px}
+.sh-ar{font-family:'Amiri Quran',var(--ar);font-size:calc(30px*var(--scale));color:var(--green);line-height:1.6}
+.sh-fr{font-size:13px;color:var(--muted);text-align:center}
+.basmala{margin:4px 0 0;text-align:center;font-family:'Amiri Quran',var(--ar);font-size:calc(28px*var(--scale));line-height:2;color:var(--ink)}
+.qnote{margin:0;text-align:center;font-size:13px;color:var(--muted);font-style:italic}
+.mushaf{font-family:'Amiri Quran',var(--ar);font-size:calc(29px*var(--scale));line-height:2.35;text-align:justify;text-align-last:center;color:var(--ink);padding:4px 2px}
+.aya{border-radius:8px;transition:background .2s;cursor:pointer}
+.aya.marked{background:rgba(168,116,36,.18)}
+.an{color:var(--gold);font-size:.85em;white-space:nowrap}
+.qnav{display:flex;justify-content:space-between;gap:10px;margin-top:10px}
+.qnav .btn{flex:1;font-size:14px;padding:12px 10px}
+.qcredit{text-align:center;font-size:12px;color:var(--muted);line-height:1.6;margin:6px 0 0}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:#1E2B27;color:#F7F1E3;padding:12px 18px;border-radius:14px;font-size:14px;opacity:0;pointer-events:none;transition:all .25s;z-index:20;max-width:90%;text-align:center}
+.toast.show{opacity:1;transform:translate(-50%,0)}
 </style>
 </head>
 <body>
@@ -254,7 +295,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
     <div class="set"><span>Vitesse de l’audio</span><div class="steps"><button class="step" data-rate="0.75">0,75×</button><button class="step" data-rate="1">1×</button><button class="step" data-rate="1.25">1,25×</button></div></div>
     <div class="set"><span>Progression du jour</span><button class="btn ghost" id="bReset">Recommencer</button></div>
     <div class="set"><span>Wirdî · version 1.1</span><span style="font-family:var(--lat);color:var(--muted)">par Alatec</span></div>
-    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations récitées par le cheikh Hamad Al-Duraihim (HisnMuslim.com) ; versets du Coran récités par Mishary Rashid Al-Afasy (Islamic App / Islamic Network). L’audio nécessite une connexion Internet.</p></div>
+    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations récitées par le cheikh Hamad Al-Duraihim (HisnMuslim.com) ; versets du Coran récités par Mishary Rashid Al-Afasy (Islamic App / Islamic Network).</p><p><b>Texte du Coran</b> : Tanzil Quran Text (Uthmani), © Tanzil Project, reproduit sans modification — tanzil.net. L’audio nécessite une connexion Internet.</p></div>
     <p class="note"><b>Installer sur le téléphone :</b> sur iPhone, touchez Partager puis « Sur l'écran d'accueil ». Sur Android, ouvrez le menu ⋮ de Chrome puis « Ajouter à l'écran d'accueil ».</p>
   </div>
 </div>
@@ -293,7 +334,7 @@ const main = $("main"), app = $("app"), root = document.documentElement;
 
 const items = () => SESS[cur].items;
 const prog = () => progs[cur];
-function save(){ if (!cur) return; prog().idx = idx; store.set("wirdi-prog-" + cur, prog()); }
+function save(){ if (!cur || cur === "coran") return; prog().idx = idx; store.set("wirdi-prog-" + cur, prog()); }
 function savePrefs(){ store.set("wirdi-prefs", prefs); }
 function doneOfK(k, i){ return progs[k].counts[i] || 0; }
 function isDoneK(k, i){ return doneOfK(k, i) >= SESS[k].items[i].n; }
@@ -331,6 +372,7 @@ function greg(){
   try { const s = new Intl.DateTimeFormat("fr-FR", {weekday:"long", day:"numeric", month:"long"}).format(new Date()); return s.charAt(0).toUpperCase() + s.slice(1); } catch(e){ return ""; }
 }
 const ART = {
+  coran: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="110" cy="100" r="62" fill="#F3D38B" opacity=".10"/><path d="M52 150 L148 70 M148 150 L52 70" stroke="#C9A25A" stroke-width="7" stroke-linecap="round"/><path d="M100 72 C84 60 62 58 44 62 V118 C62 114 84 116 100 128 Z" fill="#FBF3DF"/><path d="M100 72 C116 60 138 58 156 62 V118 C138 114 116 116 100 128 Z" fill="#F3E6C4"/><path d="M100 72 V128" stroke="#C9A25A" stroke-width="2"/><g stroke="#C9A25A" stroke-width="2" stroke-linecap="round" opacity=".8"><path d="M54 76 C68 73 80 75 92 80M54 88 C68 85 80 87 92 92M54 100 C68 97 80 99 92 104M108 80 C120 75 132 73 146 76M108 92 C120 87 132 85 146 88M108 104 C120 99 132 97 146 100"/></g></svg>',
   matin: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gS" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#FFF6D8"/><stop offset=".55" stop-color="#FFE08A"/><stop offset="1" stop-color="#F7B955"/></radialGradient></defs><circle cx="120" cy="120" r="62" fill="#FFF3D6" opacity=".45"/><g stroke="#FFF6DE" stroke-width="6" stroke-linecap="round" opacity=".9"><path d="M120 30v16M58 58l11 11M182 58l-11 11M30 120h16M194 120h-16"/></g><circle cx="120" cy="120" r="40" fill="url(#gS)"/></svg>',
   soir: '<svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="118" cy="96" r="54" fill="#8FA6E0" opacity=".1"/><path d="M132 44a52 52 0 1 0 36 88A44 44 0 0 1 132 44z" fill="#F3D38B"/><g fill="#FFF5DC"><circle cx="40" cy="40" r="2.2"/><circle cx="70" cy="22" r="1.5"/><circle cx="180" cy="36" r="2.4"/><circle cx="60" cy="96" r="1.6"/><circle cx="190" cy="150" r="1.8"/><circle cx="30" cy="140" r="1.4"/><path d="M178 88l2.6 6.2 6.4.6-4.9 4.2 1.5 6.3-5.6-3.4-5.6 3.4 1.5-6.3-4.9-4.2 6.4-.6z"/></g></svg>'
 };
@@ -352,9 +394,17 @@ function renderHome(){
       + '<span class="s-st"><b>' + status + '</b><small>' + n + ' / ' + tot + ' invocations</small></span>'
       + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   }
+  { const L = qLast();
+    s += '<button class="sess2 coran" id="bQuran">' + ART.coran
+      + '<span class="s-top"><span></span></span>'
+      + '<span class="s-t"><span class="s-ar" lang="ar">الْقُرْآنُ الْكَرِيمُ</span><span class="s-fr">Le Coran</span></span>'
+      + '<span class="s-bot"><span class="s-st"><b>' + (L ? "Reprendre la lecture" : "Ouvrir le mushaf") + '</b><small>' + (L ? esc(SURA_TR[L.s - 1]) + ' · verset ' + L.a : "114 sourates · 30 juz’") + '</small></span>'
+      + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
+  }
   s += '<p class="credit"><span lang="ar">وِرْدِي</span> · Wirdî<br><small>Conçu par <b>Alatec</b></small></p></div>';
   main.innerHTML = s;
-  main.querySelectorAll(".sess2").forEach(b => b.onclick = () => openSession(b.dataset.k));
+  main.querySelectorAll(".sess2[data-k]").forEach(b => b.onclick = () => openSession(b.dataset.k));
+  $("bQuran").onclick = () => { const L = qLast(); openQuran(); };
 }
 
 
@@ -449,17 +499,145 @@ function renderEnd(){
     + '<button class="btn ghost" id="bReview">Revoir les invocations</button></div>';
 }
 
+
+// ---------- Coran (texte Tanzil, fichier quran-uthmani.txt à la racine du site) ----------
+const SURA_AR = "الفاتحة|البقرة|آل عمران|النساء|المائدة|الأنعام|الأعراف|الأنفال|التوبة|يونس|هود|يوسف|الرعد|إبراهيم|الحجر|النحل|الإسراء|الكهف|مريم|طه|الأنبياء|الحج|المؤمنون|النور|الفرقان|الشعراء|النمل|القصص|العنكبوت|الروم|لقمان|السجدة|الأحزاب|سبأ|فاطر|يس|الصافات|ص|الزمر|غافر|فصلت|الشورى|الزخرف|الدخان|الجاثية|الأحقاف|محمد|الفتح|الحجرات|ق|الذاريات|الطور|النجم|القمر|الرحمن|الواقعة|الحديد|المجادلة|الحشر|الممتحنة|الصف|الجمعة|المنافقون|التغابن|الطلاق|التحريم|الملك|القلم|الحاقة|المعارج|نوح|الجن|المزمل|المدثر|القيامة|الإنسان|المرسلات|النبأ|النازعات|عبس|التكوير|الانفطار|المطففين|الانشقاق|البروج|الطارق|الأعلى|الغاشية|الفجر|البلد|الشمس|الليل|الضحى|الشرح|التين|العلق|القدر|البينة|الزلزلة|العاديات|القارعة|التكاثر|العصر|الهمزة|الفيل|قريش|الماعون|الكوثر|الكافرون|النصر|المسد|الإخلاص|الفلق|الناس".split("|");
+const SURA_TR = "Al-Fâtiha|Al-Baqara|Âl 'Imrân|An-Nisâ'|Al-Mâ'ida|Al-An'âm|Al-A'râf|Al-Anfâl|At-Tawba|Yûnus|Hûd|Yûsuf|Ar-Ra'd|Ibrâhîm|Al-Hijr|An-Nahl|Al-Isrâ'|Al-Kahf|Maryam|Tâ-Hâ|Al-Anbiyâ'|Al-Hajj|Al-Mu'minûn|An-Nûr|Al-Furqân|Ash-Shu'arâ'|An-Naml|Al-Qasas|Al-'Ankabût|Ar-Rûm|Luqmân|As-Sajda|Al-Ahzâb|Saba'|Fâtir|Yâ-Sîn|As-Sâffât|Sâd|Az-Zumar|Ghâfir|Fussilat|Ash-Shûrâ|Az-Zukhruf|Ad-Dukhân|Al-Jâthiya|Al-Ahqâf|Muhammad|Al-Fath|Al-Hujurât|Qâf|Adh-Dhâriyât|At-Tûr|An-Najm|Al-Qamar|Ar-Rahmân|Al-Wâqi'a|Al-Hadîd|Al-Mujâdala|Al-Hashr|Al-Mumtahana|As-Saff|Al-Jumu'a|Al-Munâfiqûn|At-Taghâbun|At-Talâq|At-Tahrîm|Al-Mulk|Al-Qalam|Al-Hâqqa|Al-Ma'ârij|Nûh|Al-Jinn|Al-Muzzammil|Al-Muddaththir|Al-Qiyâma|Al-Insân|Al-Mursalât|An-Naba'|An-Nâzi'ât|'Abasa|At-Takwîr|Al-Infitâr|Al-Mutaffifîn|Al-Inshiqâq|Al-Burûj|At-Târiq|Al-A'lâ|Al-Ghâshiya|Al-Fajr|Al-Balad|Ash-Shams|Al-Layl|Ad-Duhâ|Ash-Sharh|At-Tîn|Al-'Alaq|Al-Qadr|Al-Bayyina|Az-Zalzala|Al-'Âdiyât|Al-Qâri'a|At-Takâthur|Al-'Asr|Al-Humaza|Al-Fîl|Quraysh|Al-Mâ'ûn|Al-Kawthar|Al-Kâfirûn|An-Nasr|Al-Masad|Al-Ikhlâs|Al-Falaq|An-Nâs".split("|");
+const JUZ = [[1,1],[2,142],[2,253],[3,93],[4,24],[4,148],[5,82],[6,111],[7,88],[8,41],[9,93],[11,6],[12,53],[15,1],[17,1],[18,75],[21,1],[23,1],[25,21],[27,56],[29,46],[33,31],[36,28],[39,32],[41,47],[46,1],[51,31],[58,1],[67,1],[78,1]];
+let Q = null, qLoading = null, qErr = false;
+const qv = {mode: "list", tab: "s", s: 1, a: 1, filter: ""};
+function loadQuran(){
+  if (Q) return Promise.resolve(Q);
+  if (qLoading) return qLoading;
+  qLoading = fetch("quran-uthmani.txt", {cache: "no-cache"}).then(r => { if (!r.ok) throw new Error("absent"); return r.text(); }).then(txt => {
+    const S = Array.from({length: 115}, () => []);
+    let n = 0;
+    for (const line of txt.split(/\r?\n/)){
+      if (!line || line[0] === "#") continue;
+      const p = line.split("|"); if (p.length < 3) continue;
+      const s = +p[0], a = +p[1]; if (!(s >= 1 && s <= 114)) continue;
+      S[s][a - 1] = p.slice(2).join("|").trim(); n++;
+    }
+    if (n < 6000) throw new Error("incomplet");
+    Q = S; return Q;
+  }).catch(e => { qErr = true; qLoading = null; throw e; });
+  return qLoading;
+}
+const BASM_RE = /^(بِسْمِ\s+\S+\s+\S+\s+\S+)\s+/;
+function juzOf(s, a){ let j = 1; JUZ.forEach((x, i) => { if (s > x[0] || (s === x[0] && a >= x[1])) j = i + 1; }); return j; }
+const qLast = () => store.get("wirdi-quran-last", null);
+const qMark = () => store.get("wirdi-quran-mark", null);
+function qToast(msg){
+  let t = $("qToast"); if (!t){ t = document.createElement("div"); t.id = "qToast"; t.className = "toast"; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200);
+}
+function openQuran(){ stopAudio(); cur = "coran"; qv.mode = "list"; render(); }
+function openSura(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render(); }
+
+function renderQuran(){
+  if (!Q){
+    main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement du Coran…</p></div>';
+    loadQuran().then(() => { if (cur === "coran") render(); }).catch(() => {
+      if (cur !== "coran") return;
+      main.innerHTML = '<div class="qwrap"><div class="qmsg"><b>Le texte du Coran n’est pas disponible.</b><br>Vérifiez votre connexion. Pour l’administrateur : le fichier <code>quran-uthmani.txt</code> (Tanzil) doit se trouver à la racine du site.</div></div>';
+    });
+    return;
+  }
+  if (qv.mode === "read") return renderSura();
+  const last = qLast(), mark = qMark();
+  let h = '<div class="qwrap">';
+  if (last) h += '<button class="qresume" data-s="' + last.s + '" data-a="' + last.a + '"><span class="qr-l"><small>Reprendre la lecture</small><b>' + esc(SURA_TR[last.s - 1]) + ' · verset ' + last.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[last.s - 1] + '</span></button>';
+  if (mark) h += '<button class="qresume mark" data-s="' + mark.s + '" data-a="' + mark.a + '"><span class="qr-l"><small>🔖 Marque-page</small><b>' + esc(SURA_TR[mark.s - 1]) + ' · verset ' + mark.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[mark.s - 1] + '</span></button>';
+  h += '<div class="qtabs"><button data-tab="s" class="' + (qv.tab === "s" ? "on" : "") + '">Sourates</button><button data-tab="j" class="' + (qv.tab === "j" ? "on" : "") + '">Juz’</button></div>';
+  if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '">';
+  h += '<div class="qlist" id="qList"></div></div>';
+  main.innerHTML = h;
+  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openSura(+b.dataset.s, +b.dataset.a));
+  main.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { qv.tab = b.dataset.tab; render(); });
+  const inp = $("qSearch"); if (inp) inp.oninput = () => { qv.filter = inp.value; fillQList(); };
+  fillQList();
+}
+function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f'’\- ]/g, "").replace(/[\u064B-\u0652\u0670]/g, "").replace(/[أإآ]/g, "ا"); }
+function fillQList(){
+  const box = $("qList"); if (!box) return;
+  let h = "";
+  if (qv.tab === "s"){
+    const f = norm(qv.filter.trim());
+    for (let s = 1; s <= 114; s++){
+      if (f && !(String(s) === qv.filter.trim() || norm(SURA_TR[s - 1]).includes(f) || norm(SURA_AR[s - 1]).includes(f))) continue;
+      h += '<button class="qrow" data-s="' + s + '"><span class="qn">' + s + '</span><span class="qt"><b>' + esc(SURA_TR[s - 1]) + '</b><small>' + Q[s].length + ' versets</small></span><span class="qa" lang="ar">' + SURA_AR[s - 1] + '</span></button>';
+    }
+    if (!h) h = '<p class="qmsg">Aucune sourate trouvée.</p>';
+  } else {
+    JUZ.forEach((x, i) => {
+      h += '<button class="qrow" data-s="' + x[0] + '" data-a="' + x[1] + '"><span class="qn">' + (i + 1) + '</span><span class="qt"><b>Juz’ ' + (i + 1) + '</b><small>' + esc(SURA_TR[x[0] - 1]) + ' ' + x[0] + ':' + x[1] + '</small></span><span class="qa" lang="ar">الجزء ' + an(i + 1) + '</span></button>';
+    });
+  }
+  box.innerHTML = h;
+  box.querySelectorAll(".qrow").forEach(b => b.onclick = () => openSura(+b.dataset.s, +(b.dataset.a || 1)));
+}
+
+function renderSura(){
+  const s = qv.s, V = Q[s];
+  const mark = qMark();
+  let h = '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets · juz’ ' + juzOf(s, 1) + '</span></div>';
+  let body = "";
+  V.forEach((t, i) => {
+    let txt = t;
+    if (i === 0 && s !== 1 && s !== 9){
+      const m = txt.match(BASM_RE);
+      if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); }
+    }
+    const isMark = mark && mark.s === s && mark.a === i + 1;
+    body += '<span class="aya' + (isMark ? " marked" : "") + '" data-a="' + (i + 1) + '">' + esc(txt) + ' <span class="an">﴿' + an(i + 1) + '﴾</span></span> ';
+  });
+  if (s === 9) h += '<p class="qnote">Cette sourate ne commence pas par la basmala.</p>';
+  h += '<div class="mushaf" lang="ar" dir="rtl">' + body + '</div>';
+  h += '<div class="qnav">'
+    + (s > 1 ? '<button class="btn ghost" data-go="' + (s - 1) + '">‹ ' + esc(SURA_TR[s - 2]) + '</button>' : '<span></span>')
+    + (s < 114 ? '<button class="btn" data-go="' + (s + 1) + '">' + esc(SURA_TR[s]) + ' ›</button>' : '<span></span>') + '</div>';
+  h += '<p class="qcredit">Texte : Tanzil Quran Text (Uthmani) · tanzil.net<br>Touchez un verset pour y placer le marque-page.</p></div>';
+  main.innerHTML = h;
+  main.querySelectorAll("[data-go]").forEach(b => b.onclick = () => openSura(+b.dataset.go, 1));
+  main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
+    const a = +el.dataset.a;
+    store.set("wirdi-quran-mark", {s, a});
+    main.querySelectorAll(".aya.marked").forEach(x => x.classList.remove("marked"));
+    el.classList.add("marked");
+    qToast("🔖 Marque-page : " + SURA_TR[s - 1] + ", verset " + a);
+  });
+  const target = main.querySelector('.aya[data-a="' + qv.a + '"]');
+  if (target && qv.a > 1) requestAnimationFrame(() => { main.scrollTop = target.offsetTop - main.offsetTop - 20; });
+  else main.scrollTop = 0;
+  store.set("wirdi-quran-last", {s, a: qv.a});
+}
+let qScrollT = null;
+main.addEventListener("scroll", () => {
+  if (cur !== "coran" || qv.mode !== "read") return;
+  clearTimeout(qScrollT);
+  qScrollT = setTimeout(() => {
+    const top = main.getBoundingClientRect().top + 10;
+    for (const el of main.querySelectorAll(".aya")){
+      const r = el.getBoundingClientRect();
+      if (r.bottom > top){ const a = +el.dataset.a; qv.a = a; store.set("wirdi-quran-last", {s: qv.s, a}); break; }
+    }
+  }, 300);
+}, {passive: true});
+
 function setMode(){
   const home = cur === null;
   app.classList.toggle("is-home", home);
   app.classList.toggle("not-home", !home);
   if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
-  if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
+  app.classList.toggle("is-quran", cur === "coran");
+  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : "Le Coran"; }
+  else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
 
 function render(){
   setMode();
   if (cur === null){ renderHome(); main.scrollTop = 0; return; }
+  if (cur === "coran"){ renderQuran(); return; }
   const list = items(), n = doneCount();
   $("barFill").style.width = (100 * n / list.length) + "%";
   $("progTxt").textContent = n + " / " + list.length;
@@ -532,7 +710,7 @@ function buzz(strong){
 }
 
 function tap(){
-  if (cur === null || idx >= items().length) return;
+  if (cur === null || cur === "coran" || idx >= items().length) return;
   const it = items()[idx];
   if (doneOf(idx) >= it.n){ go(idx + 1); return; }
   prog().counts[idx] = doneOf(idx) + 1;
@@ -549,7 +727,7 @@ function tap(){
 }
 
 function go(i){
-  if (cur === null) return;
+  if (cur === null || cur === "coran") return;
   clearTimeout(advTimer);
   const chain = autoChain && prefs.auto; autoChain = false;
   stopAudio();
@@ -568,12 +746,13 @@ function goHome(){ clearTimeout(advTimer); autoChain = false; stopAudio(); save(
 $("counter").addEventListener("click", tap);
 $("bNext").addEventListener("click", () => go(idx + 1));
 $("bPrev").addEventListener("click", () => go(idx - 1));
-$("bBack").addEventListener("click", goHome);
+function backAction(){ if (cur === "coran" && qv.mode === "read"){ qv.mode = "list"; render(); main.scrollTop = 0; } else goHome(); }
+$("bBack").addEventListener("click", backAction);
 
 let sx = null, sy = null;
 main.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
 main.addEventListener("touchend", e => {
-  if (sx === null || cur === null) { sx = sy = null; return; }
+  if (sx === null || cur === null || cur === "coran") { sx = sy = null; return; }
   const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(idx + (dx < 0 ? 1 : -1));
   sx = sy = null;
@@ -581,6 +760,7 @@ main.addEventListener("touchend", e => {
 document.addEventListener("keydown", e => {
   if (document.body.classList.contains("open")) { if (e.key === "Escape") closeSheets(); return; }
   if (cur === null) return;
+  if (cur === "coran"){ if (e.key === "Escape") backAction(); return; }
   if (e.key === "ArrowRight") go(idx + 1);
   else if (e.key === "ArrowLeft") go(idx - 1);
   else if (e.key === "Escape") goHome();
@@ -592,7 +772,7 @@ $("sheetBg").onclick = closeSheets;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheets);
 
 $("bList").onclick = () => {
-  if (cur === null) return;
+  if (cur === null || cur === "coran") return;
   let h = "";
   items().forEach((it, i) => {
     const label = it.title ? it.title[0] : it.ar;
@@ -604,7 +784,7 @@ $("bList").onclick = () => {
   openSheet("sheetList");
 };
 $("bSet").onclick = () => {
-  $("bReset").textContent = cur ? "Recommencer" : "Tout recommencer";
+  $("bReset").textContent = cur && cur !== "coran" ? "Recommencer" : "Tout recommencer";
   openSheet("sheetSet");
 };
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
@@ -616,7 +796,7 @@ $("swSnd").onclick = () => { prefs.snd = !prefs.snd; savePrefs(); applyPrefs(); 
 $("sMinus").onclick = () => { prefs.scale = Math.max(0.8, +(prefs.scale - 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("sPlus").onclick = () => { prefs.scale = Math.min(1.6, +(prefs.scale + 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("bReset").onclick = () => {
-  for (const k of (cur ? [cur] : ["matin", "soir"])){ progs[k] = {day: today(), counts: {}, idx: 0}; store.set("wirdi-prog-" + k, progs[k]); }
+  for (const k of (cur && cur !== "coran" ? [cur] : ["matin", "soir"])){ progs[k] = {day: today(), counts: {}, idx: 0}; store.set("wirdi-prog-" + k, progs[k]); }
   idx = 0; closeSheets(); render();
 };
 
