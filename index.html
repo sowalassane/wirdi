@@ -360,6 +360,18 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .sbar .on b{background:transparent;border:2px solid var(--green);color:var(--green)}
 .sbar .on small{color:var(--green);font-weight:700}
 .vc-tl .sil{opacity:.45}
+.qbar{position:fixed;left:0;right:0;bottom:0;z-index:15;display:none;align-items:center;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 20px -12px rgba(0,0,0,.35);max-width:720px;margin:0 auto}
+.qbar.show{display:flex}
+.qb-btn{width:38px;height:38px;flex-shrink:0;border-radius:50%;color:var(--green);font-size:16px}
+.qb-main{width:48px;height:48px;flex-shrink:0;border-radius:50%;background:var(--green);color:var(--green-ink);font-size:18px}
+.qb-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:0 4px}
+.qb-info b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
+.qb-info select{font-size:13px;padding:3px 4px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--green);max-width:100%}
+.has-qbar main{padding-bottom:84px}
+.has-qbar .sbar{bottom:48px}
+.vcard.playing-aya{border-color:var(--green);box-shadow:0 0 0 2px var(--green)}
+.aya.playing-aya{background:rgba(29,92,74,.16)}
+.show-tabs .qbar.show{bottom:calc(62px + env(safe-area-inset-bottom,0px))}
 </style>
 </head>
 <body>
@@ -416,7 +428,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
     <div class="set"><span>Vitesse de l’audio</span><div class="steps"><button class="step" data-rate="0.75">0,75×</button><button class="step" data-rate="1">1×</button><button class="step" data-rate="1.25">1,25×</button></div></div>
     <div class="set"><span>Progression du jour</span><button class="btn ghost" id="bReset">Recommencer</button></div>
     <div class="set"><span>Wirdî · version 1.1</span><span style="font-family:var(--lat);color:var(--muted)">par Alatec</span></div>
-    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations récitées par le cheikh Hamad Al-Duraihim (HisnMuslim.com) ; versets du Coran récités par Mishary Rashid Al-Afasy (Islamic App / Islamic Network).</p><p><b>Texte du Coran</b> : Tanzil Quran Text (Uthmani), © Tanzil Project, reproduit sans modification — tanzil.net. L’audio nécessite une connexion Internet.</p></div>
+    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations récitées par le cheikh Hamad Al-Duraihim (HisnMuslim.com) ; versets du Coran récités par Mishary Rashid Al-Afasy et d’autres récitateurs au choix (Islamic Network / Al Quran Cloud).</p><p><b>Texte du Coran</b> : Tanzil Quran Text (Uthmani), © Tanzil Project, reproduit sans modification — tanzil.net. L’audio nécessite une connexion Internet.</p></div>
     <p class="note"><b>Installer sur le téléphone :</b> sur iPhone, touchez Partager puis « Sur l'écran d'accueil ». Sur Android, ouvrez le menu ⋮ de Chrome puis « Ajouter à l'écran d'accueil ».</p>
   </div>
 </div>

@@ -14,7 +14,7 @@ const store = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
 
-let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false, auto:false, rate:1, qmode:"page"}, store.get("wirdi-prefs", {}));
+let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false, auto:false, rate:1, qmode:"page", reciter:"ar.alafasy"}, store.get("wirdi-prefs", {}));
 const progs = {};
 function loadProg(k){
   let p = store.get("wirdi-p2-" + k, null);
@@ -143,6 +143,7 @@ player.addEventListener("ended", () => {
 });
 function startAudio(){
   const t = tracksOf(items()[idx]); if (!t) return;
+  if (typeof qp !== "undefined" && QS.on) qp.pause();
   if (typeof lpReset === "function") lpReset();
   pl = {k: curKey(), tracks: t, ti: 0, alt: 0, state: "loading"};
   loadTrack();
@@ -433,6 +434,7 @@ function learnPlay(btn, urls){
   const same = lp === btn;
   stopAudio(); lpReset();
   if (same) return;
+  if (typeof QS !== "undefined" && QS.on) qp.pause();
   lp = btn; lp._u = urls; lp._a = 0; btn.classList.add("playing"); btn.classList.remove("err");
   player.src = urls[0]; player.playbackRate = prefs.rate;
   const p = player.play(); if (p && p.catch) p.catch(() => {});
@@ -787,19 +789,19 @@ function renderVerse(){
     let txt = t;
     if (i === 0 && s !== 1 && s !== 9){ const m = txt.match(BASM_RE); if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); } }
     const a = i + 1, isMark = mark && mark.s === s && mark.a === a;
-    h += '<div class="vcard' + (isMark ? " marked" : "") + '" data-a="' + a + '"><div class="vc-tools"><button class="vbtn vplay" data-g="' + gAyah(s, a) + '" aria-label="Écouter le verset ' + a + '">▶</button><button class="vbtn vmark" data-a="' + a + '" aria-label="Marque-page">🔖</button></div>'
+    h += '<div class="vcard' + (isMark ? " marked" : "") + (QS.on && QS.s === s && QS.a === a ? " playing-aya" : "") + '" data-s="' + s + '" data-a="' + a + '"><div class="vc-tools"><button class="vbtn vplay" data-g="' + gAyah(s, a) + '" aria-label="Écouter le verset ' + a + '">▶</button><button class="vbtn vmark" data-a="' + a + '" aria-label="Marque-page">🔖</button></div>'
       + '<p class="vc-ar" lang="ar">' + esc(txt) + ' <span class="vnum">' + a + '</span></p>'
       + (prefs.tr && TL && TL[s][i] ? '<p class="vc-tl">' + cleanTL(TL[s][i]) + '</p>' : '')
       + (prefs.fr && FR && FR[s][i] ? '<p class="vc-fr">' + esc(FR[s][i]) + '</p>' : '')
       + '</div>';
   });
-  h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : Mishary Rashid Al-Afasy</p></div>';
+  h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : ' + esc(recName()) + ' (Islamic Network)</p></div>';
   h += '<nav class="sbar" dir="rtl">';
   for (let k = 1; k <= 114; k++) h += '<button class="' + (k === s ? "on" : "") + '" data-sb="' + k + '"><b>' + k + '</b><small>' + esc(SURA_TR[k - 1]) + '</small></button>';
   h += '</nav>';
   main.innerHTML = h;
   bindModeBar();
-  main.querySelectorAll(".vplay").forEach(b => b.onclick = () => learnPlay(b, QA(+b.dataset.g)));
+  main.querySelectorAll(".vplay").forEach(b => b.onclick = () => { const a = +b.closest(".vcard").dataset.a; if (QS.on && QS.s === s && QS.a === a){ qpToggle(); } else qpStart(s, a); });
   main.querySelectorAll(".vmark").forEach(b => b.onclick = () => {
     const a = +b.dataset.a; store.set("wirdi-quran-mark", {s, a});
     main.querySelectorAll(".vcard.marked").forEach(x => x.classList.remove("marked"));
@@ -810,6 +812,115 @@ function renderVerse(){
   const on = main.querySelector(".sbar .on"); if (on) on.scrollIntoView({inline: "center", block: "nearest"});
   $("sTitleF").textContent = SURA_TR[s - 1] + (META ? " · page " + pageOf(s, qv.a) : "");
   store.set("wirdi-quran-last", {s, a: qv.a, p: META ? pageOf(s, qv.a) : 0});
+}
+
+
+// ---------- Écoute du Coran (récitateurs, lecture continue) ----------
+const RECITERS = [
+ ["ar.alafasy", "Mishary Rashid Al-Afasy"],
+ ["ar.abdurrahmaansudais", "Abdurrahmane As-Sudais"],
+ ["ar.saoodshuraym", "Saoud Ash-Shuraym"],
+ ["ar.mahermuaiqly", "Maher Al-Muaiqly"],
+ ["ar.husary", "Mahmoud Khalil Al-Husary"],
+ ["ar.minshawi", "Mohamed Siddiq Al-Minshawi"],
+ ["ar.abdulbasitmurattal", "Abdul Basit Abdus-Samad"],
+ ["ar.shaatree", "Abu Bakr Ash-Shatri"],
+ ["ar.hudhaify", "Ali Al-Hudhaify"],
+ ["ar.muhammadayyoub", "Muhammad Ayyub"]
+];
+const recId = () => prefs.reciter && RECITERS.some(r => r[0] === prefs.reciter) ? prefs.reciter : "ar.alafasy";
+const recName = () => (RECITERS.find(r => r[0] === recId()) || RECITERS[0])[1];
+function recUrls(n){
+  const id = recId(), out = [];
+  [128, 64, 192, 48, 40, 32].forEach(b => out.push("https://cdn.islamic.network/quran/audio/" + b + "/" + id + "/" + n + ".mp3"));
+  if (id === "ar.alafasy") out.unshift("https://cdn.islamic.app/quran/audio/ar.alafasy/" + n + ".mp3");
+  return out;
+}
+const qp = new Audio(); qp.preload = "auto";
+const QS = {on: false, s: 1, a: 1, urls: [], k: 0, playing: false};
+function qpStopOthers(){ try { stopAudio(); } catch(e){} try { lpReset(); } catch(e){} }
+function qpLoad(){
+  QS.urls = recUrls(gAyah(QS.s, QS.a)); QS.k = 0;
+  qp.src = QS.urls[0]; qp.playbackRate = prefs.rate;
+  const p = qp.play(); if (p && p.catch) p.catch(e => { if (e && e.name === "NotAllowedError"){ QS.playing = false; qpUI(); } });
+  QS.playing = true; qpUI(); qpFollow();
+  if ("mediaSession" in navigator){ try { navigator.mediaSession.metadata = new MediaMetadata({title: SURA_TR[QS.s - 1] + " · verset " + QS.a, artist: recName(), album: "Wirdî · Coran"}); } catch(e){} }
+}
+function qpStart(s, a){
+  if (!Q) return;
+  qpStopOthers();
+  QS.on = true; QS.s = s; QS.a = a || 1; qpLoad();
+}
+function qpToggle(){
+  if (!QS.on){ const st = qpStartPoint(); return qpStart(st.s, st.a); }
+  if (qp.paused){ const p = qp.play(); if (p && p.catch) p.catch(() => {}); QS.playing = true; }
+  else { qp.pause(); QS.playing = false; }
+  qpUI();
+}
+function qpStartPoint(){
+  if (cur === "coran" && qv.mode === "verse") return {s: qv.s, a: qv.a || 1};
+  if (cur === "coran" && qv.mode === "page" && META){ const R = pageRange(qv.p); return {s: R[0][0], a: R[0][1]}; }
+  const L = qLast(); return L ? {s: L.s, a: L.a} : {s: 1, a: 1};
+}
+function qpStep(d){
+  if (!QS.on) return;
+  let s = QS.s, a = QS.a + d;
+  if (a < 1){ if (s > 1){ s--; a = Q[s].length; } else a = 1; }
+  if (a > Q[s].length){ if (s < 114){ s++; a = 1; } else { qpClose(); return; } }
+  QS.s = s; QS.a = a; qpLoad();
+}
+function qpClose(){ qp.pause(); QS.on = false; QS.playing = false; document.querySelectorAll(".playing-aya").forEach(x => x.classList.remove("playing-aya")); qpUI(); }
+qp.addEventListener("ended", () => qpStep(1));
+qp.addEventListener("error", () => {
+  if (!QS.on || !qp.src) return;
+  if (QS.k < QS.urls.length - 1){ QS.k++; qp.src = QS.urls[QS.k]; const p = qp.play(); if (p && p.catch) p.catch(() => {}); }
+  else { qpClose(); qToast("Audio indisponible pour ce récitateur. Essayez-en un autre."); }
+});
+qp.addEventListener("playing", () => { qp.playbackRate = prefs.rate; QS.playing = true; qpUI(); });
+qp.addEventListener("pause", () => { QS.playing = false; qpUI(); });
+player.addEventListener("play", () => { if (QS.on && !qp.paused) qp.pause(); });
+if ("mediaSession" in navigator){
+  try {
+    navigator.mediaSession.setActionHandler("nexttrack", () => qpStep(1));
+    navigator.mediaSession.setActionHandler("previoustrack", () => qpStep(-1));
+  } catch(e){}
+}
+function qpFollow(){
+  if (cur !== "coran") return;
+  const sel = '[data-s="' + QS.s + '"][data-a="' + QS.a + '"]';
+  if (qv.mode === "verse"){
+    if (qv.s !== QS.s){ openVerse(QS.s, QS.a); }
+    document.querySelectorAll(".playing-aya").forEach(x => x.classList.remove("playing-aya"));
+    const el = main.querySelector('.vcard[data-a="' + QS.a + '"]');
+    if (el){ el.classList.add("playing-aya"); el.scrollIntoView({block: "center", behavior: "smooth"}); qv.a = QS.a; }
+  } else if (qv.mode === "page" && META){
+    const p = pageOf(QS.s, QS.a);
+    if (p !== qv.p) openPage(p);
+    document.querySelectorAll(".playing-aya").forEach(x => x.classList.remove("playing-aya"));
+    const el = main.querySelector(".aya" + sel);
+    if (el){ el.classList.add("playing-aya"); const r = el.getBoundingClientRect(), m = main.getBoundingClientRect(); if (r.top < m.top + 40 || r.bottom > m.bottom - 90) el.scrollIntoView({block: "center", behavior: "smooth"}); }
+  }
+}
+let qbar = null;
+function qpUI(){
+  if (!qbar){
+    qbar = document.createElement("div"); qbar.id = "qbar"; qbar.className = "qbar";
+    qbar.innerHTML = '<button class="qb-btn" id="qbPrev" aria-label="Verset précédent">⏮</button><button class="qb-main" id="qbPlay" aria-label="Lecture">▶</button><button class="qb-btn" id="qbNext" aria-label="Verset suivant">⏭</button>'
+      + '<div class="qb-info"><b id="qbTitle">Écouter le Coran</b><select id="qbRec" aria-label="Récitateur"></select></div><button class="qb-btn" id="qbClose" aria-label="Arrêter">✕</button>';
+    document.body.appendChild(qbar);
+    const sel = $("qbRec");
+    RECITERS.forEach(r => { const o = document.createElement("option"); o.value = r[0]; o.textContent = r[1]; sel.appendChild(o); });
+    sel.onchange = () => { prefs.reciter = sel.value; savePrefs(); if (QS.on){ const wasPlaying = QS.playing; qpLoad(); if (!wasPlaying) qp.pause(); } };
+    $("qbPlay").onclick = qpToggle; $("qbPrev").onclick = () => qpStep(-1); $("qbNext").onclick = () => qpStep(1); $("qbClose").onclick = qpClose;
+  }
+  const reading = cur === "coran" && (qv.mode === "verse" || qv.mode === "page");
+  const show = QS.on || reading;
+  qbar.classList.toggle("show", show);
+  app.classList.toggle("has-qbar", show);
+  $("qbRec").value = recId();
+  $("qbPlay").textContent = QS.on && QS.playing ? "⏸" : "▶";
+  $("qbClose").style.visibility = QS.on ? "visible" : "hidden";
+  $("qbTitle").textContent = QS.on ? SURA_TR[QS.s - 1] + " · verset " + QS.a : "Écouter à partir d’ici";
 }
 
 function setMode(){
@@ -831,6 +942,7 @@ function setMode(){
 
 function render(){
   setMode();
+  if (typeof qpUI === "function") setTimeout(qpUI, 0);
   if (cur === null){ renderHome(); main.scrollTop = 0; return; }
   if (cur === "coran"){ renderQuran(); return; }
   if (cur === "learn"){ renderLearn(); return; }
