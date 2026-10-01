@@ -242,30 +242,37 @@ function renderQuran(){
   let h = '<div class="qwrap">';
   if (last) h += '<button class="qresume" data-s="' + last.s + '" data-a="' + last.a + '"' + (last.p ? ' data-p="' + last.p + '"' : '') + '><span class="qr-l"><small>Reprendre la lecture</small><b>' + (last.p ? 'Page ' + last.p + ' · ' : '') + esc(SURA_TR[last.s - 1]) + ' · verset ' + last.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[last.s - 1] + '</span></button>';
   if (mark) h += '<button class="qresume mark" data-s="' + mark.s + '" data-a="' + mark.a + '"><span class="qr-l"><small>🔖 Marque-page</small><b>' + esc(SURA_TR[mark.s - 1]) + ' · verset ' + mark.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[mark.s - 1] + '</span></button>';
-  h += '<div class="qtabs"><button data-tab="s" class="' + (qv.tab === "s" ? "on" : "") + '">Sourates</button><button data-tab="j" class="' + (qv.tab === "j" ? "on" : "") + '">Juz’</button><button data-tab="p" class="' + (qv.tab === "p" ? "on" : "") + '">Pages</button></div>';
-  if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '">';
+  h += '<div class="qtabs"><button data-tab="s" class="' + (qv.tab === "s" ? "on" : "") + '">Sourates</button><button data-tab="j" class="' + (qv.tab === "j" ? "on" : "") + '">Juz’</button></div>';
+  if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '"><div class="pgo" id="pgoBox" hidden><input id="pgIn" type="number" inputmode="numeric" min="1" max="604" placeholder="Aller à la page…"><button class="btn" id="pgGo">Ouvrir</button></div>';
   h += '<div class="qlist" id="qList"></div></div>';
   main.innerHTML = h;
-  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => b.dataset.p ? openPage(+b.dataset.p) : openSura(+b.dataset.s, +b.dataset.a));
+  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openSura(+b.dataset.s, +b.dataset.a));
   main.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { qv.tab = b.dataset.tab; render(); });
   const inp = $("qSearch"); if (inp) inp.oninput = () => { qv.filter = inp.value; fillQList(); };
   fillQList();
+  if (qv.tab === "s") loadMeta().then(() => {
+    const box = $("pgoBox"); if (!box) return; box.hidden = false;
+    const N = pageCount();
+    const go = () => { const v = +$("pgIn").value; if (v >= 1 && v <= N){ const x = META.Page[v]; openSura(x[0], x[1]); } else qToast("Entrez un numéro de page entre 1 et " + N); };
+    $("pgGo").onclick = go; $("pgIn").onkeydown = e => { if (e.key === "Enter") go(); };
+    fillQList();
+  }).catch(() => {});
+  else loadMeta().then(fillQList).catch(() => {});
 }
 function norm(s){ return s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f'’\- ]/g, "").replace(/[\u064B-\u0652\u0670]/g, "").replace(/[أإآ]/g, "ا"); }
 function fillQList(){
   const box = $("qList"); if (!box) return;
-  if (qv.tab === "p") return renderPagesTab(box);
   let h = "";
   if (qv.tab === "s"){
     const f = norm(qv.filter.trim());
     for (let s = 1; s <= 114; s++){
       if (f && !(String(s) === qv.filter.trim() || norm(SURA_TR[s - 1]).includes(f) || norm(SURA_AR[s - 1]).includes(f))) continue;
-      h += '<button class="qrow" data-s="' + s + '"><span class="qn">' + s + '</span><span class="qt"><b>' + esc(SURA_TR[s - 1]) + '</b><small>' + Q[s].length + ' versets</small></span><span class="qa" lang="ar">' + SURA_AR[s - 1] + '</span></button>';
+      h += '<button class="qrow" data-s="' + s + '"><span class="qn">' + s + '</span><span class="qt"><b>' + esc(SURA_TR[s - 1]) + '</b><small>' + Q[s].length + ' versets' + (META ? ' · page ' + pageOf(s, 1) : '') + '</small></span><span class="qa" lang="ar">' + SURA_AR[s - 1] + '</span></button>';
     }
     if (!h) h = '<p class="qmsg">Aucune sourate trouvée.</p>';
   } else {
     JUZ.forEach((x, i) => {
-      h += '<button class="qrow" data-s="' + x[0] + '" data-a="' + x[1] + '"><span class="qn">' + (i + 1) + '</span><span class="qt"><b>Juz’ ' + (i + 1) + '</b><small>' + esc(SURA_TR[x[0] - 1]) + ' ' + x[0] + ':' + x[1] + '</small></span><span class="qa" lang="ar">الجزء ' + an(i + 1) + '</span></button>';
+      h += '<button class="qrow" data-s="' + x[0] + '" data-a="' + x[1] + '"><span class="qn">' + (i + 1) + '</span><span class="qt"><b>Juz’ ' + (i + 1) + '</b><small>' + esc(SURA_TR[x[0] - 1]) + ' ' + x[0] + ':' + x[1] + (META ? ' · page ' + pageOf(x[0], x[1]) : '') + '</small></span><span class="qa" lang="ar">الجزء ' + an(i + 1) + '</span></button>';
     });
   }
   box.innerHTML = h;
@@ -275,7 +282,8 @@ function fillQList(){
 function renderSura(){
   const s = qv.s, V = Q[s];
   const mark = qMark();
-  let h = '<div class="qread"><button class="pg-switch" id="toPage">📖 Lire en mode page (mushaf)</button><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets · juz’ ' + juzOf(s, 1) + '</span></div>';
+  if (!META) loadMeta().then(() => { if (cur === "coran" && qv.mode === "read" && qv.s === s) { const y = main.scrollTop; renderSura(); main.scrollTop = y; } }).catch(() => {});
+  let h = '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets · juz’ ' + juzOf(s, 1) + (META ? ' · page ' + pageOf(s, 1) : '') + '</span></div>';
   let body = "";
   V.forEach((t, i) => {
     let txt = t;
@@ -283,6 +291,7 @@ function renderSura(){
       const m = txt.match(BASM_RE);
       if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); }
     }
+    if (META && i > 0){ const pg = META.Page.findIndex((x, k) => k > 0 && x && x[0] === s && x[1] === i + 1); if (pg > 0) body += '</div><div class="pg-sep"><span>page ' + pg + '</span></div><div class="mushaf" lang="ar" dir="rtl">'; }
     const isMark = mark && mark.s === s && mark.a === i + 1;
     body += '<span class="aya' + (isMark ? " marked" : "") + '" data-a="' + (i + 1) + '">' + esc(txt) + ' <span class="an">﴿' + an(i + 1) + '﴾</span></span> ';
   });
@@ -294,7 +303,6 @@ function renderSura(){
   h += '<p class="qcredit">Texte : Tanzil Quran Text (Uthmani) · tanzil.net<br>Touchez un verset pour y placer le marque-page.</p></div>';
   main.innerHTML = h;
   main.querySelectorAll("[data-go]").forEach(b => b.onclick = () => openSura(+b.dataset.go, 1));
-  $("toPage").onclick = () => loadMeta().then(() => openPage(pageOf(qv.s, qv.a))).catch(() => qToast("Mode page indisponible pour le moment"));
   main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
     const a = +el.dataset.a;
     store.set("wirdi-quran-mark", {s, a});
@@ -305,7 +313,8 @@ function renderSura(){
   const target = main.querySelector('.aya[data-a="' + qv.a + '"]');
   if (target && qv.a > 1) requestAnimationFrame(() => { main.scrollTop = target.offsetTop - main.offsetTop - 20; });
   else main.scrollTop = 0;
-  store.set("wirdi-quran-last", {s, a: qv.a});
+  store.set("wirdi-quran-last", {s, a: qv.a, p: META ? pageOf(s, qv.a) : 0});
+  if (META) $("sTitleF").textContent = SURA_TR[s - 1] + " · page " + pageOf(s, qv.a);
 }
 let qScrollT = null;
 main.addEventListener("scroll", () => {
@@ -315,7 +324,7 @@ main.addEventListener("scroll", () => {
     const top = main.getBoundingClientRect().top + 10;
     for (const el of main.querySelectorAll(".aya")){
       const r = el.getBoundingClientRect();
-      if (r.bottom > top){ const a = +el.dataset.a; qv.a = a; store.set("wirdi-quran-last", {s: qv.s, a}); break; }
+      if (r.bottom > top){ const a = +el.dataset.a; qv.a = a; const p = META ? pageOf(qv.s, a) : 0; store.set("wirdi-quran-last", {s: qv.s, a, p}); if (p) $("sTitleF").textContent = SURA_TR[qv.s - 1] + " · page " + p; break; }
     }
   }, 300);
 }, {passive: true});
@@ -657,7 +666,7 @@ function renderPagesTab(box){
   });
 }
 function renderPage(){
-  if (!META){ loadMeta().then(render).catch(() => { qv.mode = "list"; qv.tab = "p"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
+  if (!META){ loadMeta().then(render).catch(() => { qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
   const p = qv.p, N = pageCount(), R = pageRange(p), mark = qMark();
   let h = '<div class="qread">';
   h += '<div class="pg-top"><span>' + esc(SURA_TR[R[0][0] - 1]) + '</span><span>Juz’ ' + juzOf(R[0][0], R[0][1]) + '</span></div>';
