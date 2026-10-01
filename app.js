@@ -741,6 +741,16 @@ function loadTrans(k){
   }).catch(e => { T.err = true; T.p = null; throw e; });
   return T.p;
 }
+
+// Translittération Tanzil : balises <u>/<b> converties en notation lisible
+const UMAP = {a: "â", i: "î", u: "û", A: "Â", I: "Î", U: "Û", h: "ḥ", H: "Ḥ", s: "ṣ", S: "Ṣ", d: "ḍ", D: "Ḍ", t: "ṭ", T: "Ṭ", z: "ẓ", Z: "Ẓ"};
+function cleanTL(s){
+  let t = s.replace(/<b>(.*?)<\/b>/gi, "\u0001$1\u0002");
+  t = t.replace(/<u>(.*?)<\/u>/gi, (m, x) => x.replace(/./g, c => UMAP[c] || c));
+  t = t.replace(/<[^>]*>/g, "");
+  t = t.replace(/AA/g, "'").replace(/ee/g, "î").replace(/oo/g, "û");
+  return esc(t).replace(/\u0001/g, '<span class="sil">').replace(/\u0002/g, "</span>");
+}
 let GA = null;
 function gAyah(s, a){ if (!GA){ GA = [0, 0]; for (let k = 1; k <= 114; k++) GA[k + 1] = GA[k] + Q[k].length; } return GA[s] + a; }
 function modeBar(){
@@ -779,7 +789,7 @@ function renderVerse(){
     const a = i + 1, isMark = mark && mark.s === s && mark.a === a;
     h += '<div class="vcard' + (isMark ? " marked" : "") + '" data-a="' + a + '"><div class="vc-tools"><button class="vbtn vplay" data-g="' + gAyah(s, a) + '" aria-label="Écouter le verset ' + a + '">▶</button><button class="vbtn vmark" data-a="' + a + '" aria-label="Marque-page">🔖</button></div>'
       + '<p class="vc-ar" lang="ar">' + esc(txt) + ' <span class="vnum">' + a + '</span></p>'
-      + (prefs.tr && TL && TL[s][i] ? '<p class="vc-tl">' + esc(TL[s][i]) + '</p>' : '')
+      + (prefs.tr && TL && TL[s][i] ? '<p class="vc-tl">' + cleanTL(TL[s][i]) + '</p>' : '')
       + (prefs.fr && FR && FR[s][i] ? '<p class="vc-fr">' + esc(FR[s][i]) + '</p>' : '')
       + '</div>';
   });
