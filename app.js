@@ -14,7 +14,7 @@ const store = {
   set(k, v){ try { localStorage.setItem(k, JSON.stringify(v)); } catch(e){} }
 };
 
-let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false, auto:false, rate:1}, store.get("wirdi-prefs", {}));
+let prefs = Object.assign({tr:true, fr:true, scale:1, vib:true, snd:false, auto:false, rate:1, qmode:"page"}, store.get("wirdi-prefs", {}));
 const progs = {};
 function loadProg(k){
   let p = store.get("wirdi-p2-" + k, null);
@@ -228,6 +228,7 @@ function openQuran(){ stopAudio(); cur = "coran"; qv.mode = "list"; render(); }
 function openSuraText(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render(); }
 function openSura(s, a){
   a = a || 1;
+  if ((prefs.qmode || "page") === "verse") return openVerse(s, a);
   if (META) return openPage(pageOf(s, a), {s, a});
   loadMeta().then(() => openPage(pageOf(s, a), {s, a})).catch(() => openSuraText(s, a));
 }
@@ -243,6 +244,7 @@ function renderQuran(){
   }
   if (qv.mode === "read") return renderSura();
   if (qv.mode === "page") return renderPage();
+  if (qv.mode === "verse") return renderVerse();
   const last = qLast(), mark = qMark();
   let h = '<div class="qwrap">';
   if (last) h += '<button class="qresume" data-s="' + last.s + '" data-a="' + last.a + '"' + (last.p ? ' data-p="' + last.p + '"' : '') + '><span class="qr-l"><small>Reprendre la lecture</small><b>' + (last.p ? 'Page ' + last.p + ' · ' : '') + esc(SURA_TR[last.s - 1]) + ' · verset ' + last.a + '</b></span><span class="qr-ar" lang="ar">' + SURA_AR[last.s - 1] + '</span></button>';
@@ -251,7 +253,7 @@ function renderQuran(){
   if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '"><div class="pgo" id="pgoBox" hidden><input id="pgIn" type="number" inputmode="numeric" min="1" max="604" placeholder="Aller à la page…"><button class="btn" id="pgGo">Ouvrir</button></div>';
   h += '<div class="qlist" id="qList"></div></div>';
   main.innerHTML = h;
-  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => b.dataset.p && META ? openPage(+b.dataset.p, {s: +b.dataset.s, a: +b.dataset.a}) : openSura(+b.dataset.s, +b.dataset.a));
+  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openSura(+b.dataset.s, +b.dataset.a));
   main.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { qv.tab = b.dataset.tab; render(); });
   const inp = $("qSearch"); if (inp) inp.oninput = () => { qv.filter = inp.value; fillQList(); };
   fillQList();
@@ -323,11 +325,11 @@ function renderSura(){
 }
 let qScrollT = null;
 main.addEventListener("scroll", () => {
-  if (cur !== "coran" || qv.mode !== "read") return;
+  if (cur !== "coran" || (qv.mode !== "read" && qv.mode !== "verse")) return;
   clearTimeout(qScrollT);
   qScrollT = setTimeout(() => {
     const top = main.getBoundingClientRect().top + 10;
-    for (const el of main.querySelectorAll(".aya")){
+    for (const el of main.querySelectorAll(qv.mode === "verse" ? ".vcard" : ".aya")){
       const r = el.getBoundingClientRect();
       if (r.bottom > top){ const a = +el.dataset.a; qv.a = a; const p = META ? pageOf(qv.s, a) : 0; store.set("wirdi-quran-last", {s: qv.s, a, p}); if (p) $("sTitleF").textContent = SURA_TR[qv.s - 1] + " · page " + p; break; }
     }
@@ -682,7 +684,7 @@ function renderPagesTab(box){
 function renderPage(){
   if (!META){ loadMeta().then(render).catch(() => { qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
   const p = qv.p, N = pageCount(), R = pageRange(p), mark = qMark();
-  let h = '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
+  let h = modeBar() + '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
   h += '<div class="pg-top"><span>' + esc(SURA_TR[R[0][0] - 1]) + '</span><span>Juz’ ' + juzOf(R[0][0], R[0][1]) + '</span></div>';
   let body = "";
   const flush = () => { if (body){ h += '<div class="mushaf" lang="ar" dir="rtl">' + body + '</div>'; body = ""; } };
@@ -701,6 +703,7 @@ function renderPage(){
   h += '<div class="qnav">' + (p < N ? '<button class="btn" data-pg="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-pg="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
   h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir. Touchez un verset pour le marque-page.</p></div>';
   main.innerHTML = h;
+  bindModeBar();
   main.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => openPage(+b.dataset.pg));
   main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
     const s = +el.dataset.s, a = +el.dataset.a;
@@ -711,6 +714,92 @@ function renderPage(){
   });
   store.set("wirdi-quran-last", {s: R[0][0], a: R[0][1], p});
   $("sTitleF").textContent = SURA_TR[R[0][0] - 1] + " · page " + p;
+}
+
+
+// ---------- Coran : mode verset (traduction + translittération Tanzil) ----------
+const TRANS = {fr: {file: "fr.hamidullah.txt", data: null, p: null, err: false}, tl: {file: "en.transliteration.txt", data: null, p: null, err: false}};
+function loadTrans(k){
+  const T = TRANS[k];
+  if (T.data) return Promise.resolve(T.data);
+  if (T.p) return T.p;
+  T.p = fetch(T.file, {cache: "no-cache"}).then(r => { if (!r.ok) throw new Error("absent"); return r.text(); }).then(txt => {
+    const S = Array.from({length: 115}, () => []); let n = 0;
+    for (const line of txt.split(/\r?\n/)){
+      if (!line || line[0] === "#") continue;
+      const p = line.split("|"); if (p.length < 3) continue;
+      const s = +p[0], a = +p[1]; if (!(s >= 1 && s <= 114)) continue;
+      S[s][a - 1] = p.slice(2).join("|").trim(); n++;
+    }
+    if (n < 6000 && Q){
+      // Format sans numéros de versets : une ligne par verset, dans l'ordre du mushaf
+      const lines = txt.split(/\r?\n/).filter(l => l.trim() && l[0] !== "#");
+      if (lines.length >= 6236){ let i = 0; for (let s = 1; s <= 114; s++) for (let a = 0; a < Q[s].length; a++) S[s][a] = lines[i++].trim(); n = i; }
+    }
+    if (n < 6000) throw new Error("incomplet");
+    T.data = S; return S;
+  }).catch(e => { T.err = true; T.p = null; throw e; });
+  return T.p;
+}
+let GA = null;
+function gAyah(s, a){ if (!GA){ GA = [0, 0]; for (let k = 1; k <= 114; k++) GA[k + 1] = GA[k] + Q[k].length; } return GA[s] + a; }
+function modeBar(){
+  const m = prefs.qmode || "page";
+  return '<div class="qmode"><button data-qm="page" class="' + (m === "page" ? "on" : "") + '">📖 Page</button><button data-qm="verse" class="' + (m === "verse" ? "on" : "") + '">☰ Versets + traduction</button></div>';
+}
+function bindModeBar(){
+  main.querySelectorAll("[data-qm]").forEach(b => b.onclick = () => {
+    if ((prefs.qmode || "page") === b.dataset.qm) return;
+    prefs.qmode = b.dataset.qm; savePrefs();
+    const L = qLast() || {s: 1, a: 1};
+    const s = qv.mode === "verse" ? qv.s : (L.s || 1), a = qv.mode === "verse" ? qv.a : (L.a || 1);
+    openSura(s, a);
+  });
+}
+function openVerse(s, a){
+  stopAudio(); lpReset();
+  qv.mode = "verse"; qv.s = s; qv.a = a || 1;
+  render();
+  const el = main.querySelector('.vcard[data-a="' + qv.a + '"]');
+  if (el && qv.a > 1) requestAnimationFrame(() => { main.scrollTop = Math.max(0, el.offsetTop - main.offsetTop - 70); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1600); });
+  else main.scrollTop = 0;
+}
+function renderVerse(){
+  const s = qv.s, V = Q[s], mark = qMark();
+  const FR = TRANS.fr.data, TL = TRANS.tl.data;
+  const needFr = prefs.fr && !FR && !TRANS.fr.err, needTl = prefs.tr && !TL && !TRANS.tl.err;
+  if (needFr || needTl){
+    Promise.allSettled([needFr ? loadTrans("fr") : 0, needTl ? loadTrans("tl") : 0]).then(() => { if (cur === "coran" && qv.mode === "verse" && qv.s === s){ const y = main.scrollTop; renderVerse(); main.scrollTop = y; } });
+  }
+  let h = modeBar() + '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets' + (META ? ' · page ' + pageOf(s, 1) : '') + '</span></div>';
+  if (prefs.fr && TRANS.fr.err) h += '<p class="qnote">La traduction française n’est pas encore disponible.</p>';
+  V.forEach((t, i) => {
+    let txt = t;
+    if (i === 0 && s !== 1 && s !== 9){ const m = txt.match(BASM_RE); if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); } }
+    const a = i + 1, isMark = mark && mark.s === s && mark.a === a;
+    h += '<div class="vcard' + (isMark ? " marked" : "") + '" data-a="' + a + '"><div class="vc-tools"><button class="vbtn vplay" data-g="' + gAyah(s, a) + '" aria-label="Écouter le verset ' + a + '">▶</button><button class="vbtn vmark" data-a="' + a + '" aria-label="Marque-page">🔖</button></div>'
+      + '<p class="vc-ar" lang="ar">' + esc(txt) + ' <span class="vnum">' + a + '</span></p>'
+      + (prefs.tr && TL && TL[s][i] ? '<p class="vc-tl">' + esc(TL[s][i]) + '</p>' : '')
+      + (prefs.fr && FR && FR[s][i] ? '<p class="vc-fr">' + esc(FR[s][i]) + '</p>' : '')
+      + '</div>';
+  });
+  h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : Mishary Rashid Al-Afasy</p></div>';
+  h += '<nav class="sbar" dir="rtl">';
+  for (let k = 1; k <= 114; k++) h += '<button class="' + (k === s ? "on" : "") + '" data-sb="' + k + '"><b>' + k + '</b><small>' + esc(SURA_TR[k - 1]) + '</small></button>';
+  h += '</nav>';
+  main.innerHTML = h;
+  bindModeBar();
+  main.querySelectorAll(".vplay").forEach(b => b.onclick = () => learnPlay(b, QA(+b.dataset.g)));
+  main.querySelectorAll(".vmark").forEach(b => b.onclick = () => {
+    const a = +b.dataset.a; store.set("wirdi-quran-mark", {s, a});
+    main.querySelectorAll(".vcard.marked").forEach(x => x.classList.remove("marked"));
+    b.closest(".vcard").classList.add("marked");
+    qToast("🔖 Marque-page : " + SURA_TR[s - 1] + ", verset " + a);
+  });
+  main.querySelectorAll("[data-sb]").forEach(b => b.onclick = () => openVerse(+b.dataset.sb, 1));
+  const on = main.querySelector(".sbar .on"); if (on) on.scrollIntoView({inline: "center", block: "nearest"});
+  $("sTitleF").textContent = SURA_TR[s - 1] + (META ? " · page " + pageOf(s, qv.a) : "");
+  store.set("wirdi-quran-last", {s, a: qv.a, p: META ? pageOf(s, qv.a) : 0});
 }
 
 function setMode(){
@@ -725,7 +814,7 @@ function setMode(){
   const tab = home ? "adhkar" : cur === "coran" ? "coran" : cur === "learn" ? "apprendre" : "adhkar";
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
-  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" ? "Page " + qv.p : "Le Coran"; }
+  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
@@ -844,7 +933,7 @@ $("counter").addEventListener("click", tap);
 $("bNext").addEventListener("click", () => go(idx + 1));
 $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
-  if (cur === "coran" && (qv.mode === "read" || qv.mode === "page")){ qv.mode = "list"; render(); main.scrollTop = 0; }
+  if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse")){ lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "learn" && lv.mode !== "home"){ const back = lv.mode === "letter" ? "alpha" : "home"; openLearn(back); }
   else goHome();
 }

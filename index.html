@@ -338,6 +338,27 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 @keyframes slideNext{from{opacity:.2;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @keyframes slidePrev{from{opacity:.2;transform:translateX(40px)}to{opacity:1;transform:none}}
 .aya.flash{background:rgba(168,116,36,.3)}
+.qmode{display:flex;gap:6px;background:var(--virtue-bg);padding:4px;border-radius:14px;margin-bottom:12px}
+.qmode button{flex:1;padding:9px 6px;border-radius:11px;font-weight:600;font-size:14px;color:var(--muted)}
+.qmode button.on{background:var(--green);color:var(--green-ink)}
+.vcard{position:relative;margin:10px 0;padding:14px 16px 16px;border-radius:18px;background:var(--card);border:1px solid var(--line);transition:background .3s}
+.vcard.marked{border-color:var(--gold);box-shadow:inset 3px 0 0 var(--gold)}
+.vcard.flash{background:var(--virtue-bg)}
+.vc-tools{display:flex;gap:6px}
+.vbtn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);color:var(--green);font-size:14px;display:flex;align-items:center;justify-content:center}
+.vbtn.playing{background:var(--green);color:var(--green-ink);border-color:var(--green)}
+.vbtn.err{opacity:.4}
+.vc-ar{margin:6px 0 0;font-family:'Amiri Quran',var(--ar);font-size:calc(28px*var(--scale));line-height:2.2;direction:rtl;text-align:right;color:var(--ink)}
+.vnum{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 6px;border:2px solid var(--gold);border-radius:50%;font-family:var(--ui);font-size:14px;font-weight:700;color:var(--green);vertical-align:middle;margin-right:4px}
+.vc-tl{margin:8px 0 0;font-family:var(--lat);font-size:calc(16px*var(--scale));line-height:1.5;color:var(--muted)}
+.vc-fr{margin:8px 0 0;font-family:var(--lat);font-size:calc(17.5px*var(--scale));line-height:1.55;color:var(--ink)}
+.sbar{position:sticky;bottom:-16px;display:flex;gap:6px;overflow-x:auto;padding:10px 4px 12px;margin:0 -16px -16px;background:var(--bg);border-top:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.sbar::-webkit-scrollbar{display:none}
+.sbar button{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:4px}
+.sbar b{width:40px;height:40px;border-radius:12px;background:var(--virtue-bg);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--muted)}
+.sbar small{font-size:11px;color:var(--muted);white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.sbar .on b{background:transparent;border:2px solid var(--green);color:var(--green)}
+.sbar .on small{color:var(--green);font-weight:700}
 </style>
 </head>
 <body>
