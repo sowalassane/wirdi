@@ -225,7 +225,12 @@ function qToast(msg){
   t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2200);
 }
 function openQuran(){ stopAudio(); cur = "coran"; qv.mode = "list"; render(); }
-function openSura(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render(); }
+function openSuraText(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render(); }
+function openSura(s, a){
+  a = a || 1;
+  if (META) return openPage(pageOf(s, a), {s, a});
+  loadMeta().then(() => openPage(pageOf(s, a), {s, a})).catch(() => openSuraText(s, a));
+}
 
 function renderQuran(){
   if (!Q){
@@ -246,7 +251,7 @@ function renderQuran(){
   if (qv.tab === "s") h += '<input class="qsearch" id="qSearch" type="search" placeholder="Rechercher une sourate (nom ou numéro)" value="' + esc(qv.filter) + '"><div class="pgo" id="pgoBox" hidden><input id="pgIn" type="number" inputmode="numeric" min="1" max="604" placeholder="Aller à la page…"><button class="btn" id="pgGo">Ouvrir</button></div>';
   h += '<div class="qlist" id="qList"></div></div>';
   main.innerHTML = h;
-  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openSura(+b.dataset.s, +b.dataset.a));
+  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => b.dataset.p && META ? openPage(+b.dataset.p, {s: +b.dataset.s, a: +b.dataset.a}) : openSura(+b.dataset.s, +b.dataset.a));
   main.querySelectorAll("[data-tab]").forEach(b => b.onclick = () => { qv.tab = b.dataset.tab; render(); });
   const inp = $("qSearch"); if (inp) inp.oninput = () => { qv.filter = inp.value; fillQList(); };
   fillQList();
@@ -650,7 +655,16 @@ function pageRange(p){
   }
   return out;
 }
-function openPage(p){ qv.mode = "page"; qv.p = Math.max(1, Math.min(pageCount(), p)); render(); main.scrollTop = 0; }
+function openPage(p, target){
+  const np = Math.max(1, Math.min(pageCount(), p));
+  qv.dir = qv.mode === "page" && qv.p ? Math.sign(np - qv.p) : 0;
+  qv.mode = "page"; qv.p = np; qv.target = target || null;
+  render(); main.scrollTop = 0;
+  if (target){
+    const el = main.querySelector('.aya[data-s="' + target.s + '"][data-a="' + target.a + '"]');
+    if (el && target.a > 1){ requestAnimationFrame(() => { main.scrollTop = Math.max(0, el.offsetTop - main.offsetTop - 60); el.classList.add("flash"); setTimeout(() => el.classList.remove("flash"), 1600); }); }
+  }
+}
 function renderPagesTab(box){
   box.innerHTML = '<p class="qmsg">Chargement…</p>';
   loadMeta().then(() => {
@@ -668,7 +682,7 @@ function renderPagesTab(box){
 function renderPage(){
   if (!META){ loadMeta().then(render).catch(() => { qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
   const p = qv.p, N = pageCount(), R = pageRange(p), mark = qMark();
-  let h = '<div class="qread">';
+  let h = '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
   h += '<div class="pg-top"><span>' + esc(SURA_TR[R[0][0] - 1]) + '</span><span>Juz’ ' + juzOf(R[0][0], R[0][1]) + '</span></div>';
   let body = "";
   const flush = () => { if (body){ h += '<div class="mushaf" lang="ar" dir="rtl">' + body + '</div>'; body = ""; } };
@@ -685,7 +699,7 @@ function renderPage(){
   flush();
   h += '<div class="pg-num">' + an(p) + '</div>';
   h += '<div class="qnav">' + (p < N ? '<button class="btn" data-pg="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-pg="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
-  h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite pour la page suivante, comme dans un mushaf. Touchez un verset pour le marque-page.</p></div>';
+  h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir. Touchez un verset pour le marque-page.</p></div>';
   main.innerHTML = h;
   main.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => openPage(+b.dataset.pg));
   main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
@@ -696,7 +710,7 @@ function renderPage(){
     qToast("🔖 Marque-page : " + SURA_TR[s - 1] + ", verset " + a);
   });
   store.set("wirdi-quran-last", {s: R[0][0], a: R[0][1], p});
-  $("sTitleF").textContent = "Page " + p + " / " + N;
+  $("sTitleF").textContent = SURA_TR[R[0][0] - 1] + " · page " + p;
 }
 
 function setMode(){
