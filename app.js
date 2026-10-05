@@ -78,8 +78,11 @@ function renderHome(){
   const suggest = h < 14 ? "matin" : "soir";
   const hj = hijri(), gd = greg();
   let s = '<div class="home">';
+  const stk = store.get("wirdi-streak", null), y0 = new Date(); y0.setDate(y0.getDate() - 1);
+  const yst = y0.getFullYear() + "-" + String(y0.getMonth() + 1).padStart(2, "0") + "-" + String(y0.getDate()).padStart(2, "0");
+  const stkOk = stk && (stk.last === today() || stk.last === yst) && stk.count > 1;
   s += '<section class="hero"><p class="hero-ar" lang="ar">السَّلَامُ عَلَيْكُمْ</p><p class="hero-fr">As-salâmu \'alaykum</p>'
-     + '<p class="hero-tag">Wirdî, « ma récitation quotidienne » : les invocations du matin et du soir.</p><p class="hero-date">' + esc(gd) + (hj ? ' <span class="dot">·</span> <span lang="ar" dir="rtl">' + esc(hj) + '</span>' : '') + '</p></section>';
+     + '<p class="hero-tag">Wirdî, « ma récitation quotidienne » : les invocations du matin et du soir.</p>' + (stkOk ? '<p class="hero-streak">🔥 ' + stk.count + ' jours d’affilée</p>' : '') + '<p class="hero-date">' + esc(gd) + (hj ? ' <span class="dot">·</span> <span lang="ar" dir="rtl">' + esc(hj) + '</span>' : '') + '</p></section>';
   for (const k of ["matin", "soir"]){
     const n = doneCountK(k), tot = SESS[k].items.length, fin = n === tot;
     const R = 19, CC = 2 * Math.PI * R;
@@ -185,8 +188,25 @@ function renderCard(i){
   return h + '</article>';
 }
 
+function streakUpdate(){
+  const s = store.get("wirdi-streak", {last: null, count: 0, best: 0});
+  const t = today(); if (s.last === t) return s;
+  const y = new Date(); y.setDate(y.getDate() - 1);
+  const ys = y.getFullYear() + "-" + String(y.getMonth() + 1).padStart(2, "0") + "-" + String(y.getDate()).padStart(2, "0");
+  s.count = s.last === ys ? s.count + 1 : 1; s.last = t; s.best = Math.max(s.best || 0, s.count);
+  store.set("wirdi-streak", s); return s;
+}
+function confetti(){
+  const box = document.createElement("div"); box.className = "confetti"; box.setAttribute("aria-hidden", "true");
+  const cols = ["#E3B65E", "#1D5C4A", "#F2B36B", "#5FB592", "#9DB2E8"];
+  for (let i = 0; i < 28; i++){ const p = document.createElement("i"); p.style.left = (Math.random() * 100) + "%"; p.style.background = cols[i % cols.length]; p.style.animationDelay = (Math.random() * .5) + "s"; p.style.transform = "rotate(" + (Math.random() * 360) + "deg)"; box.appendChild(p); }
+  document.body.appendChild(box); setTimeout(() => box.remove(), 2600);
+}
 function renderEnd(){
-  return '<div class="end">' + (cur === "matin" ? SUN.replace(/36/g, "84") : MOON.replace(/34/g, "80"))
+  const full = doneCount() === items().length;
+  let st = null; if (full){ st = streakUpdate(); setTimeout(confetti, 50); }
+  return '<div class="end' + (full ? ' full' : '') + '">' + (cur === "matin" ? SUN.replace(/36/g, "84") : MOON.replace(/34/g, "80"))
+    + (st ? '<div class="streak"><b>' + st.count + '</b><span>' + (st.count > 1 ? "jours d’affilée" : "jour") + (st.count >= 3 ? ", mâ shâ'a-llâh !" : "") + '</span></div>' : '')
     + '<h2>' + SESS[cur].doneAr + '</h2>'
     + '<p>' + SESS[cur].doneFr + ' : ' + doneCount() + ' sur ' + items().length + '.</p>'
     + '<button class="btn" id="bHome">Retour à l\'accueil</button>'
@@ -960,6 +980,7 @@ function render(){
   }
   $("counter").style.visibility = "visible";
   main.innerHTML = renderCard(idx);
+  if (cardDir){ const c = main.querySelector(".card"); if (c) c.classList.add(cardDir > 0 ? "in-next" : "in-prev"); cardDir = 0; }
   main.scrollTop = 0;
   const bp = $("bPlay");
   if (bp) { paintPlay(bp, pl.k === curKey() ? pl.state : "idle"); bp.onclick = toggleAudio; }
@@ -1022,6 +1043,8 @@ function tap(){
   const it = items()[idx];
   if (doneOf(idx) >= it.n){ go(idx + 1); return; }
   prog().counts[idx] = doneOf(idx) + 1;
+  { const cb = $("counter"); cb.classList.remove("pulse"); void cb.offsetWidth; cb.classList.add("pulse");
+    const rp = document.createElement("span"); rp.className = "ripple"; cb.appendChild(rp); setTimeout(() => rp.remove(), 650); }
   buzz(prog().counts[idx] >= it.n);
   save(); updateCounter();
   const n = doneCount();
@@ -1034,8 +1057,10 @@ function tap(){
   }
 }
 
+let cardDir = 0;
 function go(i){
   if (cur === null || cur === "coran" || cur === "learn") return;
+  cardDir = Math.sign(i - idx);
   clearTimeout(advTimer);
   const chain = autoChain && prefs.auto; autoChain = false;
   stopAudio();
@@ -1134,6 +1159,7 @@ document.addEventListener("visibilitychange", () => {
 
 applyPrefs();
 render();
+setTimeout(() => { const sp = $("splash"); if (sp){ sp.classList.add("hide"); setTimeout(() => sp.remove(), 500); } }, 650);
 setTimeout(() => { loadQuran().then(() => { if (cur && SESS[cur] && idx < items().length && items()[idx].qs) render(); }).catch(() => {}); }, 400);
 if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {
   window.addEventListener("load", () => {
