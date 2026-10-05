@@ -1,29 +1,22 @@
-WIRDÎ · وِرْدِي — Adhkâr du matin et du soir
-Conçu par Alatec
-============================================
+# Wirdî · وِرْدِي
 
-Mettre l'app en ligne (gratuit, 2 minutes)
-------------------------------------------
-1. Sur un ordinateur, décompressez wirdi.zip : vous obtenez un dossier « wirdi ».
-2. Allez sur https://app.netlify.com/drop
-3. Glissez-déposez le dossier « wirdi » sur la page.
-4. Netlify vous donne une adresse du type https://xxxx.netlify.app : c'est le lien à partager.
-   (Créez un compte Netlify gratuit pour garder le site et choisir un nom, ex. wirdi.netlify.app)
+Application gratuite pour les invocations du matin et du soir, la lecture et l'écoute du Coran, et l'apprentissage de la lecture de l'arabe.
 
-Installer sur le téléphone
---------------------------
-- iPhone : ouvrir le lien dans Safari > Partager > « Sur l'écran d'accueil ».
-- Android : ouvrir le lien dans Chrome > menu ⋮ > « Installer l'application » ou « Ajouter à l'écran d'accueil ».
-L'icône Wirdî apparaît. Après une première ouverture avec connexion, l'app fonctionne hors-ligne.
+**Conçue par Alatec.**
 
-Mettre à jour
--------------
-Remplacez les fichiers dans le dossier, puis redéposez-le sur Netlify (onglet « Deploys » de votre site).
-Si vous modifiez index.html, changez aussi 'wirdi-v2' en 'wirdi-v3' dans sw.js pour forcer la mise à jour chez les utilisateurs.
+🔗 Application : https://sowalassane.github.io/wirdi/
 
-Contenu du dossier
-------------------
-index.html            l'application
-manifest.webmanifest  nom, couleurs et icônes de l'app
-sw.js                 mode hors-ligne
-icons/                logo Wirdî (PNG)
+## Fonctionnalités
+- Invocations du matin et du soir (Hisn al-Muslim) : arabe vocalisé, translittération, traduction française, compteur et audio
+- Coran : lecture page par page ou verset par verset avec traduction, écoute avec plusieurs récitateurs
+- Apprendre l'arabe : alphabet, voyelles, syllabes, vocabulaire, quiz et arabe courant
+- Fonctionne hors connexion, sans compte, sans publicité, sans collecte de données
+
+## Sources
+- Texte, translittération et traduction du Coran : Tanzil (tanzil.net)
+- Récitations du Coran : Islamic Network / Al Quran Cloud
+- Audio des invocations : HisnMuslim.com
+
+Politique de confidentialité : https://sowalassane.github.io/wirdi/politique-confidentialite.html
+
+© 2026 Alatec. Tous droits réservés.
