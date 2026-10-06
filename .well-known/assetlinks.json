@@ -1,0 +1,8 @@
+[{
+"relation": ["delegate_permission/common.handle_all_urls"],
+"target": {
+"namespace": "android_app",
+"package_name": "com.alatec.wirdi",
+"sha256_cert_fingerprints": ["7D:E8:62:5F:89:73:70:03:60:33:2F:7C:A7:2E:57:5A:25:46:1C:FF:58:05:A4:77:B0:9E:A8:3F:D0:80:34:F3","39:A7:06:BD:41:5C:68:26:2A:F3:80:04:22:A8:3D:6F:7D:B3:5F:06:AF:E6:FD:A4:91:93:F5:22:B7:51:2A:45"]
+}
+}]
