@@ -1134,7 +1134,7 @@ function geoLocate(){
     locSet({name: near ? near + " (ma position)" : "Ma position (" + lat.toFixed(2) + "°, " + lng.toFixed(2) + "°)", lat, lng, tz});
     pv.mode = "home"; pv.day = 0; render();
   }, err => {
-    qToast(err.code === 1 ? "Localisation refusée. Choisissez votre ville dans la liste." : "Position introuvable. Choisissez votre ville dans la liste.");
+    qToast(err.code === 1 ? "Localisation refusée. Autorisez-la dans les réglages du téléphone, ou choisissez votre ville dans la liste." : "Position introuvable. Choisissez votre ville dans la liste.");
     if (pv.mode !== "city") openPray("city");
   }, {enableHighAccuracy: false, timeout: 15000, maximumAge: 600000});
 }
@@ -1144,7 +1144,7 @@ function prayCity(){
   $("pGeo2").onclick = geoLocate;
   const fill = () => {
     const f = norm(pv.q.trim()); let s = "";
-    CITIES.forEach((c, i) => { if (!f || norm(c[0]).includes(f)) s += '<button class="qrow" data-c="' + i + '"><span class="qt"><b>' + esc(c[0]) + '</b><small>' + c[3].split("/")[1].replace("_", " ") + '</small></span><span class="lgo">›</span></button>'; });
+    CITIES.forEach((c, i) => { if (!f || norm(c[0]).includes(f)) s += '<button class="qrow" data-c="' + i + '"><span class="qt"><b>' + esc(c[0]) + '</b><small>' + ({"Europe/Paris": "France", "Europe/Brussels": "Belgique", "Europe/Zurich": "Suisse", "America/Toronto": "Canada", "Africa/Dakar": "Sénégal", "Africa/Bamako": "Mali", "Africa/Nouakchott": "Mauritanie", "Africa/Conakry": "Guinée", "Africa/Abidjan": "Côte d’Ivoire", "Africa/Casablanca": "Maroc", "Africa/Algiers": "Algérie", "Africa/Tunis": "Tunisie", "Asia/Riyadh": "Arabie saoudite"}[c[3]] || "") + '</small></span><span class="lgo">›</span></button>'; });
     $("pCities").innerHTML = s || '<p class="qmsg">Ville absente de la liste : utilisez « Ma position ».</p>';
     $("pCities").querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = CITIES[+b.dataset.c]; locSet({name: c[0], lat: c[1], lng: c[2], tz: c[3]}); pv.mode = "home"; pv.day = 0; render(); });
   };
