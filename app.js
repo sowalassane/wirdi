@@ -31,7 +31,7 @@ const main = $("main"), app = $("app"), root = document.documentElement;
 
 const items = () => SESS[cur].items;
 const prog = () => progs[cur];
-function save(){ if (!cur || cur === "coran" || cur === "learn") return; prog().idx = idx; store.set("wirdi-p2-" + cur, prog()); }
+function save(){ if (!cur || cur === "coran" || cur === "learn" || cur === "pray") return; prog().idx = idx; store.set("wirdi-p2-" + cur, prog()); }
 function savePrefs(){ store.set("wirdi-prefs", prefs); }
 function doneOfK(k, i){ return progs[k].counts[i] || 0; }
 function isDoneK(k, i){ return doneOfK(k, i) >= SESS[k].items[i].n; }
@@ -122,10 +122,12 @@ function paintPlay(b, state){
   b.querySelector("svg").innerHTML = state === "playing" ? '<rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/>' : '<path d="M8 5.5v13a1 1 0 0 0 1.5.86l10-6.5a1 1 0 0 0 0-1.72l-10-6.5A1 1 0 0 0 8 5.5z"/>';
   b.setAttribute("aria-label", lab);
 }
+const preloader = new Audio(); preloader.preload = "auto"; preloader.muted = true;
 function loadTrack(){
   player.src = pl.tracks[pl.ti][pl.alt];
   player.playbackRate = prefs.rate;
-  setAudioUI("loading");
+  if (!pl.started) setAudioUI("loading");
+  const nx = pl.tracks[pl.ti + 1]; if (nx) { try { preloader.src = nx[0]; preloader.load(); } catch(e){} }
   const token = pl, src = player.src;
   const p = player.play();
   if (p && p.catch) p.catch(e => { if (pl === token && player.src === src && e && e.name === "NotAllowedError") setAudioUI("idle"); });
@@ -136,8 +138,8 @@ function onAudioErr(){
   else setAudioUI("error");
 }
 player.addEventListener("error", onAudioErr);
-player.addEventListener("playing", () => { player.playbackRate = prefs.rate; setAudioUI("playing"); });
-player.addEventListener("waiting", () => setAudioUI("loading"));
+player.addEventListener("playing", () => { player.playbackRate = prefs.rate; if (pl.k !== null) pl.started = true; setAudioUI("playing"); });
+player.addEventListener("waiting", () => { if (!pl.started) setAudioUI("loading"); });
 player.addEventListener("ended", () => {
   if (pl.k === null) return;
   if (pl.ti < pl.tracks.length - 1) { pl.ti++; pl.alt = 0; loadTrack(); return; }
@@ -178,10 +180,20 @@ function renderCard(i){
   if (it.a) h += '<button class="play idle" id="bPlay" aria-label="Écouter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"></svg><span>Écouter</span></button>';
   h += '</div>';
   if (it.title) h += '<div class="title" dir="rtl">' + esc(it.title[0]) + '<small dir="ltr">' + esc(it.title[1]) + '</small></div>';
-  if (it.pre) h += '<p class="pre-ar" lang="ar">' + esc(it.pre) + '</p>';
-  if (it.qs && Q && it.qs.every(([s, a]) => Q[s] && Q[s][a - 1])) h += '<p class="ar quran" lang="ar">' + it.qs.map(([s, a]) => esc(Q[s][a - 1]) + ' <span class="an">﴿' + an(a) + '﴾</span>').join(' ') + '</p>';
+  if (it.pre && !(it.qs && Q && it.qs.every(([s, a]) => Q[s] && Q[s][a - 1]))) h += '<p class="pre-ar" lang="ar">' + esc(it.pre) + '</p>';
+  if (it.qs && Q && it.qs.every(([s, a]) => Q[s] && Q[s][a - 1])){
+    let basm = "";
+    const vv = it.qs.map(([s, a]) => {
+      let t = Q[s][a - 1];
+      if (a === 1 && s !== 1 && s !== 9){ const m = t.match(BASM_RE); if (m){ basm = m[1]; t = t.slice(m[0].length); } }
+      return esc(t) + ' <span class="an">﴿' + an(a) + '﴾</span>';
+    });
+    const sep = ' <span class="an sep">۝</span> ';
+    const lead = (it.pre ? esc(it.pre) + sep : '') + (basm ? esc(basm) + sep : '');
+    h += '<p class="ar quran" lang="ar">' + lead + vv.join(' ') + '</p>';
+  }
   else h += '<p class="ar" lang="ar">' + esc(it.ar) + '</p>';
-  h += '<p class="tr">' + esc(it.tr) + '</p>';
+  { const bm = it.tr.match(/^(Bismi-llâhi-r-rahmâni-r-rahîm\.)\s+/); h += '<p class="tr">' + (bm ? esc(bm[1]) + '<br>' + esc(it.tr.slice(bm[0].length)) : esc(it.tr)) + '</p>'; }
   h += '<p class="fr">' + esc(it.fr) + '</p>';
   if (it.v) h += '<div class="virtue"><span class="virtue-h">Mérite</span><p class="va" lang="ar">' + esc(it.v) + '</p><p class="vf">' + esc(it.vf) + '</p></div>';
   if (it.src) h += '<div class="src"><span class="a">' + (it.q ? '' : 'رواه ') + esc(it.src[0]) + '</span><span class="l">' + (it.q ? '' : 'Rapporté par ') + esc(it.src[1]) + '</span></div>';
@@ -943,19 +955,297 @@ function qpUI(){
   $("qbTitle").textContent = QS.on ? SURA_TR[QS.s - 1] + " · verset " + QS.a : "Écouter à partir d’ici";
 }
 
+
+// ---------- Horaires de prière & qibla ----------
+const PRAYERS = [
+ ["fajr", "الْفَجْر", "Fajr"], ["sunrise", "الشُّرُوق", "Lever du soleil"], ["dhuhr", "الظُّهْر", "Dhuhr"],
+ ["asr", "الْعَصْر", "Asr"], ["maghrib", "الْمَغْرِب", "Maghrib"], ["isha", "الْعِشَاء", "Isha"]
+];
+const METHODS = {
+ custom: {name: "Personnalisée", fajr: 18, isha: 15},
+ uoif: {name: "UOIF / Musulmans de France (12°)", fajr: 12, isha: 12},
+ paris: {name: "Grande Mosquée de Paris (18°)", fajr: 18, isha: 18},
+ mwl: {name: "Ligue islamique mondiale (18° / 17°)", fajr: 18, isha: 17},
+ isna: {name: "Amérique du Nord – ISNA (15°)", fajr: 15, isha: 15},
+ egypt: {name: "Égypte (19,5° / 17,5°)", fajr: 19.5, isha: 17.5},
+ makkah: {name: "Umm al-Qura, La Mecque (18,5° / +90 min)", fajr: 18.5, ishaMin: 90}
+};
+const CITIES = [
+ ["Houilles", 48.923, 2.189, "Europe/Paris"], ["Paris", 48.857, 2.352, "Europe/Paris"], ["Sartrouville", 48.937, 2.164, "Europe/Paris"],
+ ["Argenteuil", 48.947, 2.248, "Europe/Paris"], ["Nanterre", 48.892, 2.207, "Europe/Paris"], ["Saint-Denis", 48.936, 2.357, "Europe/Paris"],
+ ["Créteil", 48.790, 2.455, "Europe/Paris"], ["Évry", 48.629, 2.441, "Europe/Paris"], ["Cergy", 49.036, 2.063, "Europe/Paris"],
+ ["Mantes-la-Jolie", 48.991, 1.718, "Europe/Paris"], ["Versailles", 48.805, 2.120, "Europe/Paris"], ["Lyon", 45.764, 4.836, "Europe/Paris"],
+ ["Marseille", 43.296, 5.370, "Europe/Paris"], ["Lille", 50.629, 3.057, "Europe/Paris"], ["Toulouse", 43.605, 1.444, "Europe/Paris"],
+ ["Bordeaux", 44.838, -0.579, "Europe/Paris"], ["Nantes", 47.218, -1.554, "Europe/Paris"], ["Strasbourg", 48.573, 7.752, "Europe/Paris"],
+ ["Montpellier", 43.611, 3.877, "Europe/Paris"], ["Nice", 43.710, 7.262, "Europe/Paris"], ["Rouen", 49.443, 1.099, "Europe/Paris"],
+ ["Rennes", 48.117, -1.678, "Europe/Paris"], ["Grenoble", 45.188, 5.724, "Europe/Paris"], ["Le Havre", 49.494, 0.108, "Europe/Paris"],
+ ["Bruxelles", 50.850, 4.352, "Europe/Brussels"], ["Genève", 46.204, 6.143, "Europe/Zurich"], ["Montréal", 45.502, -73.567, "America/Toronto"],
+ ["Dakar", 14.716, -17.467, "Africa/Dakar"], ["Thiès", 14.790, -16.926, "Africa/Dakar"], ["Touba", 14.850, -15.883, "Africa/Dakar"],
+ ["Saint-Louis (Sénégal)", 16.018, -16.489, "Africa/Dakar"], ["Kaolack", 14.152, -16.073, "Africa/Dakar"], ["Ziguinchor", 12.583, -16.272, "Africa/Dakar"],
+ ["Bamako", 12.639, -8.003, "Africa/Bamako"], ["Nouakchott", 18.079, -15.965, "Africa/Nouakchott"], ["Conakry", 9.641, -13.578, "Africa/Conakry"],
+ ["Abidjan", 5.360, -4.008, "Africa/Abidjan"], ["Casablanca", 33.573, -7.590, "Africa/Casablanca"], ["Rabat", 34.020, -6.841, "Africa/Casablanca"],
+ ["Alger", 36.754, 3.059, "Africa/Algiers"], ["Tunis", 36.806, 10.181, "Africa/Tunis"], ["La Mecque", 21.423, 39.826, "Asia/Riyadh"],
+ ["Médine", 24.467, 39.611, "Asia/Riyadh"]
+];
+const KAABA = [21.4225, 39.8262];
+const PT_DEF = {method: "custom", fajr: 18, isha: 15, asr: 1, adj: {fajr: 0, sunrise: 0, dhuhr: 1, asr: 0, maghrib: 3, isha: 0}, ishaMinTime: "19:20", iqama: false, iq: {fajr: 20, dhuhr: 10, asr: 10, maghrib: 5, isha: 0}};
+function ptGet(){ const s = store.get("wirdi-pt", {}); return Object.assign({}, PT_DEF, s, {adj: Object.assign({}, PT_DEF.adj, s.adj || {}), iq: Object.assign({}, PT_DEF.iq, s.iq || {})}); }
+function ptSet(p){ store.set("wirdi-pt", p); }
+function locGet(){ return store.get("wirdi-loc", null); }
+function locSet(l){ store.set("wirdi-loc", l); }
+
+const dr = d => d * Math.PI / 180, rd = r => r * 180 / Math.PI;
+function sunPos(jd){
+  const D = jd - 2451545.0;
+  const g = (357.529 + 0.98560028 * D) % 360, q = (280.459 + 0.98564736 * D) % 360;
+  const L = (q + 1.915 * Math.sin(dr(g)) + 0.020 * Math.sin(dr(2 * g))) % 360;
+  const e = 23.439 - 0.00000036 * D;
+  let RA = rd(Math.atan2(Math.cos(dr(e)) * Math.sin(dr(L)), Math.cos(dr(L)))) / 15;
+  RA = ((RA % 24) + 24) % 24;
+  const decl = rd(Math.asin(Math.sin(dr(e)) * Math.sin(dr(L))));
+  let eqt = q / 15 - RA; eqt = ((eqt + 12) % 24 + 24) % 24 - 12;
+  return {decl, eqt};
+}
+function julian(y, m, d){ if (m <= 2){ y -= 1; m += 12; } const A = Math.floor(y / 100), B = 2 - A + Math.floor(A / 4); return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + B - 1524.5; }
+function tzOffset(tz, date){
+  try {
+    const p = new Intl.DateTimeFormat("en-US", {timeZone: tz, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit"}).formatToParts(date);
+    const g = t => +p.find(x => x.type === t).value;
+    return (Date.UTC(g("year"), g("month") - 1, g("day"), g("hour"), g("minute")) - Math.floor(date.getTime() / 60000) * 60000) / 3600000;
+  } catch(e){ return -date.getTimezoneOffset() / 60; }
+}
+// Renvoie les horaires (objets Date) pour la date civile y-m-d au lieu donné
+function prayerTimes(y, m, d, loc, P){
+  const lat = loc.lat, lng = loc.lng;
+  const M = METHODS[P.method] || METHODS.custom;
+  const fa = P.method === "custom" ? +P.fajr : M.fajr, ia = P.method === "custom" ? +P.isha : M.isha;
+  const jd = julian(y, m, d) - lng / (15 * 24);
+  const mid = t => (12 - sunPos(jd + t).eqt + 24) % 24;
+  const at = (a, t, ccw) => {
+    const s = sunPos(jd + t);
+    const v = (-Math.sin(dr(a)) - Math.sin(dr(s.decl)) * Math.sin(dr(lat))) / (Math.cos(dr(s.decl)) * Math.cos(dr(lat)));
+    if (v < -1 || v > 1) return NaN;
+    const T = rd(Math.acos(v)) / 15;
+    return mid(t) + (ccw ? -T : T);
+  };
+  const asrT = (f, t) => { const s = sunPos(jd + t); return at(-rd(Math.atan(1 / (f + Math.tan(dr(Math.abs(lat - s.decl)))))), t, false); };
+  const t = {fajr: at(fa, 5 / 24, true), sunrise: at(0.833, 6 / 24, true), dhuhr: mid(12 / 24), asr: asrT(+P.asr || 1, 13 / 24), maghrib: at(0.833, 18 / 24, false)};
+  t.isha = M.ishaMin ? t.maghrib + M.ishaMin / 60 : at(ia, 18 / 24, false);
+  // Hautes latitudes : méthode des angles (portion de la nuit)
+  const night = 24 - (t.maghrib - t.sunrise);
+  const fp = fa / 60 * night, ip = (M.ishaMin ? 0 : ia / 60 * night);
+  if (isNaN(t.fajr) || t.sunrise - t.fajr > fp) t.fajr = t.sunrise - fp;
+  if (!M.ishaMin && (isNaN(t.isha) || t.isha - t.maghrib > ip)) t.isha = t.maghrib + ip;
+  const tz = loc.tz ? tzOffset(loc.tz, new Date(Date.UTC(y, m - 1, d, 12))) : -new Date(y, m - 1, d, 12).getTimezoneOffset() / 60;
+  const out = {};
+  for (const k in t){
+    let h = t[k] + tz - lng / 15;
+    let mins = Math.round(h * 60) + (+P.adj[k] || 0);
+    if (k === "isha" && P.method === "custom" && /^\d{1,2}:\d{2}$/.test(P.ishaMinTime || "")){
+      const [hh, mm] = P.ishaMinTime.split(":").map(Number); mins = Math.max(mins, hh * 60 + mm);
+    }
+    out[k] = new Date(Date.UTC(y, m - 1, d) + (mins - tz * 60) * 60000);
+  }
+  return out;
+}
+function fmtTime(dt, loc){
+  try { return new Intl.DateTimeFormat("fr-FR", {hour: "2-digit", minute: "2-digit", timeZone: loc.tz || undefined}).format(dt); }
+  catch(e){ return String(dt.getHours()).padStart(2, "0") + ":" + String(dt.getMinutes()).padStart(2, "0"); }
+}
+function locDateParts(loc, base){
+  try {
+    const p = new Intl.DateTimeFormat("en-CA", {timeZone: loc.tz || undefined, year: "numeric", month: "2-digit", day: "2-digit"}).formatToParts(base);
+    const g = t => +p.find(x => x.type === t).value; return [g("year"), g("month"), g("day")];
+  } catch(e){ return [base.getFullYear(), base.getMonth() + 1, base.getDate()]; }
+}
+function qiblaBearing(lat, lng){
+  const p1 = dr(lat), p2 = dr(KAABA[0]), dl = dr(KAABA[1] - lng);
+  const b = rd(Math.atan2(Math.sin(dl), Math.cos(p1) * Math.tan(p2) - Math.sin(p1) * Math.cos(dl)));
+  return (b + 360) % 360;
+}
+function cardinal(b){ return ["nord", "nord-est", "est", "sud-est", "sud", "sud-ouest", "ouest", "nord-ouest"][Math.round(b / 45) % 8]; }
+function distKm(a, b, c, d){ const R = 6371, x = dr(c - a), y = dr(d - b); const h = Math.sin(x / 2) ** 2 + Math.cos(dr(a)) * Math.cos(dr(c)) * Math.sin(y / 2) ** 2; return 2 * R * Math.asin(Math.sqrt(h)); }
+function nearestCity(lat, lng){ let best = null, bd = 1e9; CITIES.forEach(c => { const d = distKm(lat, lng, c[1], c[2]); if (d < bd){ bd = d; best = c; } }); return bd < 25 ? best[0] : null; }
+
+const pv = {mode: "home", day: 0, q: ""};
+let ptTimer = null;
+function openPray(mode){ pv.mode = mode || "home"; render(); main.scrollTop = 0; }
+function renderPray(){
+  clearInterval(ptTimer);
+  if (pv.mode === "city") return prayCity();
+  if (pv.mode === "settings") return praySettings();
+  if (pv.mode === "qibla") return prayQibla();
+  stopCompass();
+  const loc = locGet();
+  if (!loc){
+    main.innerHTML = '<div class="pwrap"><section class="pempty"><p class="pe-ar" lang="ar">مَوَاقِيتُ الصَّلَاةِ</p><p>Pour calculer les horaires de prière et la direction de la qibla, Wirdî a besoin de votre ville.</p><button class="btn" id="pGeo">📍 Utiliser ma position</button><button class="btn ghost" id="pCity">Choisir une ville</button><p class="lnote">Votre position reste sur votre téléphone : elle n’est envoyée nulle part.</p></section></div>';
+    $("pGeo").onclick = geoLocate; $("pCity").onclick = () => openPray("city");
+    return;
+  }
+  const P = ptGet(), now = new Date();
+  const [y, m, d] = locDateParts(loc, new Date(now.getTime() + pv.day * 86400000));
+  const T = prayerTimes(y, m, d, loc, P);
+  let next = null, nextT = null;
+  if (pv.day === 0){
+    for (const [k] of PRAYERS){ if (k !== "sunrise" && T[k] > now){ next = k; nextT = T[k]; break; } }
+    if (!next){ const [y2, m2, d2] = locDateParts(loc, new Date(now.getTime() + 86400000)); nextT = prayerTimes(y2, m2, d2, loc, P).fajr; next = "fajr"; }
+  }
+  const dateObj = new Date(Date.UTC(y, m - 1, d, 12));
+  const dateFr = new Intl.DateTimeFormat("fr-FR", {weekday: "long", day: "numeric", month: "long", timeZone: "UTC"}).format(dateObj);
+  let hj = ""; try { hj = new Intl.DateTimeFormat("ar-SA-u-ca-islamic-umalqura-nu-arab", {day: "numeric", month: "long", year: "numeric", timeZone: "UTC"}).format(dateObj); } catch(e){}
+  let h = '<div class="pwrap">';
+  if (next){
+    const N = PRAYERS.find(p => p[0] === next), mins = Math.max(0, Math.round((nextT - now) / 60000));
+    const cd = mins >= 60 ? Math.floor(mins / 60) + " h " + String(mins % 60).padStart(2, "0") + " min" : mins + " min";
+    h += '<section class="pnext p-' + next + '"><span class="pn-l">Prochaine prière</span><span class="pn-ar" lang="ar">' + N[1] + '</span><span class="pn-fr">' + N[2] + ' · ' + fmtTime(nextT, loc) + '</span><span class="pn-cd" id="pCd">dans ' + cd + '</span>'
+      + (P.iqama && P.iq[next] != null ? '<span class="pn-iq">Iqâma à ' + fmtTime(new Date(nextT.getTime() + P.iq[next] * 60000), loc) + '</span>' : '') + '</section>';
+  }
+  h += '<div class="ploc"><span>📍 <b>' + esc(loc.name) + '</b></span><button id="pChg">Changer</button></div>';
+  h += '<div class="pday"><button id="pPrev" aria-label="Jour précédent">‹</button><span><b>' + (pv.day === 0 ? "Aujourd’hui" : pv.day === 1 ? "Demain" : pv.day === -1 ? "Hier" : "") + '</b> ' + dateFr + '<small lang="ar">' + esc(hj) + '</small></span><button id="pNext" aria-label="Jour suivant">›</button></div>';
+  h += '<div class="plist">';
+  let curK = null;
+  if (pv.day === 0){ for (const [k] of PRAYERS){ if (k !== "sunrise" && T[k] <= now) curK = k; } }
+  PRAYERS.forEach(([k, ar, fr]) => {
+    const past = pv.day === 0 && T[k] <= now && k !== curK;
+    h += '<div class="prow' + (k === curK ? " cur" : "") + (k === next && pv.day === 0 && T[k] > now ? " nxt" : "") + (past ? " past" : "") + (k === "sunrise" ? " sun" : "") + '"><span class="pr-n"><b>' + fr + '</b><small lang="ar">' + ar + '</small></span>'
+      + (P.iqama && P.iq[k] != null ? '<span class="pr-iq">+' + P.iq[k] + '</span>' : '') + '<span class="pr-t">' + fmtTime(T[k], loc) + '</span></div>';
+  });
+  h += '</div>';
+  const qb = qiblaBearing(loc.lat, loc.lng);
+  h += '<button class="pqib" id="pQib"><span class="pq-ic"><svg viewBox="0 0 48 48" width="40" height="40"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 8l6 18h-12z" fill="#E3B65E" transform="rotate(' + Math.round(qb) + ' 24 24)"/><rect x="20.5" y="20.5" width="7" height="7" rx="1" fill="currentColor" transform="rotate(' + Math.round(qb) + ' 24 24)"/></svg></span><span class="pq-t"><b>Direction de la qibla</b><small>' + Math.round(qb) + '° depuis le nord (' + cardinal(qb) + ') · ouvrir la boussole</small></span><span class="lgo">›</span></button>';
+  const M = METHODS[P.method] || METHODS.custom;
+  h += '<button class="pmeth" id="pSet"><span>⚙︎ Méthode : <b>' + esc(P.method === "custom" ? "Personnalisée (Fajr " + P.fajr + "°, Isha " + P.isha + "°)" : M.name) + '</b></span><span class="lgo">›</span></button>';
+  h += '<p class="lnote">Horaires calculés sur votre téléphone. Comparez-les avec ceux de votre mosquée et ajustez-les dans les réglages si besoin.</p></div>';
+  main.innerHTML = h;
+  $("pChg").onclick = () => openPray("city");
+  $("pPrev").onclick = () => { pv.day--; renderPray(); };
+  $("pNext").onclick = () => { pv.day++; renderPray(); };
+  $("pQib").onclick = () => openPray("qibla");
+  $("pSet").onclick = () => openPray("settings");
+  if (next) ptTimer = setInterval(() => { if (cur === "pray" && pv.mode === "home") { const y0 = main.scrollTop; renderPray(); main.scrollTop = y0; } else clearInterval(ptTimer); }, 30000);
+}
+function geoLocate(){
+  if (!navigator.geolocation){ qToast("La localisation n’est pas disponible sur cet appareil."); return; }
+  qToast("Recherche de votre position…");
+  navigator.geolocation.getCurrentPosition(pos => {
+    const lat = +pos.coords.latitude.toFixed(4), lng = +pos.coords.longitude.toFixed(4);
+    let tz; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){}
+    const near = nearestCity(lat, lng);
+    locSet({name: near ? near + " (ma position)" : "Ma position (" + lat.toFixed(2) + "°, " + lng.toFixed(2) + "°)", lat, lng, tz});
+    pv.mode = "home"; pv.day = 0; render();
+  }, err => {
+    qToast(err.code === 1 ? "Localisation refusée. Choisissez votre ville dans la liste." : "Position introuvable. Choisissez votre ville dans la liste.");
+    if (pv.mode !== "city") openPray("city");
+  }, {enableHighAccuracy: false, timeout: 15000, maximumAge: 600000});
+}
+function prayCity(){
+  let h = '<div class="pwrap"><button class="btn" id="pGeo2">📍 Utiliser ma position actuelle</button><input class="qsearch" id="pQ" type="search" placeholder="Rechercher une ville" value="' + esc(pv.q) + '"><div class="qlist" id="pCities"></div></div>';
+  main.innerHTML = h;
+  $("pGeo2").onclick = geoLocate;
+  const fill = () => {
+    const f = norm(pv.q.trim()); let s = "";
+    CITIES.forEach((c, i) => { if (!f || norm(c[0]).includes(f)) s += '<button class="qrow" data-c="' + i + '"><span class="qt"><b>' + esc(c[0]) + '</b><small>' + c[3].split("/")[1].replace("_", " ") + '</small></span><span class="lgo">›</span></button>'; });
+    $("pCities").innerHTML = s || '<p class="qmsg">Ville absente de la liste : utilisez « Ma position ».</p>';
+    $("pCities").querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = CITIES[+b.dataset.c]; locSet({name: c[0], lat: c[1], lng: c[2], tz: c[3]}); pv.mode = "home"; pv.day = 0; render(); });
+  };
+  $("pQ").oninput = e => { pv.q = e.target.value; fill(); };
+  fill();
+}
+function praySettings(){
+  const P = ptGet();
+  let h = '<div class="pwrap psets"><label class="pf"><span>Méthode de calcul</span><select id="sMeth">';
+  for (const k in METHODS) h += '<option value="' + k + '"' + (P.method === k ? " selected" : "") + '>' + esc(METHODS[k].name) + '</option>';
+  h += '</select></label>';
+  if (P.method === "custom"){
+    h += '<div class="pgrid"><label class="pf"><span>Angle de Fajr (°)</span><input id="sFa" type="number" step="0.5" min="10" max="20" value="' + P.fajr + '"></label><label class="pf"><span>Angle d’Isha (°)</span><input id="sIa" type="number" step="0.5" min="10" max="20" value="' + P.isha + '"></label></div>';
+    h += '<label class="pf"><span>Isha au plus tôt à (laisser vide pour désactiver)</span><input id="sImin" type="time" value="' + esc(P.ishaMinTime || "") + '"></label>';
+  }
+  h += '<label class="pf"><span>Asr</span><select id="sAsr"><option value="1"' + (+P.asr === 1 ? " selected" : "") + '>Majorité des écoles (ombre = 1)</option><option value="2"' + (+P.asr === 2 ? " selected" : "") + '>Hanafite (ombre = 2)</option></select></label>';
+  h += '<h3 class="lsec">Ajustements (minutes)</h3><div class="pgrid">';
+  PRAYERS.forEach(([k, , fr]) => { h += '<label class="pf"><span>' + fr + '</span><input data-adj="' + k + '" type="number" step="1" min="-30" max="30" value="' + (P.adj[k] || 0) + '"></label>'; });
+  h += '</div><div class="set"><span>Afficher l’iqâma</span><button class="sw" id="sIq" role="switch" aria-checked="' + !!P.iqama + '"></button></div>';
+  if (P.iqama){
+    h += '<div class="pgrid">';
+    PRAYERS.forEach(([k, , fr]) => { if (k === "sunrise") return; h += '<label class="pf"><span>Iqâma ' + fr + ' (+ min)</span><input data-iq="' + k + '" type="number" step="1" min="0" max="60" value="' + (P.iq[k] || 0) + '"></label>'; });
+    h += '</div>';
+  }
+  h += '<button class="btn ghost" id="sReset">Rétablir les réglages par défaut</button><p class="lnote">Astuce : relevez les horaires de Fajr et d’Isha de votre mosquée (calendrier ou application Mawaqit) et ajustez les angles ou les minutes jusqu’à obtenir les mêmes heures.</p></div>';
+  main.innerHTML = h;
+  const save2 = () => {
+    const Q = ptGet();
+    Q.method = $("sMeth").value;
+    if ($("sFa")) { Q.fajr = +$("sFa").value || 18; Q.isha = +$("sIa").value || 15; Q.ishaMinTime = $("sImin").value || ""; }
+    Q.asr = +$("sAsr").value;
+    main.querySelectorAll("[data-adj]").forEach(i => Q.adj[i.dataset.adj] = Math.max(-60, Math.min(60, Math.round(+i.value || 0))));
+    main.querySelectorAll("[data-iq]").forEach(i => Q.iq[i.dataset.iq] = Math.max(0, Math.min(90, Math.round(+i.value || 0))));
+    ptSet(Q);
+  };
+  main.querySelectorAll("input,select").forEach(el => el.onchange = () => { save2(); if (el.id === "sMeth") { const y0 = main.scrollTop; praySettings(); main.scrollTop = y0; } });
+  $("sIq").onclick = () => { save2(); const Q = ptGet(); Q.iqama = !Q.iqama; ptSet(Q); const y0 = main.scrollTop; praySettings(); main.scrollTop = y0; };
+  $("sReset").onclick = () => { store.set("wirdi-pt", {}); praySettings(); qToast("Réglages par défaut rétablis"); };
+}
+// Boussole
+let compassOn = false, lastAligned = false;
+function onOrient(e){
+  let hd = null;
+  if (typeof e.webkitCompassHeading === "number") hd = e.webkitCompassHeading;
+  else if (e.absolute && typeof e.alpha === "number") hd = (360 - e.alpha) % 360;
+  if (hd === null) return;
+  const so = (screen.orientation && screen.orientation.angle) || window.orientation || 0;
+  hd = (hd + so + 360) % 360;
+  const dial = $("cDial"), loc = locGet(); if (!dial || !loc) return;
+  const qb = qiblaBearing(loc.lat, loc.lng);
+  dial.style.transform = "rotate(" + (-hd) + "deg)";
+  const diff = Math.abs(((qb - hd + 540) % 360) - 180);
+  const ok = diff < 5;
+  $("cWrap").classList.toggle("aligned", ok);
+  $("cInfo").textContent = ok ? "✓ Vous êtes face à la qibla" : "Tournez-vous de " + Math.round(diff) + "° " + ((((qb - hd + 360) % 360) < 180) ? "vers la droite" : "vers la gauche");
+  if (ok && !lastAligned) buzz(false);
+  lastAligned = ok;
+}
+function startCompass(){
+  const go = () => {
+    window.addEventListener("deviceorientationabsolute", onOrient, true);
+    window.addEventListener("deviceorientation", onOrient, true);
+    compassOn = true; $("cStart").hidden = true; $("cInfo").textContent = "Tenez le téléphone à plat, écran vers le haut.";
+    setTimeout(() => { if (compassOn && $("cInfo") && /à plat/.test($("cInfo").textContent)) $("cInfo").textContent = "Boussole indisponible sur cet appareil : utilisez l’angle indiqué ci-dessous avec une boussole classique."; }, 4000);
+  };
+  if (typeof DeviceOrientationEvent !== "undefined" && typeof DeviceOrientationEvent.requestPermission === "function"){
+    DeviceOrientationEvent.requestPermission().then(r => { if (r === "granted") go(); else $("cInfo").textContent = "Accès aux capteurs refusé. Autorisez-le dans les réglages du navigateur."; }).catch(() => { $("cInfo").textContent = "Impossible d’activer la boussole."; });
+  } else go();
+}
+function stopCompass(){ if (!compassOn) return; window.removeEventListener("deviceorientationabsolute", onOrient, true); window.removeEventListener("deviceorientation", onOrient, true); compassOn = false; }
+function prayQibla(){
+  const loc = locGet(); if (!loc) return openPray("city");
+  const qb = qiblaBearing(loc.lat, loc.lng), km = Math.round(distKm(loc.lat, loc.lng, KAABA[0], KAABA[1]));
+  let ticks = "";
+  for (let a = 0; a < 360; a += 15) ticks += '<line x1="100" y1="10" x2="100" y2="' + (a % 90 ? 17 : 24) + '" stroke="currentColor" stroke-width="' + (a % 90 ? 1.5 : 3) + '" transform="rotate(' + a + ' 100 100)" opacity=".6"/>';
+  const lbl = [["N", 0], ["E", 90], ["S", 180], ["O", 270]].map(([t, a]) => '<text x="100" y="40" text-anchor="middle" font-size="15" font-weight="700" fill="' + (t === "N" ? "#C0392B" : "currentColor") + '" transform="rotate(' + a + ' 100 100)">' + t + '</text>').join("");
+  let h = '<div class="pwrap"><div class="cwrap" id="cWrap"><div class="cpointer">▼</div><svg class="cdial" id="cDial" viewBox="0 0 200 200"><circle cx="100" cy="100" r="94" fill="var(--card)" stroke="var(--line)" stroke-width="2"/>' + ticks + lbl
+    + '<g transform="rotate(' + qb.toFixed(1) + ' 100 100)"><line x1="100" y1="100" x2="100" y2="34" stroke="#E3B65E" stroke-width="5" stroke-linecap="round"/><rect x="91" y="22" width="18" height="18" rx="3" fill="#1E2B27" stroke="#E3B65E" stroke-width="2"/><rect x="91" y="26" width="18" height="3" fill="#E3B65E"/></g><circle cx="100" cy="100" r="6" fill="var(--green)"/></svg></div>'
+    + '<p class="cinfo" id="cInfo">Activez la boussole puis tenez le téléphone à plat.</p><button class="btn" id="cStart">🧭 Activer la boussole</button>'
+    + '<div class="cdata"><div><b>' + Math.round(qb) + '°</b><small>depuis le nord (' + cardinal(qb) + ')</small></div><div><b>' + km.toLocaleString("fr-FR") + ' km</b><small>jusqu’à La Mecque</small></div></div>'
+    + '<p class="lnote">📍 ' + esc(loc.name) + '. Pour plus de précision : éloignez-vous des objets métalliques et des appareils électriques, et calibrez la boussole en dessinant un « 8 » dans l’air avec le téléphone.</p></div>';
+  main.innerHTML = h;
+  $("cStart").onclick = startCompass;
+  if (compassOn) { $("cStart").hidden = true; }
+}
+
 function setMode(){
   const home = cur === null;
   app.classList.toggle("is-home", home);
   app.classList.toggle("not-home", !home);
   app.classList.toggle("is-quran", cur === "coran");
   app.classList.toggle("is-learn", cur === "learn");
-  const top = home || (cur === "coran" && qv.mode === "list") || (cur === "learn" && lv.mode === "home");
+  app.classList.toggle("is-pray", cur === "pray");
+  const top = home || (cur === "coran" && qv.mode === "list") || (cur === "learn" && lv.mode === "home") || (cur === "pray" && pv.mode === "home");
   app.classList.toggle("show-tabs", top);
   app.classList.toggle("top-level", top);
-  const tab = home ? "adhkar" : cur === "coran" ? "coran" : cur === "learn" ? "apprendre" : "adhkar";
+  const tab = home ? "adhkar" : cur === "coran" ? "coran" : cur === "learn" ? "apprendre" : cur === "pray" ? "priere" : "adhkar";
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
   if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
+  else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
@@ -966,6 +1256,7 @@ function render(){
   if (cur === null){ renderHome(); main.scrollTop = 0; return; }
   if (cur === "coran"){ renderQuran(); return; }
   if (cur === "learn"){ renderLearn(); return; }
+  if (cur === "pray"){ renderPray(); return; }
   const list = items(), n = doneCount();
   $("barFill").style.width = (100 * n / list.length) + "%";
   $("progTxt").textContent = (Math.min(idx, list.length - 1) + 1) + " / " + list.length;
@@ -1039,7 +1330,7 @@ function buzz(strong){
 }
 
 function tap(){
-  if (cur === null || cur === "coran" || cur === "learn" || idx >= items().length) return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || idx >= items().length) return;
   const it = items()[idx];
   if (doneOf(idx) >= it.n){ go(idx + 1); return; }
   prog().counts[idx] = doneOf(idx) + 1;
@@ -1059,7 +1350,7 @@ function tap(){
 
 let cardDir = 0;
 function go(i){
-  if (cur === null || cur === "coran" || cur === "learn") return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray") return;
   cardDir = Math.sign(i - idx);
   clearTimeout(advTimer);
   const chain = autoChain && prefs.auto; autoChain = false;
@@ -1081,14 +1372,16 @@ $("bNext").addEventListener("click", () => go(idx + 1));
 $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
   if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse")){ lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
+  else if (cur === "pray" && pv.mode !== "home"){ stopCompass(); openPray("home"); }
   else if (cur === "learn" && lv.mode !== "home"){ const back = lv.mode === "letter" ? "alpha" : "home"; openLearn(back); }
   else goHome();
 }
 function setTab(t){
-  clearTimeout(advTimer); autoChain = false; stopAudio(); lpReset();
+  clearTimeout(advTimer); autoChain = false; stopAudio(); lpReset(); if (typeof stopCompass === "function") stopCompass();
   if (t === "adhkar"){ save(); cur = null; }
   else if (t === "coran"){ cur = "coran"; qv.mode = "list"; }
   else if (t === "apprendre"){ cur = "learn"; lv.mode = "home"; }
+  else if (t === "priere"){ cur = "pray"; pv.mode = "home"; pv.day = 0; }
   render(); main.scrollTop = 0;
 }
 document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.onclick = () => b.dataset.tab === "reglages" ? $("bSet").click() : setTab(b.dataset.tab));
@@ -1102,7 +1395,7 @@ main.addEventListener("touchend", e => {
     if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8){ const np = qv.p + (dx > 0 ? 1 : -1); if (np >= 1 && np <= pageCount()) openPage(np); }
     sx = sy = null; return;
   }
-  if (sx === null || cur === null || cur === "coran" || cur === "learn") { sx = sy = null; return; }
+  if (sx === null || cur === null || cur === "coran" || cur === "learn" || cur === "pray") { sx = sy = null; return; }
   const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(idx + (dx < 0 ? 1 : -1));
   sx = sy = null;
@@ -1110,7 +1403,7 @@ main.addEventListener("touchend", e => {
 document.addEventListener("keydown", e => {
   if (document.body.classList.contains("open")) { if (e.key === "Escape") closeSheets(); return; }
   if (cur === null) return;
-  if (cur === "coran" || cur === "learn"){ if (e.key === "Escape") backAction(); return; }
+  if (cur === "coran" || cur === "learn" || cur === "pray"){ if (e.key === "Escape") backAction(); return; }
   if (e.key === "ArrowRight") go(idx + 1);
   else if (e.key === "ArrowLeft") go(idx - 1);
   else if (e.key === "Escape") goHome();
@@ -1122,7 +1415,7 @@ $("sheetBg").onclick = closeSheets;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheets);
 
 $("bList").onclick = () => {
-  if (cur === null || cur === "coran" || cur === "learn") return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray") return;
   let h = "";
   items().forEach((it, i) => {
     const label = it.title ? it.title[0] : it.ar;
@@ -1134,7 +1427,7 @@ $("bList").onclick = () => {
   openSheet("sheetList");
 };
 $("bSet").onclick = () => {
-  $("bReset").textContent = cur && cur !== "coran" && cur !== "learn" ? "Recommencer" : "Tout recommencer";
+  $("bReset").textContent = cur && cur !== "coran" && cur !== "learn" && cur !== "pray" ? "Recommencer" : "Tout recommencer";
   openSheet("sheetSet");
 };
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
@@ -1146,7 +1439,7 @@ $("swSnd").onclick = () => { prefs.snd = !prefs.snd; savePrefs(); applyPrefs(); 
 $("sMinus").onclick = () => { prefs.scale = Math.max(0.8, +(prefs.scale - 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("sPlus").onclick = () => { prefs.scale = Math.min(1.6, +(prefs.scale + 0.1).toFixed(2)); savePrefs(); applyPrefs(); };
 $("bReset").onclick = () => {
-  for (const k of (cur && cur !== "coran" && cur !== "learn" ? [cur] : ["matin", "soir"])){ progs[k] = {day: today(), counts: {}, idx: 0}; store.set("wirdi-p2-" + k, progs[k]); }
+  for (const k of (cur && cur !== "coran" && cur !== "learn" && cur !== "pray" ? [cur] : ["matin", "soir"])){ progs[k] = {day: today(), counts: {}, idx: 0}; store.set("wirdi-p2-" + k, progs[k]); }
   idx = 0; closeSheets(); render();
 };
 

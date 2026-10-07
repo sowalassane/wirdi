@@ -407,6 +407,57 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 :root:not([data-theme="light"]) .sess2.matin .chip{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.3)}
 :root:not([data-theme="light"]) .sess2{box-shadow:0 10px 28px -14px rgba(0,0,0,.8)}
 :root:not([data-theme="light"]) .hero::before{opacity:.12;filter:invert(1)}}
+.is-pray footer,.is-pray .hint,.is-pray .prog,.is-pray #bList{display:none}
+.tabbar button span{white-space:nowrap}
+.pwrap{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
+.pempty{display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center;padding:26px 18px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
+.pe-ar{margin:0;font-family:var(--ar);font-weight:700;font-size:32px;color:var(--green)}
+.pempty p{margin:0;font-family:var(--lat);font-size:17px;line-height:1.5}
+.pnext{display:flex;flex-direction:column;align-items:center;gap:2px;padding:22px 18px;border-radius:24px;color:#F7F1E3;background:linear-gradient(160deg,#34427A,#1E2750 60%,#121833);text-align:center}
+.pnext.p-fajr{background:linear-gradient(160deg,#3B3F78,#5B4B8A 55%,#C77F6B)}
+.pnext.p-dhuhr{background:linear-gradient(160deg,#2F7A9A,#2B6E8F 55%,#1D5C4A)}
+.pnext.p-asr{background:linear-gradient(160deg,#C98A3E,#B0703A 55%,#7A4A2C)}
+.pnext.p-maghrib{background:linear-gradient(160deg,#D9784F,#A8456A 55%,#4A2F6B)}
+.pn-l{font-size:12px;text-transform:uppercase;letter-spacing:.08em;opacity:.85;font-weight:700}
+.pn-ar{font-family:var(--ar);font-weight:700;font-size:42px;line-height:1.5}
+.pn-fr{font-family:var(--lat);font-size:20px}
+.pn-cd{margin-top:6px;padding:5px 14px;border-radius:99px;background:rgba(255,255,255,.18);font-weight:700;font-size:15px}
+.pn-iq{margin-top:6px;font-size:13px;opacity:.9}
+.ploc{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:14px;background:var(--virtue-bg);font-size:15px}
+.ploc button{color:var(--green);font-weight:700}
+.pday{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.pday button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);color:var(--green);font-size:22px}
+.pday span{flex:1;text-align:center;font-size:15px;line-height:1.35}
+.pday small{display:block;font-family:var(--ar);font-size:16px;color:var(--muted)}
+.plist{display:flex;flex-direction:column;border-radius:18px;border:1px solid var(--line);background:var(--card);overflow:hidden}
+.prow{display:flex;align-items:center;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line)}
+.prow:last-child{border-bottom:0}
+.pr-n{flex:1;display:flex;align-items:baseline;gap:10px}
+.pr-n b{font-size:17px}.pr-n small{font-family:var(--ar);font-size:18px;color:var(--muted)}
+.pr-t{font-size:20px;font-weight:700;font-variant-numeric:tabular-nums}
+.pr-iq{font-size:12px;color:var(--muted);padding:2px 7px;border-radius:99px;border:1px solid var(--line)}
+.prow.sun{opacity:.75}.prow.sun b{font-weight:500}
+.prow.past{opacity:.5}
+.prow.cur{background:var(--virtue-bg)}
+.prow.nxt{background:var(--green);color:var(--green-ink)}.prow.nxt small{color:var(--green-ink);opacity:.85}.prow.nxt .pr-iq{color:var(--green-ink);border-color:rgba(255,255,255,.4)}
+.pqib,.pmeth{display:flex;align-items:center;gap:14px;padding:14px;border-radius:16px;border:1px solid var(--line);background:var(--card);text-align:left;width:100%;color:var(--ink)}
+.pq-ic{color:var(--green);flex-shrink:0}
+.pq-t{flex:1;display:flex;flex-direction:column;gap:2px}.pq-t b{font-size:16px}.pq-t small{font-size:13px;color:var(--muted)}
+.pmeth span:first-child{flex:1;font-size:14px;color:var(--muted)}.pmeth b{color:var(--ink)}
+.psets .pf{display:flex;flex-direction:column;gap:6px;font-size:14px;color:var(--muted)}
+.psets select,.psets input{padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:16px;font-family:var(--ui)}
+.pgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cwrap{position:relative;align-self:center;width:min(78vw,320px);aspect-ratio:1;margin-top:18px;color:var(--ink)}
+.cdial{width:100%;height:100%;transition:transform .15s linear}
+.cpointer{position:absolute;top:-22px;left:50%;transform:translateX(-50%);color:var(--green);font-size:20px}
+.cwrap.aligned .cdial circle:first-child{stroke:#2E8B57;stroke-width:6}
+.cinfo{margin:4px 0 0;text-align:center;font-size:16px;font-weight:600;min-height:24px}
+.cdata{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cdata div{display:flex;flex-direction:column;align-items:center;padding:12px;border-radius:14px;background:var(--virtue-bg)}
+.cdata b{font-size:22px}.cdata small{font-size:12px;color:var(--muted);text-align:center}
+.toast{bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.meta .play{min-width:132px;justify-content:center;white-space:nowrap}
+.an.sep{font-family:"Amiri Quran",var(--ar);font-size:1.05em}
 </style>
 </head>
 <body>
@@ -441,6 +492,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
   </footer>
   <nav class="tabbar" id="tabbar" aria-label="Navigation">
     <button data-tab="adhkar"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 16a7 7 0 0 1 14 0"/><path d="M2 16h20M12 4v3M5.5 7.5l2 2M18.5 7.5l-2 2"/></svg><span>Invocations</span></button>
+    <button data-tab="priere"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2"/><path d="M9 2.5h6"/></svg><span>Prière</span></button>
     <button data-tab="coran"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6.5C10 5 7 4.6 3.5 5v12.5c3.5-.4 6.5 0 8.5 1.5 2-1.5 5-1.9 8.5-1.5V5C17 4.6 14 5 12 6.5z"/><path d="M12 6.5V19"/></svg><span>Coran</span></button>
     <button data-tab="apprendre"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-4.5L21 9l-9 4.5z"/><path d="M7 11v4.5c1.5 1.5 3 2 5 2s3.5-.5 5-2V11"/></svg><span>Apprendre</span></button>
     <button data-tab="reglages"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"><path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/></svg><span>Réglages</span></button>
