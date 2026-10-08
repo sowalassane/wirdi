@@ -1430,6 +1430,13 @@ $("bSet").onclick = () => {
   $("bReset").textContent = cur && cur !== "coran" && cur !== "learn" && cur !== "pray" ? "Recommencer" : "Tout recommencer";
   openSheet("sheetSet");
 };
+const PLAY_URL = "https://play.google.com/store/apps/details?id=com.alatec.wirdi", SITE_URL = "https://wirdi.alatec.fr";
+$("bShare").onclick = async () => {
+  const text = "Wirdî · وِرْدِي : adhkâr du matin et du soir, Coran et horaires de prière.\nAndroid (Play Store) : " + PLAY_URL + "\niPhone et navigateur : " + SITE_URL;
+  if (navigator.share){ try { await navigator.share({ title: "Wirdî", text }); return; } catch (e){ if (e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(text); qToast("Lien copié, collez-le pour le partager"); }
+  catch (e){ window.open(PLAY_URL, "_blank", "noopener"); }
+};
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
 $("swFr").onclick = () => { prefs.fr = !prefs.fr; savePrefs(); applyPrefs(); };
 $("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); if (prefs.vib) buzz(false); };
