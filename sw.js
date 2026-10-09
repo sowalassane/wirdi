@@ -1,4 +1,4 @@
-const CACHE = 'wirdi-v29';
+const CACHE = 'wirdi-v30';
 const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png'];
 
 self.addEventListener('install', e => {
@@ -14,6 +14,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin === location.origin) {
+    // Audios : laissés au navigateur (requêtes partielles de lecture)
+    if (url.pathname.includes('/audio/')) return;
     // Réseau d'abord pour la page (mises à jour), cache en secours hors-ligne
     if (url.pathname.endsWith('/app.js')) {
       e.respondWith(fetch(req, {cache: 'no-cache'}).then(r => { const c = r.clone(); caches.open(CACHE).then(ca => ca.put(req, c)); return r; }).catch(() => caches.match(req)));
