@@ -776,6 +776,12 @@ function loadTrans(k){
   return T.p;
 }
 
+function retryTrans(){
+  TRANS.fr.err = TRANS.tl.err = false;
+  if (cur === "coran" && qv.mode === "verse"){ const y = main.scrollTop; renderVerse(); main.scrollTop = y; }
+}
+window.addEventListener("online", () => { if (TRANS.fr.err || TRANS.tl.err) retryTrans(); });
+
 // Translittération Tanzil : balises <u>/<b> converties en notation lisible
 const UMAP = {a: "â", i: "î", u: "û", A: "Â", I: "Î", U: "Û", h: "ḥ", H: "Ḥ", s: "ṣ", S: "Ṣ", d: "ḍ", D: "Ḍ", t: "ṭ", T: "Ṭ", z: "ẓ", Z: "Ẓ"};
 function cleanTL(s){
@@ -802,6 +808,8 @@ function bindModeBar(){
 }
 function openVerse(s, a){
   stopAudio(); lpReset();
+  // Un échec de chargement (hors connexion, réseau coupé) ne doit pas bloquer la traduction pour toute la session
+  TRANS.fr.err = TRANS.tl.err = false;
   qv.mode = "verse"; qv.s = s; qv.a = a || 1;
   render();
   const el = main.querySelector('.vcard[data-a="' + qv.a + '"]');
@@ -816,7 +824,8 @@ function renderVerse(){
     Promise.allSettled([needFr ? loadTrans("fr") : 0, needTl ? loadTrans("tl") : 0]).then(() => { if (cur === "coran" && qv.mode === "verse" && qv.s === s){ const y = main.scrollTop; renderVerse(); main.scrollTop = y; } });
   }
   let h = modeBar() + '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets' + (META ? ' · page ' + pageOf(s, 1) : '') + '</span></div>';
-  if (prefs.fr && TRANS.fr.err) h += '<p class="qnote">La traduction française n’est pas encore disponible.</p>';
+  const missFr = prefs.fr && TRANS.fr.err, missTl = prefs.tr && TRANS.tl.err;
+  if (missFr || missTl) h += '<p class="qnote">' + (missFr ? "La traduction française" : "La translittération") + (missFr && missTl ? " et la translittération n’ont pas pu être chargées." : " n’a pas pu être chargée.") + ' Vérifiez votre connexion. <button class="btn ghost qretry">Réessayer</button></p>';
   V.forEach((t, i) => {
     let txt = t;
     if (i === 0 && s !== 1 && s !== 9){ const m = txt.match(BASM_RE); if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); } }
@@ -833,6 +842,7 @@ function renderVerse(){
   h += '</nav>';
   main.innerHTML = h;
   bindModeBar();
+  main.querySelectorAll(".qretry").forEach(b => b.onclick = retryTrans);
   main.querySelectorAll(".vplay").forEach(b => b.onclick = () => { const a = +b.closest(".vcard").dataset.a; if (QS.on && QS.s === s && QS.a === a){ qpToggle(); } else qpStart(s, a); });
   main.querySelectorAll(".vmark").forEach(b => b.onclick = () => {
     const a = +b.dataset.a; store.set("wirdi-quran-mark", {s, a});
