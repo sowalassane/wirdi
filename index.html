@@ -240,6 +240,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .sh-fr{font-size:13px;color:var(--muted);text-align:center}
 .basmala{margin:4px 0 0;text-align:center;font-family:'Amiri Quran',var(--ar);font-size:calc(28px*var(--scale));line-height:2;color:var(--ink)}
 .qnote{margin:0;text-align:center;font-size:13px;color:var(--muted);font-style:italic}
+.qnote .qretry{display:block;margin:8px auto 0;font-style:normal}
 .mushaf{font-family:'Amiri Quran',var(--ar);font-size:calc(29px*var(--scale));line-height:2.35;text-align:justify;text-align-last:center;color:var(--ink);padding:4px 2px}
 .aya{border-radius:8px;transition:background .2s;cursor:pointer}
 .aya.marked{background:rgba(168,116,36,.18)}
@@ -390,6 +391,9 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 @keyframes cardNext{from{opacity:.15;transform:translateX(48px)}to{opacity:1;transform:none}}
 @keyframes cardPrev{from{opacity:.15;transform:translateX(-48px)}to{opacity:1;transform:none}}
 .counter{overflow:visible}
+.hwrap{position:relative;display:block;flex:none;width:112px;height:112px}
+.hwrap .hapt{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;border-radius:50%;clip-path:circle(50%);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.hwrap:active .counter .face{transform:scale(.94)}
 .counter .ripple{position:absolute;inset:12px;border-radius:50%;border:3px solid var(--green);animation:ripple .6s ease-out forwards;pointer-events:none}
 @keyframes ripple{from{transform:scale(1);opacity:.7}to{transform:scale(1.45);opacity:0}}
 .counter.pulse .face{animation:pulse .22s ease}

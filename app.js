@@ -776,6 +776,12 @@ function loadTrans(k){
   return T.p;
 }
 
+function retryTrans(){
+  TRANS.fr.err = TRANS.tl.err = false;
+  if (cur === "coran" && qv.mode === "verse"){ const y = main.scrollTop; renderVerse(); main.scrollTop = y; }
+}
+window.addEventListener("online", () => { if (TRANS.fr.err || TRANS.tl.err) retryTrans(); });
+
 // Translittération Tanzil : balises <u>/<b> converties en notation lisible
 const UMAP = {a: "â", i: "î", u: "û", A: "Â", I: "Î", U: "Û", h: "ḥ", H: "Ḥ", s: "ṣ", S: "Ṣ", d: "ḍ", D: "Ḍ", t: "ṭ", T: "Ṭ", z: "ẓ", Z: "Ẓ"};
 function cleanTL(s){
@@ -802,6 +808,8 @@ function bindModeBar(){
 }
 function openVerse(s, a){
   stopAudio(); lpReset();
+  // Un échec de chargement (hors connexion, réseau coupé) ne doit pas bloquer la traduction pour toute la session
+  TRANS.fr.err = TRANS.tl.err = false;
   qv.mode = "verse"; qv.s = s; qv.a = a || 1;
   render();
   const el = main.querySelector('.vcard[data-a="' + qv.a + '"]');
@@ -816,7 +824,8 @@ function renderVerse(){
     Promise.allSettled([needFr ? loadTrans("fr") : 0, needTl ? loadTrans("tl") : 0]).then(() => { if (cur === "coran" && qv.mode === "verse" && qv.s === s){ const y = main.scrollTop; renderVerse(); main.scrollTop = y; } });
   }
   let h = modeBar() + '<div class="qread"><div class="sura-head"><span class="sh-ar" lang="ar">سُورَةُ ' + SURA_AR[s - 1] + '</span><span class="sh-fr">' + s + '. ' + esc(SURA_TR[s - 1]) + ' · ' + V.length + ' versets' + (META ? ' · page ' + pageOf(s, 1) : '') + '</span></div>';
-  if (prefs.fr && TRANS.fr.err) h += '<p class="qnote">La traduction française n’est pas encore disponible.</p>';
+  const missFr = prefs.fr && TRANS.fr.err, missTl = prefs.tr && TRANS.tl.err;
+  if (missFr || missTl) h += '<p class="qnote">' + (missFr ? "La traduction française" : "La translittération") + (missFr && missTl ? " et la translittération n’ont pas pu être chargées." : " n’a pas pu être chargée.") + ' Vérifiez votre connexion. <button class="btn ghost qretry">Réessayer</button></p>';
   V.forEach((t, i) => {
     let txt = t;
     if (i === 0 && s !== 1 && s !== 9){ const m = txt.match(BASM_RE); if (m){ h += '<p class="basmala" lang="ar">' + esc(m[1]) + '</p>'; txt = txt.slice(m[0].length); } }
@@ -833,6 +842,7 @@ function renderVerse(){
   h += '</nav>';
   main.innerHTML = h;
   bindModeBar();
+  main.querySelectorAll(".qretry").forEach(b => b.onclick = retryTrans);
   main.querySelectorAll(".vplay").forEach(b => b.onclick = () => { const a = +b.closest(".vcard").dataset.a; if (QS.on && QS.s === s && QS.a === a){ qpToggle(); } else qpStart(s, a); });
   main.querySelectorAll(".vmark").forEach(b => b.onclick = () => {
     const a = +b.dataset.a; store.set("wirdi-quran-mark", {s, a});
@@ -1264,12 +1274,12 @@ function render(){
     main.innerHTML = renderEnd();
     $("bHome").onclick = goHome;
     $("bReview").onclick = () => go(0);
-    $("counter").style.visibility = "hidden";
+    $("counter").style.visibility = "hidden"; { const h = document.querySelector(".hapt"); if (h) h.style.visibility = "hidden"; }
     $("hint").textContent = "";
     $("bPrev").disabled = false; $("bNext").disabled = true;
     return;
   }
-  $("counter").style.visibility = "visible";
+  $("counter").style.visibility = "visible"; { const h = document.querySelector(".hapt"); if (h) h.style.visibility = "visible"; }
   main.innerHTML = renderCard(idx);
   if (cardDir){ const c = main.querySelector(".card"); if (c) c.classList.add(cardDir > 0 ? "in-next" : "in-prev"); cardDir = 0; }
   main.scrollTop = 0;
@@ -1292,7 +1302,7 @@ function updateCounter(){
   $("counter").setAttribute("aria-label", left === 0 ? "Terminé" : "Compter, " + left + " restant");
 }
 
-let advTimer = null;
+let advTimer = null, hapticTap = false;
 // Retour au comptage : vibration (Android), haptique iOS 18+ (interrupteur natif), son optionnel
 function iosHaptic(){
   try {
@@ -1325,6 +1335,7 @@ function buzz(strong){
   if (prefs.snd) tick(strong);
   if (!prefs.vib) return;
   if (typeof navigator.vibrate === "function"){ try { if (navigator.vibrate(strong ? [40, 70, 40] : 25)) return; } catch(e){} }
+  if (hapticTap) return; // le toucher sur l'interrupteur a déjà fait vibrer
   iosHaptic();
   if (strong) setTimeout(iosHaptic, 150);
 }
@@ -1368,6 +1379,18 @@ function openSession(k){
 function goHome(){ clearTimeout(advTimer); autoChain = false; stopAudio(); save(); cur = null; render(); }
 
 $("counter").addEventListener("click", tap);
+// iOS : Safari n'accepte plus le clic simulé de iosHaptic() (le retour haptique exige un vrai toucher sur un interrupteur).
+// On pose donc un interrupteur invisible sur le bouton de comptage : le toucher de l'utilisateur le bascule et iOS vibre.
+const IOS_HAPTIC = typeof navigator.vibrate !== "function" && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1));
+if (IOS_HAPTIC){
+  const cb = $("counter"), wrap = document.createElement("span"), sw = document.createElement("input");
+  wrap.className = "hwrap"; cb.parentNode.insertBefore(wrap, cb); wrap.appendChild(cb);
+  sw.type = "checkbox"; sw.setAttribute("switch", ""); sw.className = "hapt"; sw.tabIndex = -1; sw.setAttribute("aria-hidden", "true");
+  sw.addEventListener("click", () => { hapticTap = true; tap(); hapticTap = false; });
+  wrap.appendChild(sw);
+}
+function syncHaptic(){ if (IOS_HAPTIC) document.querySelector(".hapt").hidden = !prefs.vib; }
+syncHaptic();
 $("bNext").addEventListener("click", () => go(idx + 1));
 $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
@@ -1439,7 +1462,7 @@ $("bShare").onclick = async () => {
 };
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
 $("swFr").onclick = () => { prefs.fr = !prefs.fr; savePrefs(); applyPrefs(); };
-$("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); if (prefs.vib) buzz(false); };
+$("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); syncHaptic(); if (prefs.vib) buzz(false); };
 $("swAuto").onclick = () => { prefs.auto = !prefs.auto; savePrefs(); applyPrefs(); };
 document.querySelectorAll("[data-rate]").forEach(b => b.onclick = () => { prefs.rate = +b.dataset.rate; player.playbackRate = prefs.rate; savePrefs(); applyPrefs(); });
 $("swSnd").onclick = () => { prefs.snd = !prefs.snd; savePrefs(); applyPrefs(); if (prefs.snd) tick(false); };

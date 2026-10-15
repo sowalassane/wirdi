@@ -1,4 +1,7 @@
-const CACHE = 'wirdi-v29';
+const CACHE = 'wirdi-v30';
+// Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
+const DATA = 'wirdi-data';
+const DATA_FILES = ['/quran-uthmani.txt', '/fr.hamidullah.txt', '/en.transliteration.txt'];
 const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png'];
 
 self.addEventListener('install', e => {
@@ -21,6 +24,10 @@ self.addEventListener('fetch', e => {
     }
     if (req.mode === 'navigate') {
       e.respondWith(fetch(req, {cache: 'no-cache'}).then(r => { const c = r.clone(); caches.open(CACHE).then(ca => ca.put('./index.html', c)); return r; }).catch(() => caches.match('./index.html')));
+      return;
+    }
+    if (DATA_FILES.some(p => url.pathname.endsWith(p))) {
+      e.respondWith(caches.open(DATA).then(c => c.match(req, {ignoreSearch: true}).then(hit => hit || caches.match(req).then(old => { if (old) { c.put(req, old.clone()); return old; } return fetch(req).then(res => { if (res.ok) c.put(req, res.clone()); return res; }); }))));
       return;
     }
     e.respondWith(caches.match(req).then(r => r || fetch(req).then(res => { if (res.ok) { const c = res.clone(); caches.open(CACHE).then(ca => ca.put(req, c)); } return res; })));
