@@ -367,12 +367,17 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .mtools .btn{flex:1;font-size:14px;padding:10px 8px}
 .mhead{display:flex;justify-content:space-between;font-family:var(--ar);font-size:16px;color:var(--gold);padding:0 6px}
 .mpage{--paper:#FFFBEF;margin:0;padding:10px;border-radius:6px;background:var(--paper);border:2px solid #2F7A62;box-shadow:inset 0 0 0 4px var(--paper),inset 0 0 0 6px #C9A25A,0 4px 18px -10px rgba(0,0,0,.4)}
-.mpage img{display:block;width:100%;height:auto;aspect-ratio:1024/1656;mix-blend-mode:multiply;background:var(--paper)}
+.mpage img{display:block;width:100%;height:auto;aspect-ratio:1024/1656;mix-blend-mode:multiply}
+.mpage .qmsg[hidden]{display:none}
 .mpage .qmsg{aspect-ratio:1024/1656;display:flex;flex-direction:column;justify-content:center;color:#3E4C47}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mpage{--paper:#18211E}:root:not([data-theme="light"]) .mpage img{mix-blend-mode:normal;filter:invert(.9) sepia(.15);background:none}:root:not([data-theme="light"]) .mpage .qmsg{color:var(--muted)}}
 :root[data-theme="dark"] .mpage{--paper:#18211E}
 :root[data-theme="dark"] .mpage img{mix-blend-mode:normal;filter:invert(.9) sepia(.15);background:none}
 :root[data-theme="dark"] .mpage .qmsg{color:var(--muted)}
+.mnum{display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.mnum small{font-size:12px;color:#6B5A3A}
+:root[data-theme="dark"] .mnum small{color:var(--muted)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mnum small{color:var(--muted)}}
 .sig-ov{position:fixed;inset:0;z-index:18;background:rgba(0,0,0,0);transition:background .25s}
 .sig-ov.show{background:rgba(0,0,0,.35)}
 .sig{position:absolute;top:0;right:0;bottom:0;width:min(80vw,320px);background:var(--bg);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(100%);transition:transform .25s ease}

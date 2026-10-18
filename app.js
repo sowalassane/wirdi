@@ -771,8 +771,7 @@ function renderMushaf(){
   let h = modeBar() + '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
   h += '<div class="mtools"><button class="btn ghost" id="mMark">' + (marked ? '🔖 Page marquée' : '🔖 Marquer') + '</button><button class="btn" id="mSig">📑 Signets</button></div>';
   h += '<div class="mhead"><span lang="ar">سُورَةُ ' + SURA_AR[s0 - 1] + '</span><span lang="ar">الجزء ' + an(juzOf(s0, R[0][1])) + '</span></div>';
-  h += '<figure class="mpage"><img id="mImg" src="' + mImg(p) + '" alt="Page ' + p + ' du Coran" width="1024" height="1656"><p class="qmsg" id="mErr" hidden>Cette page n’est pas encore enregistrée sur l’appareil.<br>Connectez-vous, ou téléchargez le mushaf depuis <b>📑 Signets</b>.</p></figure>';
-  h += '<div class="pg-num">' + an(p) + '</div>';
+  h += '<figure class="mpage"><img id="mImg" src="' + mImg(p) + '" alt="Page ' + p + ' du Coran" width="1024" height="1656"><p class="qmsg" id="mErr" hidden>Cette page n’est pas encore enregistrée sur l’appareil.<br>Connectez-vous, ou téléchargez le mushaf depuis <b>📑 Signets</b>.</p><figcaption class="mnum"><span class="pg-num">' + an(p) + '</span><small>Page ' + p + ' / ' + MP + '</small></figcaption></figure>';
   h += '<div class="qnav">' + (p < MP ? '<button class="btn" data-mp="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-mp="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
   h += '<p class="qcredit">Mushaf de Médine (Hafs), pages du Complexe du Roi Fahd · images quran.com<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir.</p></div>';
   main.innerHTML = h;
@@ -902,7 +901,7 @@ let GA = null;
 function gAyah(s, a){ if (!GA){ GA = [0, 0]; for (let k = 1; k <= 114; k++) GA[k + 1] = GA[k] + Q[k].length; } return GA[s] + a; }
 function modeBar(){
   const m = prefs.qmode || "page";
-  return '<div class="qmode"><button data-qm="mushaf" class="' + (m === "mushaf" ? "on" : "") + '">🕌 Mushaf</button><button data-qm="page" class="' + (m === "page" ? "on" : "") + '">📖 Texte</button><button data-qm="verse" class="' + (m === "verse" ? "on" : "") + '">☰ Traduction</button></div>';
+  return '<div class="qmode"><button data-qm="mushaf" class="' + (m === "mushaf" ? "on" : "") + '">🕌 Mushaf</button><button data-qm="page" class="' + (m === "page" ? "on" : "") + '">📖 Page</button><button data-qm="verse" class="' + (m === "verse" ? "on" : "") + '">☰ Traduction</button></div>';
 }
 function bindModeBar(){
   main.querySelectorAll("[data-qm]").forEach(b => b.onclick = () => {
