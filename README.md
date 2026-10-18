@@ -8,12 +8,13 @@ Application gratuite pour les invocations du matin et du soir, la lecture et l'�
 
 ## Fonctionnalités
 - Invocations du matin et du soir (Hisn al-Muslim) : arabe vocalisé, translittération, traduction française, compteur et audio
-- Coran : lecture page par page ou verset par verset avec traduction, écoute avec plusieurs récitateurs
+- Coran : mushaf de Médine page par page (téléchargeable pour le hors connexion, signets des sourates), lecture du texte page par page ou verset par verset avec traduction, écoute avec plusieurs récitateurs
 - Apprendre l'arabe : alphabet, voyelles, syllabes, vocabulaire, quiz et arabe courant
 - Fonctionne hors connexion, sans compte, sans publicité, sans collecte de données
 
 ## Sources
 - Texte, translittération et traduction du Coran : Tanzil (tanzil.net)
+- Pages du mushaf de Médine (dossier `mushaf/`) : Complexe du Roi Fahd pour l'impression du Saint Coran, images générées par quran.com-images et compressées par tarekeldeeb/madina_images
 - Récitations du Coran : Islamic Network / Al Quran Cloud
 - Audio des invocations : HisnMuslim.com
 

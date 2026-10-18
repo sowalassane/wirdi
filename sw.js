@@ -1,6 +1,8 @@
-const CACHE = 'wirdi-v30';
+const CACHE = 'wirdi-v31';
 // Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
 const DATA = 'wirdi-data';
+// Pages du mushaf (images) : cache à part aussi, rempli page par page ou par le bouton « Télécharger »
+const MUSHAF = 'wirdi-mushaf';
 const DATA_FILES = ['/quran-uthmani.txt', '/fr.hamidullah.txt', '/en.transliteration.txt'];
 const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png'];
 
@@ -24,6 +26,10 @@ self.addEventListener('fetch', e => {
     }
     if (req.mode === 'navigate') {
       e.respondWith(fetch(req, {cache: 'no-cache'}).then(r => { const c = r.clone(); caches.open(CACHE).then(ca => ca.put('./index.html', c)); return r; }).catch(() => caches.match('./index.html')));
+      return;
+    }
+    if (/\/mushaf\/\d{3}\.png$/.test(url.pathname)) {
+      e.respondWith(caches.open(MUSHAF).then(c => c.match(req, {ignoreSearch: true}).then(hit => hit || fetch(req).then(res => { if (res.ok) c.put(req, res.clone()); return res; }))));
       return;
     }
     if (DATA_FILES.some(p => url.pathname.endsWith(p))) {

@@ -262,6 +262,7 @@ function openSuraText(s, a){ qv.mode = "read"; qv.s = s; qv.a = a || 1; render()
 function openSura(s, a){
   a = a || 1;
   if ((prefs.qmode || "page") === "verse") return openVerse(s, a);
+  if (prefs.qmode === "mushaf") return META ? openMushaf(pageOf(s, a)) : loadMeta().then(() => openMushaf(pageOf(s, a))).catch(() => openSuraText(s, a));
   if (META) return openPage(pageOf(s, a), {s, a});
   loadMeta().then(() => openPage(pageOf(s, a), {s, a})).catch(() => openSuraText(s, a));
 }
@@ -277,6 +278,7 @@ function renderQuran(){
   }
   if (qv.mode === "read") return renderSura();
   if (qv.mode === "page") return renderPage();
+  if (qv.mode === "mushaf") return renderMushaf();
   if (qv.mode === "verse") return renderVerse();
   const last = qLast(), mark = qMark();
   let h = '<div class="qwrap">';
@@ -751,6 +753,111 @@ function renderPage(){
 }
 
 
+// ---------- Mushaf : pages imprimées de Médine (images dans /mushaf, cache 'wirdi-mushaf') ----------
+const MP = 604, MCACHE = "wirdi-mushaf";
+const mImg = p => "mushaf/" + String(p).padStart(3, "0") + ".png";
+const md = {busy: false, stop: false, done: 0};
+function openMushaf(p){
+  const np = Math.max(1, Math.min(MP, p || 1));
+  qv.dir = qv.mode === "mushaf" && qv.p ? Math.sign(np - qv.p) : 0;
+  qv.mode = "mushaf"; qv.p = np;
+  render(); main.scrollTop = 0;
+}
+function suraOfPage(p){ let s = 1; for (let k = 1; k <= 114; k++) if (pageOf(k, 1) <= p) s = k; return s; }
+function renderMushaf(){
+  if (!META){ loadMeta().then(render).catch(() => { prefs.qmode = "page"; qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
+  const p = qv.p, R = pageRange(p), s0 = R[0][0], mark = qMark();
+  const marked = mark && mark.p === p;
+  let h = modeBar() + '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
+  h += '<div class="mtools"><button class="btn ghost" id="mMark">' + (marked ? '🔖 Page marquée' : '🔖 Marquer') + '</button><button class="btn" id="mSig">📑 Signets</button></div>';
+  h += '<div class="mhead"><span lang="ar">سُورَةُ ' + SURA_AR[s0 - 1] + '</span><span lang="ar">الجزء ' + an(juzOf(s0, R[0][1])) + '</span></div>';
+  h += '<figure class="mpage"><img id="mImg" src="' + mImg(p) + '" alt="Page ' + p + ' du Coran" width="1024" height="1656"><p class="qmsg" id="mErr" hidden>Cette page n’est pas encore enregistrée sur l’appareil.<br>Connectez-vous, ou téléchargez le mushaf depuis <b>📑 Signets</b>.</p></figure>';
+  h += '<div class="pg-num">' + an(p) + '</div>';
+  h += '<div class="qnav">' + (p < MP ? '<button class="btn" data-mp="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-mp="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
+  h += '<p class="qcredit">Mushaf de Médine (Hafs), pages du Complexe du Roi Fahd · images quran.com<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir.</p></div>';
+  main.innerHTML = h;
+  bindModeBar();
+  const img = $("mImg");
+  img.onerror = () => { img.hidden = true; $("mErr").hidden = false; };
+  main.querySelectorAll("[data-mp]").forEach(b => b.onclick = () => openMushaf(+b.dataset.mp));
+  $("mSig").onclick = openSignets;
+  $("mMark").onclick = () => {
+    store.set("wirdi-quran-mark", {s: R[0][0], a: R[0][1], p});
+    $("mMark").textContent = "🔖 Page marquée";
+    qToast("🔖 Marque-page : page " + p + " (" + SURA_TR[s0 - 1] + ")");
+  };
+  // Pages voisines préchargées pour tourner sans attente
+  [p + 1, p - 1].forEach(n => { if (n >= 1 && n <= MP){ const im = new Image(); im.src = mImg(n); } });
+  store.set("wirdi-quran-last", {s: R[0][0], a: R[0][1], p});
+  $("sTitleF").textContent = SURA_TR[s0 - 1] + " · page " + p;
+}
+
+function openSignets(){
+  closeSignets();
+  const p = qv.p, cs = suraOfPage(p);
+  const ov = document.createElement("div"); ov.className = "sig-ov"; ov.id = "sigOv";
+  let h = '<aside class="sig" role="dialog" aria-label="Signets"><div class="sig-h"><b>Signets</b><button class="qb-btn" id="sigX" aria-label="Fermer">✕</button></div>';
+  h += '<div class="qtabs"><button data-st="s" class="' + (qv.sigTab !== "j" ? "on" : "") + '">Sourates</button><button data-st="j" class="' + (qv.sigTab === "j" ? "on" : "") + '">Juz’</button></div><div class="sig-list" id="sigList">';
+  if (qv.sigTab === "j") JUZ.forEach((x, i) => { const jp = pageOf(x[0], x[1]); const on = jp <= p && (i === 29 || pageOf(JUZ[i + 1][0], JUZ[i + 1][1]) > p); h += '<button class="sig-row' + (on ? ' on' : '') + '" data-mp="' + jp + '"><span class="sig-p">' + jp + '</span><span lang="ar">الجزء ' + an(i + 1) + '</span></button>'; });
+  else for (let s = 1; s <= 114; s++){ const sp = pageOf(s, 1); h += '<button class="sig-row' + (s === cs ? ' on' : '') + '" data-mp="' + sp + '"><span class="sig-p">' + sp + '</span><span lang="ar">' + SURA_AR[s - 1] + '</span></button>'; }
+  h += '</div><div class="sig-dl" id="sigDl"></div></aside>';
+  ov.innerHTML = h;
+  document.body.appendChild(ov);
+  requestAnimationFrame(() => ov.classList.add("show"));
+  ov.onclick = e => { if (e.target === ov) closeSignets(); };
+  $("sigX").onclick = closeSignets;
+  ov.querySelectorAll("[data-st]").forEach(b => b.onclick = () => { qv.sigTab = b.dataset.st; openSignets(); });
+  ov.querySelectorAll(".sig-row").forEach(b => b.onclick = () => { closeSignets(); openMushaf(+b.dataset.mp); });
+  const on = ov.querySelector(".sig-row.on"); if (on) on.scrollIntoView({block: "center"});
+  dlUI();
+}
+function closeSignets(){ const o = $("sigOv"); if (o) o.remove(); }
+
+// Téléchargement de toutes les pages pour la lecture hors connexion
+function dlCount(){
+  if (!("caches" in window)) return Promise.resolve(-1);
+  return caches.open(MCACHE).then(c => c.keys()).then(k => k.filter(r => /\/mushaf\/\d{3}\.png$/.test(r.url)).length).catch(() => -1);
+}
+function dlUI(){
+  const box = $("sigDl"); if (!box) return;
+  if (md.busy){
+    box.innerHTML = '<p>Téléchargement : <b>' + md.done + ' / ' + MP + '</b> pages</p><div class="lprog"><span class="bar"><i style="width:' + Math.round(md.done * 100 / MP) + '%"></i></span></div><button class="btn ghost" id="dlStop">Interrompre</button>';
+    $("dlStop").onclick = () => { md.stop = true; };
+    return;
+  }
+  dlCount().then(n => {
+    if (!$("sigDl") || md.busy) return;
+    if (n < 0){ box.innerHTML = '<p>Le téléchargement hors connexion n’est pas disponible sur ce navigateur.</p>'; return; }
+    if (n >= MP){ box.innerHTML = '<p>✓ Mushaf complet enregistré : lecture possible sans connexion.</p><button class="btn ghost" id="dlDel">Supprimer (libère ≈ 57 Mo)</button>'; $("dlDel").onclick = () => { if (confirm("Supprimer les pages du mushaf de cet appareil ?")) caches.delete(MCACHE).then(dlUI); }; return; }
+    box.innerHTML = '<p>' + (n ? n + ' pages sur ' + MP + ' déjà enregistrées. ' : '') + 'Téléchargez le mushaf pour le lire sans connexion.</p><button class="btn" id="dlGo">⬇ Télécharger le mushaf (≈ 57 Mo)</button>';
+    $("dlGo").onclick = dlAll;
+  });
+}
+function dlAll(){
+  if (md.busy || !("caches" in window)) return;
+  md.busy = true; md.stop = false; md.done = 0;
+  if (navigator.storage && navigator.storage.persist) navigator.storage.persist().catch(() => {});
+  dlUI();
+  let next = 1, fails = 0;
+  caches.open(MCACHE).then(c => {
+    const worker = () => {
+      if (md.stop || next > MP) return Promise.resolve();
+      const url = new URL(mImg(next++), location.href).href;
+      return c.match(url).then(hit => hit || fetch(url).then(r => { if (!r.ok) throw new Error(r.status); return c.put(url, r); }))
+        .then(() => { md.done++; }, () => { fails++; })
+        .then(() => { if (md.done % 8 === 0) dlUI(); return worker(); });
+    };
+    return Promise.all([1, 2, 3, 4, 5, 6].map(worker));
+  }).catch(() => { fails++; }).then(() => {
+    md.busy = false;
+    if (md.stop) qToast("Téléchargement interrompu (" + md.done + " pages enregistrées)");
+    else if (fails) qToast("Certaines pages n’ont pas pu être téléchargées. Réessayez avec une meilleure connexion.");
+    else qToast("✓ Mushaf téléchargé : lecture hors connexion possible");
+    dlUI();
+  });
+}
+
+
 // ---------- Coran : mode verset (traduction + translittération Tanzil) ----------
 const TRANS = {fr: {file: "fr.hamidullah.txt", data: null, p: null, err: false}, tl: {file: "en.transliteration.txt", data: null, p: null, err: false}};
 function loadTrans(k){
@@ -795,7 +902,7 @@ let GA = null;
 function gAyah(s, a){ if (!GA){ GA = [0, 0]; for (let k = 1; k <= 114; k++) GA[k + 1] = GA[k] + Q[k].length; } return GA[s] + a; }
 function modeBar(){
   const m = prefs.qmode || "page";
-  return '<div class="qmode"><button data-qm="page" class="' + (m === "page" ? "on" : "") + '">📖 Page</button><button data-qm="verse" class="' + (m === "verse" ? "on" : "") + '">☰ Versets + traduction</button></div>';
+  return '<div class="qmode"><button data-qm="mushaf" class="' + (m === "mushaf" ? "on" : "") + '">🕌 Mushaf</button><button data-qm="page" class="' + (m === "page" ? "on" : "") + '">📖 Texte</button><button data-qm="verse" class="' + (m === "verse" ? "on" : "") + '">☰ Traduction</button></div>';
 }
 function bindModeBar(){
   main.querySelectorAll("[data-qm]").forEach(b => b.onclick = () => {
@@ -901,7 +1008,7 @@ function qpToggle(){
 }
 function qpStartPoint(){
   if (cur === "coran" && qv.mode === "verse") return {s: qv.s, a: qv.a || 1};
-  if (cur === "coran" && qv.mode === "page" && META){ const R = pageRange(qv.p); return {s: R[0][0], a: R[0][1]}; }
+  if (cur === "coran" && (qv.mode === "page" || qv.mode === "mushaf") && META){ const R = pageRange(qv.p); return {s: R[0][0], a: R[0][1]}; }
   const L = qLast(); return L ? {s: L.s, a: L.a} : {s: 1, a: 1};
 }
 function qpStep(d){
@@ -935,6 +1042,9 @@ function qpFollow(){
     document.querySelectorAll(".playing-aya").forEach(x => x.classList.remove("playing-aya"));
     const el = main.querySelector('.vcard[data-a="' + QS.a + '"]');
     if (el){ el.classList.add("playing-aya"); el.scrollIntoView({block: "center", behavior: "smooth"}); qv.a = QS.a; }
+  } else if (qv.mode === "mushaf" && META){
+    const p = pageOf(QS.s, QS.a);
+    if (p !== qv.p) openMushaf(p);
   } else if (qv.mode === "page" && META){
     const p = pageOf(QS.s, QS.a);
     if (p !== qv.p) openPage(p);
@@ -955,7 +1065,7 @@ function qpUI(){
     sel.onchange = () => { prefs.reciter = sel.value; savePrefs(); if (QS.on){ const wasPlaying = QS.playing; qpLoad(); if (!wasPlaying) qp.pause(); } };
     $("qbPlay").onclick = qpToggle; $("qbPrev").onclick = () => qpStep(-1); $("qbNext").onclick = () => qpStep(1); $("qbClose").onclick = qpClose;
   }
-  const reading = cur === "coran" && (qv.mode === "verse" || qv.mode === "page");
+  const reading = cur === "coran" && (qv.mode === "verse" || qv.mode === "page" || qv.mode === "mushaf");
   const show = QS.on || reading;
   qbar.classList.toggle("show", show);
   app.classList.toggle("has-qbar", show);
@@ -1254,7 +1364,7 @@ function setMode(){
   const tab = home ? "adhkar" : cur === "coran" ? "coran" : cur === "learn" ? "apprendre" : cur === "pray" ? "priere" : "adhkar";
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
-  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
+  if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" || qv.mode === "mushaf" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
   else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
@@ -1394,13 +1504,13 @@ syncHaptic();
 $("bNext").addEventListener("click", () => go(idx + 1));
 $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
-  if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse")){ lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
+  if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse" || qv.mode === "mushaf")){ closeSignets(); lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "pray" && pv.mode !== "home"){ stopCompass(); openPray("home"); }
   else if (cur === "learn" && lv.mode !== "home"){ const back = lv.mode === "letter" ? "alpha" : "home"; openLearn(back); }
   else goHome();
 }
 function setTab(t){
-  clearTimeout(advTimer); autoChain = false; stopAudio(); lpReset(); if (typeof stopCompass === "function") stopCompass();
+  clearTimeout(advTimer); autoChain = false; stopAudio(); lpReset(); closeSignets(); if (typeof stopCompass === "function") stopCompass();
   if (t === "adhkar"){ save(); cur = null; }
   else if (t === "coran"){ cur = "coran"; qv.mode = "list"; }
   else if (t === "apprendre"){ cur = "learn"; lv.mode = "home"; }
@@ -1413,9 +1523,9 @@ $("bBack").addEventListener("click", backAction);
 let sx = null, sy = null;
 main.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
 main.addEventListener("touchend", e => {
-  if (sx !== null && cur === "coran" && qv.mode === "page" && META){
+  if (sx !== null && cur === "coran" && (qv.mode === "page" || qv.mode === "mushaf") && META){
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8){ const np = qv.p + (dx > 0 ? 1 : -1); if (np >= 1 && np <= pageCount()) openPage(np); }
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8){ const np = qv.p + (dx > 0 ? 1 : -1); if (np >= 1 && np <= pageCount()) (qv.mode === "mushaf" ? openMushaf : openPage)(np); }
     sx = sy = null; return;
   }
   if (sx === null || cur === null || cur === "coran" || cur === "learn" || cur === "pray") { sx = sy = null; return; }
@@ -1426,7 +1536,7 @@ main.addEventListener("touchend", e => {
 document.addEventListener("keydown", e => {
   if (document.body.classList.contains("open")) { if (e.key === "Escape") closeSheets(); return; }
   if (cur === null) return;
-  if (cur === "coran" || cur === "learn" || cur === "pray"){ if (e.key === "Escape") backAction(); return; }
+  if (cur === "coran" || cur === "learn" || cur === "pray"){ if (e.key === "Escape"){ if ($("sigOv")) closeSignets(); else backAction(); } return; }
   if (e.key === "ArrowRight") go(idx + 1);
   else if (e.key === "ArrowLeft") go(idx - 1);
   else if (e.key === "Escape") goHome();
