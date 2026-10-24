@@ -941,9 +941,6 @@ function renderVerse(){
       + '</div>';
   });
   h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : ' + esc(recName()) + ' (Islamic Network)</p></div>';
-  h += '<nav class="sbar" dir="rtl">';
-  for (let k = 1; k <= 114; k++) h += '<button class="' + (k === s ? "on" : "") + '" data-sb="' + k + '"><b>' + k + '</b><small>' + esc(SURA_TR[k - 1]) + '</small></button>';
-  h += '</nav>';
   main.innerHTML = h;
   bindModeBar();
   main.querySelectorAll(".qretry").forEach(b => b.onclick = retryTrans);
@@ -954,8 +951,6 @@ function renderVerse(){
     b.closest(".vcard").classList.add("marked");
     qToast("🔖 Marque-page : " + SURA_TR[s - 1] + ", verset " + a);
   });
-  main.querySelectorAll("[data-sb]").forEach(b => b.onclick = () => openVerse(+b.dataset.sb, 1));
-  const on = main.querySelector(".sbar .on"); if (on) on.scrollIntoView({inline: "center", block: "nearest"});
   $("sTitleF").textContent = SURA_TR[s - 1] + (META ? " · page " + pageOf(s, qv.a) : "");
   store.set("wirdi-quran-last", {s, a: qv.a, p: META ? pageOf(s, qv.a) : 0});
 }
@@ -1051,21 +1046,50 @@ function qpFollow(){
   }
 }
 let qbar = null;
+// Bandeau du bas : sourates (mode Traduction) ou pages (Mushaf, Page), avec accès direct à la première et à la dernière
+function pnavMax(){ return qv.mode === "verse" ? 114 : qv.mode === "mushaf" ? MP : pageCount(); }
+function pnavGo(n){
+  n = n === "first" ? 1 : n === "last" ? pnavMax() : +n;
+  if (qv.mode === "verse"){ if (n !== qv.s) openVerse(n, 1); }
+  else if (n !== qv.p) (qv.mode === "mushaf" ? openMushaf : openPage)(n);
+}
+function pnavUI(reading){
+  const el = $("pnav"), verse = qv.mode === "verse";
+  if (!reading || (!verse && !META)){ el.hidden = true; el.dataset.k = ""; return; }
+  el.hidden = false;
+  const n = pnavMax(), c = verse ? qv.s : qv.p, key = qv.mode + n, fresh = el.dataset.k !== key;
+  if (fresh){
+    let h = '<div class="pn-t"></div><div class="pn-row"><button class="pn-end" data-n="last" aria-label="' + (verse ? "Dernière sourate" : "Dernière page") + '">⇤</button><div class="pn-list' + (verse ? " pn-s" : "") + '" dir="rtl">';
+    for (let k = 1; k <= n; k++) h += '<button data-n="' + k + '"><b>' + k + '</b>' + (verse ? '<small>' + esc(SURA_TR[k - 1]) + '</small>' : '') + '</button>';
+    el.innerHTML = h + '</div><button class="pn-end" data-n="first" aria-label="' + (verse ? "Première sourate" : "Première page") + '">⇥</button></div>';
+    el.dataset.k = key;
+  }
+  el.querySelector(".pn-t").textContent = verse ? "" : SURA_TR[pageRange(c)[0][0] - 1];
+  const old = el.querySelector(".pn-list .on"), on = el.querySelector('.pn-list [data-n="' + c + '"]');
+  if (old !== on){
+    if (old) old.classList.remove("on");
+    if (on){ on.classList.add("on"); on.scrollIntoView({inline: "center", block: "nearest", behavior: fresh ? "auto" : "smooth"}); }
+  }
+}
 function qpUI(){
   if (!qbar){
     qbar = document.createElement("div"); qbar.id = "qbar"; qbar.className = "qbar";
-    qbar.innerHTML = '<button class="qb-btn" id="qbPrev" aria-label="Verset précédent">⏮</button><button class="qb-main" id="qbPlay" aria-label="Lecture">▶</button><button class="qb-btn" id="qbNext" aria-label="Verset suivant">⏭</button>'
-      + '<div class="qb-info"><b id="qbTitle">Écouter le Coran</b><select id="qbRec" aria-label="Récitateur"></select></div><button class="qb-btn" id="qbClose" aria-label="Arrêter">✕</button>';
+    qbar.innerHTML = '<div class="pnav" id="pnav" hidden></div><div class="qb-row"><button class="qb-btn" id="qbPrev" aria-label="Verset précédent">⏮</button><button class="qb-main" id="qbPlay" aria-label="Lecture">▶</button><button class="qb-btn" id="qbNext" aria-label="Verset suivant">⏭</button>'
+      + '<div class="qb-info"><b id="qbTitle">Écouter le Coran</b><select id="qbRec" aria-label="Récitateur"></select></div><button class="qb-btn" id="qbClose" aria-label="Arrêter">✕</button></div>';
     document.body.appendChild(qbar);
     const sel = $("qbRec");
     RECITERS.forEach(r => { const o = document.createElement("option"); o.value = r[0]; o.textContent = r[1]; sel.appendChild(o); });
     sel.onchange = () => { prefs.reciter = sel.value; savePrefs(); if (QS.on){ const wasPlaying = QS.playing; qpLoad(); if (!wasPlaying) qp.pause(); } };
+    $("pnav").onclick = e => { const b = e.target.closest("[data-n]"); if (b) pnavGo(b.dataset.n); };
     $("qbPlay").onclick = qpToggle; $("qbPrev").onclick = () => qpStep(-1); $("qbNext").onclick = () => qpStep(1); $("qbClose").onclick = qpClose;
   }
   const reading = cur === "coran" && (qv.mode === "verse" || qv.mode === "page" || qv.mode === "mushaf");
   const show = QS.on || reading;
   qbar.classList.toggle("show", show);
   app.classList.toggle("has-qbar", show);
+  pnavUI(reading);
+  // Le texte s'arrête au-dessus du bandeau du bas, quelle que soit sa hauteur (encoche, bandeau des pages)
+  main.style.paddingBottom = show ? (qbar.offsetHeight + 12) + "px" : "";
   $("qbRec").value = recId();
   $("qbPlay").textContent = QS.on && QS.playing ? "⏸" : "▶";
   $("qbClose").style.visibility = QS.on ? "visible" : "hidden";
