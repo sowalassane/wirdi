@@ -736,11 +736,9 @@ function renderPage(){
   });
   flush();
   h += '<div class="pg-num">' + an(p) + '</div>';
-  h += '<div class="qnav">' + (p < N ? '<button class="btn" data-pg="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-pg="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
   h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite (ou vers le haut en bas de page) pour la page suivante, vers la gauche (ou vers le bas en haut de page) pour revenir. Touchez un verset pour le marque-page.</p></div>';
   main.innerHTML = h;
   bindModeBar();
-  main.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => openPage(+b.dataset.pg));
   main.querySelectorAll(".aya").forEach(el => el.onclick = () => {
     const s = +el.dataset.s, a = +el.dataset.a;
     store.set("wirdi-quran-mark", {s, a});
@@ -774,13 +772,11 @@ function renderMushaf(){
   h += '<div class="mtools"><button class="btn ghost" id="mMark">' + (marked ? '🔖 Page marquée' : '🔖 Marquer') + '</button><button class="btn" id="mSig">📑 Signets</button></div>';
   h += '<div class="mhead"><span lang="ar">سُورَةُ ' + SURA_AR[s0 - 1] + '</span><span lang="ar">الجزء ' + an(juzOf(s0, R[0][1])) + '</span></div>';
   h += '<figure class="mpage"><img id="mImg" src="' + mImg(p) + '" alt="Page ' + p + ' du Coran" width="1024" height="1656"><p class="qmsg" id="mErr" hidden>Cette page n’est pas encore enregistrée sur l’appareil.<br>Connectez-vous, ou téléchargez le mushaf depuis <b>📑 Signets</b>.</p><figcaption class="mnum"><span class="pg-num">' + an(p) + '</span><small>Page ' + p + ' / ' + MP + '</small></figcaption></figure>';
-  h += '<div class="qnav">' + (p < MP ? '<button class="btn" data-mp="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-mp="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
   h += '<p class="qcredit">Mushaf de Médine (Hafs), pages du Complexe du Roi Fahd · images quran.com<br>Glissez vers la droite (ou vers le haut en bas de page) pour la page suivante, vers la gauche (ou vers le bas en haut de page) pour revenir.</p></div>';
   main.innerHTML = h;
   bindModeBar();
   const img = $("mImg");
   img.onerror = () => { img.hidden = true; $("mErr").hidden = false; };
-  main.querySelectorAll("[data-mp]").forEach(b => b.onclick = () => openMushaf(+b.dataset.mp));
   $("mSig").onclick = openSignets;
   $("mMark").onclick = () => {
     store.set("wirdi-quran-mark", {s: R[0][0], a: R[0][1], p});
