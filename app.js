@@ -720,7 +720,7 @@ function renderPagesTab(box){
 function renderPage(){
   if (!META){ loadMeta().then(render).catch(() => { qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
   const p = qv.p, N = pageCount(), R = pageRange(p), mark = qMark();
-  let h = modeBar() + '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
+  let h = modeBar() + '<div class="qread' + slideCls() + '">';
   h += '<div class="pg-top"><span>' + esc(SURA_TR[R[0][0] - 1]) + '</span><span>Juz’ ' + juzOf(R[0][0], R[0][1]) + '</span></div>';
   let body = "";
   const flush = () => { if (body){ h += '<div class="mushaf" lang="ar" dir="rtl">' + body + '</div>'; body = ""; } };
@@ -737,7 +737,7 @@ function renderPage(){
   flush();
   h += '<div class="pg-num">' + an(p) + '</div>';
   h += '<div class="qnav">' + (p < N ? '<button class="btn" data-pg="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-pg="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
-  h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir. Touchez un verset pour le marque-page.</p></div>';
+  h += '<p class="qcredit">Texte et découpage : Tanzil (mushaf de Médine) · tanzil.net<br>Glissez vers la droite (ou vers le haut en bas de page) pour la page suivante, vers la gauche (ou vers le bas en haut de page) pour revenir. Touchez un verset pour le marque-page.</p></div>';
   main.innerHTML = h;
   bindModeBar();
   main.querySelectorAll("[data-pg]").forEach(b => b.onclick = () => openPage(+b.dataset.pg));
@@ -757,6 +757,8 @@ function renderPage(){
 const MP = 604, MCACHE = "wirdi-mushaf";
 const mImg = p => "mushaf/" + String(p).padStart(3, "0") + ".png";
 const md = {busy: false, stop: false, done: 0};
+// Animation du changement de page : latérale (glissé gauche/droite, boutons) ou verticale (glissé haut/bas)
+function slideCls(){ const v = qv.vert; qv.vert = false; return qv.dir > 0 ? (v ? ' slide-up' : ' slide-next') : qv.dir < 0 ? (v ? ' slide-down' : ' slide-prev') : ''; }
 function openMushaf(p){
   const np = Math.max(1, Math.min(MP, p || 1));
   qv.dir = qv.mode === "mushaf" && qv.p ? Math.sign(np - qv.p) : 0;
@@ -768,12 +770,12 @@ function renderMushaf(){
   if (!META){ loadMeta().then(render).catch(() => { prefs.qmode = "page"; qv.mode = "list"; render(); }); main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement…</p></div>'; return; }
   const p = qv.p, R = pageRange(p), s0 = R[0][0], mark = qMark();
   const marked = mark && mark.p === p;
-  let h = modeBar() + '<div class="qread' + (qv.dir > 0 ? ' slide-next' : qv.dir < 0 ? ' slide-prev' : '') + '">';
+  let h = modeBar() + '<div class="qread' + slideCls() + '">';
   h += '<div class="mtools"><button class="btn ghost" id="mMark">' + (marked ? '🔖 Page marquée' : '🔖 Marquer') + '</button><button class="btn" id="mSig">📑 Signets</button></div>';
   h += '<div class="mhead"><span lang="ar">سُورَةُ ' + SURA_AR[s0 - 1] + '</span><span lang="ar">الجزء ' + an(juzOf(s0, R[0][1])) + '</span></div>';
   h += '<figure class="mpage"><img id="mImg" src="' + mImg(p) + '" alt="Page ' + p + ' du Coran" width="1024" height="1656"><p class="qmsg" id="mErr" hidden>Cette page n’est pas encore enregistrée sur l’appareil.<br>Connectez-vous, ou téléchargez le mushaf depuis <b>📑 Signets</b>.</p><figcaption class="mnum"><span class="pg-num">' + an(p) + '</span><small>Page ' + p + ' / ' + MP + '</small></figcaption></figure>';
   h += '<div class="qnav">' + (p < MP ? '<button class="btn" data-mp="' + (p + 1) + '">‹ Page ' + (p + 1) + '</button>' : '<span></span>') + (p > 1 ? '<button class="btn ghost" data-mp="' + (p - 1) + '">Page ' + (p - 1) + ' ›</button>' : '<span></span>') + '</div>';
-  h += '<p class="qcredit">Mushaf de Médine (Hafs), pages du Complexe du Roi Fahd · images quran.com<br>Glissez vers la droite pour la page suivante, vers la gauche pour revenir.</p></div>';
+  h += '<p class="qcredit">Mushaf de Médine (Hafs), pages du Complexe du Roi Fahd · images quran.com<br>Glissez vers la droite (ou vers le haut en bas de page) pour la page suivante, vers la gauche (ou vers le bas en haut de page) pour revenir.</p></div>';
   main.innerHTML = h;
   bindModeBar();
   const img = $("mImg");
@@ -1519,13 +1521,21 @@ function setTab(t){
 document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.onclick = () => b.dataset.tab === "reglages" ? $("bSet").click() : setTab(b.dataset.tab));
 $("bBack").addEventListener("click", backAction);
 
-let sx = null, sy = null;
-main.addEventListener("touchstart", e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, {passive:true});
+let sx = null, sy = null, sTop = false, sBot = false;
+main.addEventListener("touchstart", e => {
+  sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  // Le glissé vertical ne tourne la page que s'il commence déjà en haut / en bas : un défilement normal ne change jamais de page
+  sTop = main.scrollTop <= 2; sBot = main.scrollTop + main.clientHeight >= main.scrollHeight - 2;
+}, {passive:true});
 main.addEventListener("touchend", e => {
   if (sx !== null && cur === "coran" && (qv.mode === "page" || qv.mode === "mushaf") && META){
     const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
-    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8){ const np = qv.p + (dx > 0 ? 1 : -1); if (np >= 1 && np <= pageCount()) (qv.mode === "mushaf" ? openMushaf : openPage)(np); }
-    sx = sy = null; return;
+    let step = 0;
+    if (Math.abs(dx) > 70 && Math.abs(dx) > Math.abs(dy) * 1.8) step = dx > 0 ? 1 : -1;
+    else if (Math.abs(dy) > 80 && Math.abs(dy) > Math.abs(dx) * 1.8){ if (dy < 0 && sBot) step = 1; else if (dy > 0 && sTop) step = -1; if (step) qv.vert = true; }
+    const np = qv.p + step;
+    if (step && np >= 1 && np <= pageCount()) (qv.mode === "mushaf" ? openMushaf : openPage)(np);
+    qv.vert = false; sx = sy = null; return;
   }
   if (sx === null || cur === null || cur === "coran" || cur === "learn" || cur === "pray") { sx = sy = null; return; }
   const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
