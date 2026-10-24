@@ -338,8 +338,12 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .pg-sep span{padding:2px 10px;border:1px solid var(--gold);border-radius:99px}
 .qread.slide-next{animation:slideNext .28s ease}
 .qread.slide-prev{animation:slidePrev .28s ease}
+.qread.slide-up{animation:slideUp .28s ease}
+.qread.slide-down{animation:slideDown .28s ease}
 @keyframes slideNext{from{opacity:.2;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @keyframes slidePrev{from{opacity:.2;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{opacity:.2;transform:translateY(60px)}to{opacity:1;transform:none}}
+@keyframes slideDown{from{opacity:.2;transform:translateY(-60px)}to{opacity:1;transform:none}}
 .aya.flash{background:rgba(168,116,36,.3)}
 .qmode{display:flex;gap:6px;background:var(--virtue-bg);padding:4px;border-radius:14px;margin-bottom:12px}
 .qmode button{flex:1;padding:9px 6px;border-radius:11px;font-weight:600;font-size:14px;color:var(--muted)}
