@@ -1429,7 +1429,7 @@ function updateCounter(){
   if (left === 0){ $("cBig").textContent = "✓"; $("cSm").textContent = "terminé"; }
   else if (it.n === 1){ $("cBig").textContent = "✓"; $("cSm").textContent = "valider"; }
   else { $("cBig").textContent = left; $("cSm").textContent = "restant" + (left > 1 ? "s" : ""); }
-  $("hint").textContent = left === 0 ? "Glissez ou touchez la flèche pour continuer" : (it.n === 1 ? "Touchez le bouton une fois récité" : "Touchez le bouton à chaque répétition");
+  $("hint").textContent = left === 0 ? "Glissez ou touchez la flèche pour continuer" : (it.n === 1 ? "Touchez le bouton une fois récité" : "Touchez à chaque répétition, ou maintenez 4 s pour tout valider");
   $("counter").setAttribute("aria-label", left === 0 ? "Terminé" : "Compter, " + left + " restant");
 }
 
@@ -1519,6 +1519,60 @@ if (IOS_HAPTIC){
   sw.type = "checkbox"; sw.setAttribute("switch", ""); sw.className = "hapt"; sw.tabIndex = -1; sw.setAttribute("aria-hidden", "true");
   sw.addEventListener("click", () => { hapticTap = true; tap(); hapticTap = false; });
   wrap.appendChild(sw);
+}
+// Appui long (4 s) sur le compteur : valide toutes les répétitions d'un coup (pour qui compte sur ses doigts).
+// L'anneau doré se remplit pendant l'appui ; relâcher ou glisser avant la fin annule.
+const HOLD_DELAY = 350, HOLD_MS = 4000;
+let hold = null, holdSkipClick = 0;
+function holdable(){
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || idx >= items().length) return false;
+  const it = items()[idx]; return it.n > 1 && doneOf(idx) < it.n;
+}
+function holdPaint(f){ const r = $("holdRing"); r.style.strokeDasharray = C; r.style.strokeDashoffset = C * (1 - f); }
+function holdStop(){
+  if (!hold) return;
+  cancelAnimationFrame(hold.raf); hold = null;
+  // appui long abandonné : le relâchement ne doit pas compter une répétition
+  if ($("counter").classList.contains("holding")) holdSkipClick = Date.now();
+  $("counter").classList.remove("holding"); holdPaint(0);
+  if (holdable()) updateCounter();
+}
+function holdStart(e){
+  if (hold || !holdable() || (e.pointerType === "mouse" && e.button !== 0)) return;
+  hold = { x: e.clientX, y: e.clientY, t0: performance.now(), at: idx, k: cur, raf: 0 };
+  const step = now => {
+    if (!hold) return;
+    if (hold.at !== idx || hold.k !== cur){ holdStop(); return; }
+    const el = now - hold.t0;
+    if (el >= HOLD_DELAY){
+      const cb = $("counter");
+      if (!cb.classList.contains("holding")){ cb.classList.add("holding"); $("hint").textContent = "Maintenez pour tout valider…"; }
+      holdPaint(Math.min(1, (el - HOLD_DELAY) / (HOLD_MS - HOLD_DELAY)));
+    }
+    if (el >= HOLD_MS){ holdStop(); holdSkipClick = Date.now(); holdFinish(); return; }
+    hold.raf = requestAnimationFrame(step);
+  };
+  hold.raf = requestAnimationFrame(step);
+}
+function holdFinish(){
+  const it = items()[idx];
+  prog().counts[idx] = it.n;
+  { const cb = $("counter"); cb.classList.remove("pulse"); void cb.offsetWidth; cb.classList.add("pulse"); }
+  buzz(true);
+  save(); updateCounter();
+  $("barFill").style.width = (100 * doneCount() / items().length) + "%";
+  clearTimeout(advTimer);
+  const at = idx, k = cur;
+  advTimer = setTimeout(() => { if (idx === at && cur === k) go(idx + 1); }, 900);
+}
+{
+  const zone = IOS_HAPTIC ? document.querySelector(".hwrap") : $("counter");
+  zone.addEventListener("pointerdown", holdStart);
+  zone.addEventListener("pointermove", e => { if (hold && Math.hypot(e.clientX - hold.x, e.clientY - hold.y) > 12) holdStop(); });
+  ["pointerup", "pointercancel", "pointerleave"].forEach(ev => zone.addEventListener(ev, holdStop));
+  zone.addEventListener("contextmenu", e => e.preventDefault());
+  // Le relâchement après un appui long déclenche un clic : on l'ignore pour ne pas compter ni passer à la suite
+  zone.addEventListener("click", e => { if (Date.now() - holdSkipClick < 800){ holdSkipClick = 0; e.stopPropagation(); } }, true);
 }
 function syncHaptic(){ if (IOS_HAPTIC) document.querySelector(".hapt").hidden = !prefs.vib; }
 syncHaptic();
