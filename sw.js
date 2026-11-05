@@ -1,4 +1,4 @@
-const CACHE = 'wirdi-v36';
+const CACHE = 'wirdi-v37';
 // Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
 const DATA = 'wirdi-data';
 // Pages du mushaf (images) : cache à part aussi, rempli page par page ou par le bouton « Télécharger »
@@ -19,6 +19,8 @@ self.addEventListener('fetch', e => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin === location.origin) {
+    // Audios : laissés au navigateur (requêtes partielles de lecture)
+    if (url.pathname.includes('/audio/')) return;
     // Réseau d'abord pour la page (mises à jour), cache en secours hors-ligne
     if (url.pathname.endsWith('/app.js')) {
       e.respondWith(fetch(req, {cache: 'no-cache'}).then(r => { const c = r.clone(); caches.open(CACHE).then(ca => ca.put(req, c)); return r; }).catch(() => caches.match(req)));
