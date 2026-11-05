@@ -99,6 +99,10 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .counter .big{font-size:34px;font-weight:700;line-height:1}
 .counter .sm{font-size:11px;opacity:.85;margin-top:3px}
 .counter.done .face{background:var(--gold)}
+.counter .hold{stroke:var(--gold);opacity:0;transition:opacity .15s}
+.counter.holding .hold{opacity:1}
+.counter.holding .face{transform:scale(.94)}
+.counter,.hwrap .hapt{-webkit-touch-callout:none}
 .hint{text-align:center;font-size:12px;color:var(--muted);padding:0 16px 6px}
 
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:10}
@@ -240,6 +244,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .sh-fr{font-size:13px;color:var(--muted);text-align:center}
 .basmala{margin:4px 0 0;text-align:center;font-family:'Amiri Quran',var(--ar);font-size:calc(28px*var(--scale));line-height:2;color:var(--ink)}
 .qnote{margin:0;text-align:center;font-size:13px;color:var(--muted);font-style:italic}
+.qnote .qretry{display:block;margin:8px auto 0;font-style:normal}
 .mushaf{font-family:'Amiri Quran',var(--ar);font-size:calc(29px*var(--scale));line-height:2.35;text-align:justify;text-align-last:center;color:var(--ink);padding:4px 2px}
 .aya{border-radius:8px;transition:background .2s;cursor:pointer}
 .aya.marked{background:rgba(168,116,36,.18)}
@@ -337,8 +342,12 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .pg-sep span{padding:2px 10px;border:1px solid var(--gold);border-radius:99px}
 .qread.slide-next{animation:slideNext .28s ease}
 .qread.slide-prev{animation:slidePrev .28s ease}
+.qread.slide-up{animation:slideUp .28s ease}
+.qread.slide-down{animation:slideDown .28s ease}
 @keyframes slideNext{from{opacity:.2;transform:translateX(-40px)}to{opacity:1;transform:none}}
 @keyframes slidePrev{from{opacity:.2;transform:translateX(40px)}to{opacity:1;transform:none}}
+@keyframes slideUp{from{opacity:.2;transform:translateY(60px)}to{opacity:1;transform:none}}
+@keyframes slideDown{from{opacity:.2;transform:translateY(-60px)}to{opacity:1;transform:none}}
 .aya.flash{background:rgba(168,116,36,.3)}
 .qmode{display:flex;gap:6px;background:var(--virtue-bg);padding:4px;border-radius:14px;margin-bottom:12px}
 .qmode button{flex:1;padding:9px 6px;border-radius:11px;font-weight:600;font-size:14px;color:var(--muted)}
@@ -354,24 +363,58 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .vnum{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 6px;border:2px solid var(--gold);border-radius:50%;font-family:var(--ui);font-size:14px;font-weight:700;color:var(--green);vertical-align:middle;margin-right:4px}
 .vc-tl{margin:8px 0 0;font-family:var(--lat);font-size:calc(16px*var(--scale));line-height:1.5;color:var(--muted)}
 .vc-fr{margin:8px 0 0;font-family:var(--lat);font-size:calc(17.5px*var(--scale));line-height:1.55;color:var(--ink)}
-.sbar{position:sticky;bottom:-16px;display:flex;gap:6px;overflow-x:auto;padding:10px 4px 12px;margin:0 -16px -16px;background:var(--bg);border-top:1px solid var(--line);-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.sbar::-webkit-scrollbar{display:none}
-.sbar button{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:78px;padding:4px}
-.sbar b{width:40px;height:40px;border-radius:12px;background:var(--virtue-bg);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--muted)}
-.sbar small{font-size:11px;color:var(--muted);white-space:nowrap;direction:ltr;unicode-bidi:isolate}
-.sbar .on b{background:transparent;border:2px solid var(--green);color:var(--green)}
-.sbar .on small{color:var(--green);font-weight:700}
 .vc-tl .sil{opacity:.45}
+.mtools{display:flex;gap:8px;margin-top:-4px}
+.mtools .btn{flex:1;font-size:14px;padding:10px 8px}
+.mhead{display:flex;justify-content:space-between;font-family:var(--ar);font-size:16px;color:var(--gold);padding:0 6px}
+.mpage{--paper:#FFFBEF;margin:0;padding:10px;border-radius:6px;background:var(--paper);border:2px solid #2F7A62;box-shadow:inset 0 0 0 4px var(--paper),inset 0 0 0 6px #C9A25A,0 4px 18px -10px rgba(0,0,0,.4)}
+.mpage img{display:block;width:100%;height:auto;aspect-ratio:1024/1656;mix-blend-mode:multiply}
+.mpage .qmsg[hidden]{display:none}
+.mpage .qmsg{aspect-ratio:1024/1656;display:flex;flex-direction:column;justify-content:center;color:#3E4C47}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mpage{--paper:#18211E}:root:not([data-theme="light"]) .mpage img{mix-blend-mode:normal;filter:invert(.9) sepia(.15);background:none}:root:not([data-theme="light"]) .mpage .qmsg{color:var(--muted)}}
+:root[data-theme="dark"] .mpage{--paper:#18211E}
+:root[data-theme="dark"] .mpage img{mix-blend-mode:normal;filter:invert(.9) sepia(.15);background:none}
+:root[data-theme="dark"] .mpage .qmsg{color:var(--muted)}
+.mnum{display:flex;flex-direction:column;align-items:center;gap:2px;padding-top:8px}
+.mnum small{font-size:12px;color:#6B5A3A}
+:root[data-theme="dark"] .mnum small{color:var(--muted)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .mnum small{color:var(--muted)}}
+.sig-ov{position:fixed;inset:0;z-index:18;background:rgba(0,0,0,0);transition:background .25s}
+.sig-ov.show{background:rgba(0,0,0,.35)}
+.sig{position:absolute;top:0;right:0;bottom:0;width:min(80vw,320px);background:var(--bg);border-left:1px solid var(--line);display:flex;flex-direction:column;gap:10px;padding:calc(12px + env(safe-area-inset-top,0px)) 12px calc(12px + env(safe-area-inset-bottom,0px));transform:translateX(100%);transition:transform .25s ease}
+.sig-ov.show .sig{transform:none}
+.sig-h{display:flex;align-items:center;justify-content:space-between;font-size:18px}
+.sig-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:flex;flex-direction:column}
+.sig-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);font-family:var(--ar);font-size:20px;color:var(--ink);border-radius:10px}
+.sig-row.on{outline:2px solid var(--green);background:var(--card)}
+.sig-p{font-family:var(--ui);font-size:13px;color:var(--muted)}
+.sig-dl{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:8px;font-size:14px;color:var(--muted)}
+.sig-dl p{margin:0;line-height:1.4}
+.sig-dl .btn{font-size:14px;padding:11px 10px}
+@media (prefers-reduced-motion: reduce){.sig,.sig-ov{transition:none}}
 .qbar{position:fixed;left:0;right:0;bottom:0;z-index:15;display:none;align-items:center;gap:6px;padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px));background:var(--card);border-top:1px solid var(--line);box-shadow:0 -6px 20px -12px rgba(0,0,0,.35);max-width:720px;margin:0 auto}
-.qbar.show{display:flex}
+.qbar.show{display:block}
+.qb-row{display:flex;align-items:center;gap:6px}
+.pnav{margin:-2px -10px 8px;padding:0 6px 8px;border-bottom:1px solid var(--line)}
+.pnav[hidden]{display:none}
+.pn-t{text-align:center;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:4px}
+.pn-t:empty{display:none}
+.pn-row{display:flex;align-items:center;gap:4px}
+.pn-end{width:38px;height:38px;flex-shrink:0;border-radius:50%;background:var(--virtue-bg);color:var(--green);font-size:18px;font-weight:700}
+.pn-list{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:2px 0;-webkit-mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent);mask-image:linear-gradient(90deg,transparent,#000 14px,#000 calc(100% - 14px),transparent)}
+.pn-list::-webkit-scrollbar{display:none}
+.pn-list button{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:40px}
+.pn-list.pn-s button{min-width:72px}
+.pn-list b{min-width:36px;height:36px;padding:0 4px;border-radius:10px;background:var(--virtue-bg);display:flex;align-items:center;justify-content:center;font-size:14px;color:var(--muted)}
+.pn-list small{font-size:11px;color:var(--muted);white-space:nowrap;direction:ltr;unicode-bidi:isolate}
+.pn-list .on b{background:transparent;border:2px solid var(--green);color:var(--green)}
+.pn-list .on small{color:var(--green);font-weight:700}
 .qb-btn{width:38px;height:38px;flex-shrink:0;border-radius:50%;color:var(--green);font-size:16px}
 .qb-main{width:48px;height:48px;flex-shrink:0;border-radius:50%;background:var(--green);color:var(--green-ink);font-size:18px}
 .qb-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;padding:0 4px}
 .qb-info b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--ink)}
 .qb-info select{font-size:13px;padding:3px 4px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--green);max-width:100%}
-.has-qbar main{padding-bottom:84px}
-.has-qbar .sbar{bottom:48px}
-.vcard.playing-aya{border-color:var(--green);box-shadow:0 0 0 2px var(--green)}
+.has-qbar .vcard.playing-aya{border-color:var(--green);box-shadow:0 0 0 2px var(--green)}
 .aya.playing-aya{background:rgba(29,92,74,.16)}
 .show-tabs .qbar.show{bottom:calc(62px + env(safe-area-inset-bottom,0px))}
 
@@ -390,6 +433,9 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 @keyframes cardNext{from{opacity:.15;transform:translateX(48px)}to{opacity:1;transform:none}}
 @keyframes cardPrev{from{opacity:.15;transform:translateX(-48px)}to{opacity:1;transform:none}}
 .counter{overflow:visible}
+.hwrap{position:relative;display:block;flex:none;width:112px;height:112px}
+.hwrap .hapt{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;border-radius:50%;clip-path:circle(50%);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer}
+.hwrap:active .counter .face{transform:scale(.94)}
 .counter .ripple{position:absolute;inset:12px;border-radius:50%;border:3px solid var(--green);animation:ripple .6s ease-out forwards;pointer-events:none}
 @keyframes ripple{from{transform:scale(1);opacity:.7}to{transform:scale(1.45);opacity:0}}
 .counter.pulse .face{animation:pulse .22s ease}
@@ -487,7 +533,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
   <footer>
     <button class="nav" id="bPrev" aria-label="Précédent"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <button class="counter" id="counter" aria-label="Compter">
-      <svg viewBox="0 0 112 112" width="112" height="112"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="6"/><circle class="ring" id="ring" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 112 112" width="112" height="112"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="6"/><circle class="ring" id="ring" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/><circle class="hold" id="holdRing" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/></svg>
       <span class="face"><span class="big" id="cBig"></span><span class="sm" id="cSm"></span></span>
     </button>
     <button class="nav" id="bNext" aria-label="Suivant"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
@@ -519,7 +565,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
     <div class="set"><span>Progression du jour</span><button class="btn ghost" id="bReset">Recommencer</button></div>
     <div class="set"><span>Partager l’application</span><button class="btn ghost" id="bShare">Partager</button></div>
     <div class="set"><span>Wirdî · version 1.1</span><span style="font-family:var(--lat);color:var(--muted)">par Alatec</span></div>
-    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations récitées par le cheikh Hamad Al-Duraihim (HisnMuslim.com) ; versets du Coran récités par Mishary Rashid Al-Afasy et d’autres récitateurs au choix (Islamic Network / Al Quran Cloud).</p><p><b>Texte du Coran</b> : Tanzil Quran Text (Uthmani), © Tanzil Project, reproduit sans modification — tanzil.net. L’audio nécessite une connexion Internet.</p></div>
+    <div class="about"><h3>À propos</h3><p><b>Wirdî · وِرْدِي</b> signifie « mon wird ». Le <i>wird</i> est la portion de rappel d’Allah (<i>dhikr</i>) que l’on s’engage à réciter régulièrement, chaque jour.</p><p><b>Adhkâr · أَذْكَار</b> est le pluriel de <i>dhikr</i>, « rappel ». Ce sont les invocations et formules de rappel d’Allah enseignées par le Prophète ﷺ, à réciter notamment le matin et le soir.</p><p><b>Audio</b> : invocations enregistrées pour Wirdî ; versets du Coran récités par Mishary Rashid Al-Afasy et d’autres récitateurs au choix (Islamic Network / Al Quran Cloud).</p><p><b>Texte du Coran</b> : Tanzil Quran Text (Uthmani), © Tanzil Project, reproduit sans modification — tanzil.net. L’audio nécessite une connexion Internet.</p></div>
     <p class="note"><b>Installer sur le téléphone :</b> sur iPhone, touchez Partager puis « Sur l'écran d'accueil ». Sur Android, ouvrez le menu ⋮ de Chrome puis « Ajouter à l'écran d'accueil ». Site : <a href="https://wirdi.alatec.fr" target="_blank" rel="noopener">wirdi.alatec.fr</a></p>
   </div>
 </div>
