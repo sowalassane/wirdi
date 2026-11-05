@@ -1,4 +1,4 @@
-const CACHE = 'wirdi-v36';
+const CACHE = 'wirdi-v37';
 // Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
 const DATA = 'wirdi-data';
 // Pages du mushaf (images) : cache à part aussi, rempli page par page ou par le bouton « Télécharger »
@@ -46,4 +46,25 @@ self.addEventListener('fetch', e => {
       return hit || net;
     })));
   }
+});
+
+// Notifications (horaires de prière, adhkâr, Al-Kahf, jours blancs) envoyées par le serveur wirdi-push
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (err) { d = {body: e.data ? e.data.text() : ''}; }
+  e.waitUntil(self.registration.showNotification(d.title || 'Wirdî', {
+    body: d.body || '', tag: d.tag || 'wirdi', icon: 'icon-192.png', lang: 'fr', dir: 'auto',
+    data: {open: d.open || 'home'}
+  }));
+});
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const open = (e.notification.data && e.notification.data.open) || 'home';
+  const url = new URL('./?open=' + encodeURIComponent(open), self.registration.scope).href;
+  e.waitUntil(self.clients.matchAll({type: 'window', includeUncontrolled: true}).then(list => {
+    const c = list.find(w => new URL(w.url).origin === location.origin);
+    if (c) { c.postMessage({type: 'wirdi-open', open}); return c.focus(); }
+    return self.clients.openWindow(url);
+  }));
 });

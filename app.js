@@ -1131,9 +1131,9 @@ const CITIES = [
 const KAABA = [21.4225, 39.8262];
 const PT_DEF = {method: "custom", fajr: 18, isha: 15, asr: 1, adj: {fajr: 0, sunrise: 0, dhuhr: 1, asr: 0, maghrib: 3, isha: 0}, ishaMinTime: "19:20", iqama: false, iq: {fajr: 20, dhuhr: 10, asr: 10, maghrib: 5, isha: 0}};
 function ptGet(){ const s = store.get("wirdi-pt", {}); return Object.assign({}, PT_DEF, s, {adj: Object.assign({}, PT_DEF.adj, s.adj || {}), iq: Object.assign({}, PT_DEF.iq, s.iq || {})}); }
-function ptSet(p){ store.set("wirdi-pt", p); }
+function ptSet(p){ store.set("wirdi-pt", p); nfSync(); }
 function locGet(){ return store.get("wirdi-loc", null); }
-function locSet(l){ store.set("wirdi-loc", l); }
+function locSet(l){ store.set("wirdi-loc", l); nfSync(); }
 
 const dr = d => d * Math.PI / 180, rd = r => r * 180 / Math.PI;
 function sunPos(jd){
@@ -1216,6 +1216,7 @@ function renderPray(){
   if (pv.mode === "city") return prayCity();
   if (pv.mode === "settings") return praySettings();
   if (pv.mode === "qibla") return prayQibla();
+  if (pv.mode === "notif") return renderNotif();
   stopCompass();
   const loc = locGet();
   if (!loc){
@@ -1256,6 +1257,7 @@ function renderPray(){
   h += '<button class="pqib" id="pQib"><span class="pq-ic"><svg viewBox="0 0 48 48" width="40" height="40"><circle cx="24" cy="24" r="21" fill="none" stroke="currentColor" stroke-width="2.5"/><path d="M24 8l6 18h-12z" fill="#E3B65E" transform="rotate(' + Math.round(qb) + ' 24 24)"/><rect x="20.5" y="20.5" width="7" height="7" rx="1" fill="currentColor" transform="rotate(' + Math.round(qb) + ' 24 24)"/></svg></span><span class="pq-t"><b>Direction de la qibla</b><small>' + Math.round(qb) + '° depuis le nord (' + cardinal(qb) + ') · ouvrir la boussole</small></span><span class="lgo">›</span></button>';
   const M = METHODS[P.method] || METHODS.custom;
   h += '<button class="pmeth" id="pSet"><span>⚙︎ Méthode : <b>' + esc(P.method === "custom" ? "Personnalisée (Fajr " + P.fajr + "°, Isha " + P.isha + "°)" : M.name) + '</b></span><span class="lgo">›</span></button>';
+  h += '<button class="pmeth" id="pNotif"><span>🔔 Notifications : <b>' + (nfGet().on ? "activées" : "désactivées") + '</b></span><span class="lgo">›</span></button>';
   h += '<p class="lnote">Horaires calculés sur votre téléphone. Comparez-les avec ceux de votre mosquée et ajustez-les dans les réglages si besoin.</p></div>';
   main.innerHTML = h;
   $("pChg").onclick = () => openPray("city");
@@ -1263,6 +1265,7 @@ function renderPray(){
   $("pNext").onclick = () => { pv.day++; renderPray(); };
   $("pQib").onclick = () => openPray("qibla");
   $("pSet").onclick = () => openPray("settings");
+  $("pNotif").onclick = () => openPray("notif");
   if (next) ptTimer = setInterval(() => { if (cur === "pray" && pv.mode === "home") { const y0 = main.scrollTop; renderPray(); main.scrollTop = y0; } else clearInterval(ptTimer); }, 30000);
 }
 function geoLocate(){
@@ -1325,6 +1328,123 @@ function praySettings(){
   $("sIq").onclick = () => { save2(); const Q = ptGet(); Q.iqama = !Q.iqama; ptSet(Q); const y0 = main.scrollTop; praySettings(); main.scrollTop = y0; };
   $("sReset").onclick = () => { store.set("wirdi-pt", {}); praySettings(); qToast("Réglages par défaut rétablis"); };
 }
+// Notifications : le serveur wirdi-push (dossier worker/) recalcule les horaires de la ville choisie et envoie les rappels, même appli fermée
+const PUSH_API = "https://wirdi-push.A_REMPLACER.workers.dev";
+const NOTIF_DEF = {on: false, pr: {fajr: true, dhuhr: true, asr: true, maghrib: true, isha: true}, before: 0, matin: true, matinOff: 20, soir: true, soirOff: 20, kahf: true, blancs: true};
+function nfGet(){ const s = store.get("wirdi-notif", {}); return Object.assign({}, NOTIF_DEF, s, {pr: Object.assign({}, NOTIF_DEF.pr, s.pr || {})}); }
+function nfSet(n){ store.set("wirdi-notif", n); }
+function nfSupport(){
+  if (!/^https:\/\//.test(PUSH_API) || /A_REMPLACER/.test(PUSH_API)) return "off";
+  const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  const standalone = navigator.standalone === true || (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+  if (ios && !standalone) return "ios-install";
+  if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window) || !window.isSecureContext) return "unsupported";
+  return "ok";
+}
+async function nfKey(){
+  let k = store.get("wirdi-vapid", null); if (k) return k;
+  const r = await fetch(PUSH_API + "/api/push/key"); k = (await r.json()).key;
+  if (!k) throw new Error("key"); store.set("wirdi-vapid", k); return k;
+}
+function nfU8(s){ s = s.replace(/-/g, "+").replace(/_/g, "/"); while (s.length % 4) s += "="; const b = atob(s), o = new Uint8Array(b.length); for (let i = 0; i < b.length; i++) o[i] = b.charCodeAt(i); return o; }
+async function nfSub(create){
+  const reg = await navigator.serviceWorker.ready;
+  let s = await reg.pushManager.getSubscription();
+  if (!s && create) s = await reg.pushManager.subscribe({userVisibleOnly: true, applicationServerKey: nfU8(await nfKey())});
+  return s;
+}
+async function nfPost(path, s, extra){
+  const r = await fetch(PUSH_API + "/api/push/" + path, {method: "POST", headers: {"Content-Type": "application/json"}, body: JSON.stringify(Object.assign({sub: s.toJSON()}, extra || {}))});
+  if (!r.ok) throw new Error("HTTP " + r.status);
+  return r.json();
+}
+// Ce qui part au serveur : ville arrondie à ~1 km, fuseau horaire, méthode de calcul et rappels choisis (rien d'autre)
+function nfCfg(){
+  const loc = locGet(), P = ptGet(), N = nfGet();
+  let tz = loc.tz; if (!tz) { try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch(e){} }
+  return {
+    loc: {lat: Math.round(loc.lat * 100) / 100, lng: Math.round(loc.lng * 100) / 100, tz, name: /^Ma position/.test(loc.name) ? "" : loc.name},
+    pt: {method: P.method, fajr: P.fajr, isha: P.isha, asr: P.asr, adj: P.adj, ishaMinTime: P.ishaMinTime},
+    n: {pr: N.pr, before: N.before, matin: N.matin, matinOff: N.matinOff, soir: N.soir, soirOff: N.soirOff, kahf: N.kahf, blancs: N.blancs}
+  };
+}
+let nfTimer = null;
+// Envoie les réglages au serveur (regroupés si plusieurs changements se suivent)
+function nfSync(now){
+  if (!nfGet().on || nfSupport() !== "ok" || !locGet() || Notification.permission !== "granted") return Promise.resolve(null);
+  clearTimeout(nfTimer);
+  return new Promise(res => { nfTimer = setTimeout(async () => {
+    try { const r = await nfPost("sub", await nfSub(true), {cfg: nfCfg()}); store.set("wirdi-notif-next", r.next || null); res(r); }
+    catch(e){ res(null); }
+  }, now ? 0 : 1000); });
+}
+async function nfEnable(){
+  if (!locGet()){ qToast("Choisissez d’abord votre ville"); return openPray("city"); }
+  let perm = Notification.permission;
+  if (perm === "default"){ try { perm = await Notification.requestPermission(); } catch(e){} }
+  if (perm !== "granted"){ qToast("Notifications refusées. Autorisez-les dans les réglages du téléphone."); return renderNotif(); }
+  const N = nfGet(); N.on = true; nfSet(N); renderNotif();
+  const r = await nfSync(true);
+  if (r && r.ok) qToast("Notifications activées"); else { N.on = false; nfSet(N); qToast("Le serveur de notifications ne répond pas. Réessayez plus tard."); }
+  if (cur === "pray" && pv.mode === "notif") renderNotif();
+}
+async function nfDisable(){
+  const N = nfGet(); N.on = false; nfSet(N); store.set("wirdi-notif-next", null); renderNotif();
+  try { const s = await nfSub(false); if (s){ await nfPost("unsub", s).catch(() => {}); await s.unsubscribe(); } } catch(e){}
+  qToast("Notifications désactivées");
+}
+function nfOpen(o){
+  closeSheets();
+  if (o === "matin" || o === "soir"){ setTab("adhkar"); openSession(o); }
+  else if (o === "pray") setTab("priere");
+  else if (o === "kahf"){ setTab("coran"); loadQuran().then(() => { if (cur === "coran") openSura(18); }).catch(() => {}); }
+}
+function renderNotif(){
+  if (cur !== "pray" || pv.mode !== "notif") return;
+  const y0 = main.scrollTop, N = nfGet(), sup = nfSupport(), loc = locGet();
+  const perm = typeof Notification !== "undefined" ? Notification.permission : "default";
+  let h = '<div class="pwrap psets">';
+  if (sup === "off") h += '<p class="lnote">Les notifications arrivent bientôt dans Wirdî, in shâ Allah.</p>';
+  else if (sup === "ios-install") h += '<section class="pempty"><p>Sur iPhone, les notifications ne fonctionnent que si Wirdî est installée sur l’écran d’accueil.</p><p class="lnote">Dans Safari, touchez Partager puis « Sur l’écran d’accueil », puis ouvrez Wirdî depuis son icône et revenez ici (iOS 16.4 ou plus récent).</p></section>';
+  else if (sup === "unsupported") h += '<p class="lnote">Ce navigateur ne permet pas de recevoir des notifications. Installez Wirdî depuis le Play Store (Android) ou sur l’écran d’accueil (iPhone).</p>';
+  else if (!loc) h += '<section class="pempty"><p>Pour vous prévenir à l’heure de chaque prière, Wirdî a besoin de votre ville.</p><button class="btn" id="nCity">Choisir une ville</button></section>';
+  else {
+    h += '<div class="set"><span><b>Recevoir des notifications</b><br><small style="color:var(--muted)">📍 ' + esc(loc.name) + '</small></span><button class="sw" id="nOn" role="switch" aria-label="Notifications" aria-checked="' + !!N.on + '"></button></div>';
+    if (perm === "denied") h += '<p class="lnote">⚠︎ Les notifications de Wirdî sont bloquées dans les réglages du téléphone. Autorisez-les puis revenez ici.</p>';
+    if (N.on){
+      const nx = store.get("wirdi-notif-next", null);
+      if (nx && nx.at > Date.now()) h += '<p class="lnote">Prochaine notification : <b>' + esc(nx.title) + '</b>, ' + new Intl.DateTimeFormat("fr-FR", {weekday: "long", hour: "2-digit", minute: "2-digit", timeZone: loc.tz || undefined}).format(nx.at) + '.</p>';
+      h += '<h3 class="lsec">Heures de prière</h3>';
+      PRAYERS.forEach(([k, ar, fr]) => { if (k === "sunrise") return; h += '<div class="set"><span>' + fr + ' <small lang="ar" style="color:var(--muted)">' + ar + '</small></span><button class="sw" data-pr="' + k + '" role="switch" aria-label="' + fr + '" aria-checked="' + !!N.pr[k] + '"></button></div>'; });
+      h += '<label class="pf"><span>Moment de la notification</span><select id="nBefore">' + [0, 5, 10, 15, 20, 30].map(v => '<option value="' + v + '"' + (+N.before === v ? " selected" : "") + '>' + (v ? v + " min avant la prière" : "À l’heure de la prière") + '</option>').join("") + '</select></label>';
+      h += '<h3 class="lsec">Rappels</h3>';
+      const off = (id, val, after) => '<select id="' + id + '">' + [0, 10, 20, 30, 45, 60, 90].map(v => '<option value="' + v + '"' + (+val === v ? " selected" : "") + '>' + (v ? v + " min après " + after : "Juste après " + after) + '</option>').join("") + '</select>';
+      h += '<div class="set"><span>Invocations du matin</span><button class="sw" data-k="matin" role="switch" aria-label="Invocations du matin" aria-checked="' + !!N.matin + '"></button></div>';
+      if (N.matin) h += '<label class="pf">' + off("nMatin", N.matinOff, "Fajr") + '</label>';
+      h += '<div class="set"><span>Invocations du soir</span><button class="sw" data-k="soir" role="switch" aria-label="Invocations du soir" aria-checked="' + !!N.soir + '"></button></div>';
+      if (N.soir) h += '<label class="pf">' + off("nSoir", N.soirOff, "Asr") + '</label>';
+      h += '<div class="set"><span>Sourate Al-Kahf<br><small style="color:var(--muted)">le vendredi à 10 h</small></span><button class="sw" data-k="kahf" role="switch" aria-label="Sourate Al-Kahf" aria-checked="' + !!N.kahf + '"></button></div>';
+      h += '<div class="set"><span>Jours blancs<br><small style="color:var(--muted)">la veille des 13, 14 et 15 du mois hégirien, à 21 h</small></span><button class="sw" data-k="blancs" role="switch" aria-label="Jours blancs" aria-checked="' + !!N.blancs + '"></button></div>';
+      h += '<button class="btn ghost" id="nTest">Envoyer une notification d’essai</button>';
+    }
+    h += '<p class="lnote">Pour vous prévenir même quand l’appli est fermée, Wirdî envoie à son serveur votre ville (arrondie à environ 1 km), votre fuseau horaire, la méthode de calcul et les rappels choisis. Rien d’autre, et tout est effacé quand vous désactivez les notifications.</p>';
+  }
+  h += '</div>';
+  main.innerHTML = h; main.scrollTop = y0;
+  if ($("nCity")) $("nCity").onclick = () => openPray("city");
+  if ($("nOn")) $("nOn").onclick = () => nfGet().on ? nfDisable() : nfEnable();
+  const upd = f => { const n = nfGet(); f(n); nfSet(n); renderNotif(); nfSync(); };
+  main.querySelectorAll("[data-pr]").forEach(b => b.onclick = () => upd(n => n.pr[b.dataset.pr] = !n.pr[b.dataset.pr]));
+  main.querySelectorAll("[data-k]").forEach(b => b.onclick = () => upd(n => n[b.dataset.k] = !n[b.dataset.k]));
+  if ($("nBefore")) $("nBefore").onchange = e => upd(n => n.before = +e.target.value);
+  if ($("nMatin")) $("nMatin").onchange = e => upd(n => n.matinOff = +e.target.value);
+  if ($("nSoir")) $("nSoir").onchange = e => upd(n => n.soirOff = +e.target.value);
+  if ($("nTest")) $("nTest").onclick = async () => {
+    qToast("Envoi…");
+    try { await nfSync(true); const r = await nfPost("test", await nfSub(true)); qToast(r.ok ? "Notification envoyée" : "Échec de l’envoi"); }
+    catch(e){ qToast("Le serveur de notifications ne répond pas."); }
+  };
+}
 // Boussole
 let compassOn = false, lastAligned = false;
 function onOrient(e){
@@ -1386,7 +1506,7 @@ function setMode(){
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
   if (home) root.removeAttribute("data-session"); else root.setAttribute("data-session", cur);
   if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" || qv.mode === "mushaf" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
-  else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
+  else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "notif" ? "Notifications" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
@@ -1675,6 +1795,11 @@ document.addEventListener("visibilitychange", () => {
 
 applyPrefs();
 render();
+// Ouverture depuis une notification (?open=matin|soir|pray|kahf) ou message du service worker si l'appli est déjà ouverte
+{ const o = new URLSearchParams(location.search).get("open"); if (o){ try { history.replaceState(null, "", location.pathname); } catch(e){} nfOpen(o); } }
+if ("serviceWorker" in navigator) navigator.serviceWorker.addEventListener("message", e => { if (e.data && e.data.type === "wirdi-open") nfOpen(e.data.open); });
+$("bNotif").onclick = () => { closeSheets(); setTab("priere"); openPray("notif"); };
+setTimeout(() => nfSync(true), 3000);
 setTimeout(() => { const sp = $("splash"); if (sp){ sp.classList.add("hide"); setTimeout(() => sp.remove(), 500); } }, 650);
 setTimeout(() => { loadQuran().then(() => { if (cur && SESS[cur] && idx < items().length && items()[idx].qs) render(); }).catch(() => {}); }, 400);
 if ("serviceWorker" in navigator && location.protocol === "https:" && !/claude\.ai|claudeusercontent/.test(location.hostname)) {

@@ -1,0 +1,17 @@
+name = "wirdi-push"
+main = "src/index.js"
+compatibility_date = "2026-10-01"
+
+# Chaque minute : envoi des notifications arrivées à échéance
+[triggers]
+crons = ["* * * * *"]
+
+[vars]
+VAPID_SUBJECT = "https://wirdi.alatec.fr"
+# Clé publique produite par `node vapid-keys.mjs` (la clé privée va dans un secret : wrangler secret put VAPID_PRIVATE)
+VAPID_PUBLIC = "A_REMPLACER"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "wirdi-push"
+database_id = "A_REMPLACER"
