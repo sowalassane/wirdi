@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Wirdî · Calage des mots</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#F7F1E3;--card:#FFFBF2;--ink:#1E2B27;--muted:#5A6863;--green:#1D5C4A;--green-ink:#F7F1E3;--line:#E4DCC8}
+@media (prefers-color-scheme: dark){:root{--bg:#121B19;--card:#1A2723;--ink:#F0EADC;--muted:#AEB8B3;--green:#5FB592;--green-ink:#0E1614;--line:#2A3833}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:16px 16px 140px}
+h1{font-size:20px;margin:4px 0 4px}
+p.help{color:var(--muted);margin:0 0 14px;font-size:14px}
+.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(64px,1fr));gap:8px;margin-bottom:16px}
+.list button{padding:10px 0;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-weight:600}
+.list button.ok{background:var(--green);color:var(--green-ink);border-color:var(--green)}
+.list button.sel{outline:3px solid var(--green);outline-offset:1px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.ar{font-family:Amiri,serif;font-size:28px;line-height:2.1;direction:rtl;text-align:right;margin:0}
+.w{border-radius:6px;padding:0 2px}
+.w.done{color:var(--green)}
+.w.next{background:rgba(29,92,74,.18)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center}
+.row button,.row select{padding:10px 14px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font-size:15px}
+.tap{position:fixed;left:16px;right:16px;bottom:16px;max-width:608px;margin:0 auto;height:96px;border:0;border-radius:20px;background:var(--green);color:var(--green-ink);font-size:22px;font-weight:700;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.tap:disabled{opacity:.45}
+.status{color:var(--muted);font-size:14px}
+textarea{width:100%;height:90px;margin-top:8px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:12px monospace}
+</style>
+</head>
+<body>
+<main>
+  <h1>Calage des mots</h1>
+  <p class="help">Choisissez un audio, appuyez sur « Lancer », puis touchez le grand bouton au début de chaque mot surligné, au moment où vous l'entendez. Si vous vous trompez, « Recommencer ». Quand les audios sont verts, « Copier les résultats » et collez le texte dans le fil.</p>
+  <div class="list" id="list"></div>
+  <div class="card" id="card" hidden>
+    <p class="ar" id="ar" lang="ar"></p>
+    <div class="row">
+      <button id="go">Lancer</button>
+      <button id="redo">Recommencer</button>
+      <select id="rate" aria-label="Vitesse"><option value="0.75">0,75×</option><option value="1" selected>1×</option></select>
+      <span class="status" id="st"></span>
+    </div>
+  </div>
+  <div class="row">
+    <button id="copy">Copier les résultats</button>
+    <span class="status" id="cp"></span>
+  </div>
+  <textarea id="out" readonly hidden></textarea>
+</main>
+<button class="tap" id="tap" disabled>Mot suivant</button>
+<script>
+const KEY = "wirdi-calage";
+let RES = {}; try { RES = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch(e){}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(RES)); } catch(e){} };
+const $ = id => document.getElementById(id);
+const audio = new Audio(); audio.preload = "auto";
+let ITEMS = [], curI = -1, words = [], times = [];
+fetch("app.js", {cache: "no-cache"}).then(r => r.text()).then(t => {
+  const D = JSON.parse(t.split("\n")[0].replace(/^const DATA = /, "").replace(/;\s*$/, ""));
+  const seen = {};
+  for (const k of ["matin", "soir"]) D[k].forEach(it => { if (it.a && it.a.me && !seen[it.a.me]){ seen[it.a.me] = 1; ITEMS.push({code: it.a.me, ar: it.ar}); } });
+  ITEMS.sort((a, b) => a.code.localeCompare(b.code));
+  drawList();
+});
+function drawList(){
+  $("list").innerHTML = ITEMS.map((it, i) => '<button data-i="' + i + '" class="' + (RES[it.code] ? "ok" : "") + (i === curI ? " sel" : "") + '">' + it.code + '</button>').join("");
+  $("list").querySelectorAll("button").forEach(b => b.onclick = () => pick(+b.dataset.i));
+}
+function pick(i){
+  stop(); curI = i; const it = ITEMS[i];
+  words = it.ar.split(/\s+/).filter(Boolean); times = [];
+  $("ar").innerHTML = words.map((w, j) => '<span class="w" data-j="' + j + '">' + w + '</span>').join(" ");
+  audio.src = "audio/" + it.code + ".mp3";
+  $("card").hidden = false; $("st").textContent = words.length + " mots" + (RES[it.code] ? " · déjà calé" : "");
+  paint(); drawList(); $("card").scrollIntoView({block: "start", behavior: "smooth"});
+}
+function paint(){
+  document.querySelectorAll("#ar .w").forEach((el, j) => { el.classList.toggle("done", j < times.length); el.classList.toggle("next", j === times.length && !audio.paused); });
+  const nx = document.querySelector("#ar .w.next"); if (nx) nx.scrollIntoView({block: "nearest"});
+}
+function stop(){ audio.pause(); $("tap").disabled = true; }
+$("go").onclick = () => {
+  if (curI < 0) return; times = []; audio.currentTime = 0; audio.playbackRate = +$("rate").value;
+  audio.play().then(() => { $("tap").disabled = false; paint(); }).catch(() => { $("st").textContent = "Audio indisponible"; });
+};
+$("redo").onclick = () => { stop(); times = []; if (curI >= 0){ delete RES[ITEMS[curI].code]; save(); } paint(); drawList(); };
+$("rate").onchange = () => { audio.playbackRate = +$("rate").value; };
+$("tap").addEventListener("pointerdown", e => {
+  e.preventDefault(); if (audio.paused || times.length >= words.length) return;
+  times.push(times.length === 0 ? 0 : +audio.currentTime.toFixed(2));
+  if (navigator.vibrate) navigator.vibrate(10);
+  if (times.length === words.length){ RES[ITEMS[curI].code] = times; save(); $("st").textContent = "Calé ✓"; $("tap").disabled = true; drawList(); }
+  paint();
+});
+audio.addEventListener("ended", () => { $("tap").disabled = true; if (times.length < words.length) $("st").textContent = "Audio fini avant le dernier mot : recommencez"; paint(); });
+$("copy").onclick = () => {
+  const n = Object.keys(RES).length, txt = "CALAGE " + JSON.stringify(RES);
+  $("out").hidden = false; $("out").value = txt;
+  (navigator.clipboard ? navigator.clipboard.writeText(txt) : Promise.reject()).then(() => { $("cp").textContent = n + " audio(s) copiés"; }, () => { $("out").select(); $("cp").textContent = "Sélectionnez le texte ci-dessous et copiez-le"; });
+};
+</script>
+</body>
+</html>
