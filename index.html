@@ -99,6 +99,10 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .counter .big{font-size:34px;font-weight:700;line-height:1}
 .counter .sm{font-size:11px;opacity:.85;margin-top:3px}
 .counter.done .face{background:var(--gold)}
+.counter .hold{stroke:var(--gold);opacity:0;transition:opacity .15s}
+.counter.holding .hold{opacity:1}
+.counter.holding .face{transform:scale(.94)}
+.counter,.hwrap .hapt{-webkit-touch-callout:none}
 .hint{text-align:center;font-size:12px;color:var(--muted);padding:0 16px 6px}
 
 .sheet-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:none;z-index:10}
@@ -529,7 +533,7 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
   <footer>
     <button class="nav" id="bPrev" aria-label="Précédent"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
     <button class="counter" id="counter" aria-label="Compter">
-      <svg viewBox="0 0 112 112" width="112" height="112"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="6"/><circle class="ring" id="ring" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/></svg>
+      <svg viewBox="0 0 112 112" width="112" height="112"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="6"/><circle class="ring" id="ring" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/><circle class="hold" id="holdRing" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round"/></svg>
       <span class="face"><span class="big" id="cBig"></span><span class="sm" id="cSm"></span></span>
     </button>
     <button class="nav" id="bNext" aria-label="Suivant"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
