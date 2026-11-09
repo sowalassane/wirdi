@@ -19,7 +19,6 @@ Application gratuite pour les invocations du matin et du soir, la lecture et l'�
 - Récitations du Coran : Islamic Network / Al Quran Cloud
 - Audio des invocations : HisnMuslim.com
 - La Citadelle du musulman (`citadelle.json`) : Sa'îd ibn 'Alî ibn Wahf Al-Qahtânî ; arabe, translittération et traduction de l'édition gratuite AR-FR de Badr B. (github.com/Kiwifu/la-citadelle-du-musulman, diffusion libre, vente interdite) ; titres arabes des chapitres : github.com/rn0x/hisn_almuslim_json
-- Récitation de Yasser Ad-Dossari : EveryAyah.com
 
 Politique de confidentialité : https://sowalassane.github.io/wirdi/politique-confidentialite.html
 

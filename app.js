@@ -1036,15 +1036,12 @@ const RECITERS = [
  ["ar.abdulbasitmurattal", "Abdul Basit Abdus-Samad"],
  ["ar.shaatree", "Abu Bakr Ash-Shatri"],
  ["ar.hudhaify", "Ali Al-Hudhaify"],
- ["ar.muhammadayyoub", "Muhammad Ayyub"],
- ["ea.Yasser_Ad-Dussary_128kbps", "Yasser Ad-Dossari"]
+ ["ar.muhammadayyoub", "Muhammad Ayyub"]
 ];
 const recId = () => prefs.reciter && RECITERS.some(r => r[0] === prefs.reciter) ? prefs.reciter : "ar.alafasy";
 const recName = () => (RECITERS.find(r => r[0] === recId()) || RECITERS[0])[1];
-function recUrls(n, s, a){
+function recUrls(n){
   const id = recId(), out = [];
-  // Récitateurs absents d'Islamic Network : fichiers verset par verset d'EveryAyah (SSSAAA.mp3)
-  if (id.startsWith("ea.")) return ["https://everyayah.com/data/" + id.slice(3) + "/" + String(s).padStart(3, "0") + String(a).padStart(3, "0") + ".mp3"];
   [128, 64, 192, 48, 40, 32].forEach(b => out.push("https://cdn.islamic.network/quran/audio/" + b + "/" + id + "/" + n + ".mp3"));
   if (id === "ar.alafasy") out.unshift("https://cdn.islamic.app/quran/audio/ar.alafasy/" + n + ".mp3");
   return out;
@@ -1053,7 +1050,7 @@ const qp = new Audio(); qp.preload = "auto";
 const QS = {on: false, s: 1, a: 1, urls: [], k: 0, playing: false};
 function qpStopOthers(){ try { stopAudio(); } catch(e){} try { lpReset(); } catch(e){} }
 function qpLoad(){
-  QS.urls = recUrls(gAyah(QS.s, QS.a), QS.s, QS.a); QS.k = 0;
+  QS.urls = recUrls(gAyah(QS.s, QS.a)); QS.k = 0;
   qp.src = QS.urls[0]; qp.playbackRate = prefs.rate;
   const p = qp.play(); if (p && p.catch) p.catch(e => { if (e && e.name === "NotAllowedError"){ QS.playing = false; qpUI(); } });
   QS.playing = true; qpUI(); qpFollow();
