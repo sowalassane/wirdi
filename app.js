@@ -31,7 +31,7 @@ const main = $("main"), app = $("app"), root = document.documentElement;
 
 const items = () => SESS[cur].items;
 const prog = () => progs[cur];
-function save(){ if (!cur || cur === "coran" || cur === "learn" || cur === "pray") return; prog().idx = idx; store.set("wirdi-p2-" + cur, prog()); }
+function save(){ if (!cur || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn") return; prog().idx = idx; store.set("wirdi-p2-" + cur, prog()); }
 function savePrefs(){ store.set("wirdi-prefs", prefs); }
 function doneOfK(k, i){ return progs[k].counts[i] || 0; }
 function isDoneK(k, i){ return doneOfK(k, i) >= SESS[k].items[i].n; }
@@ -94,12 +94,83 @@ function renderHome(){
       + '<span class="s-st"><b>' + status + '</b><small>' + n + ' / ' + tot + ' invocations</small></span>'
       + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   }
+  s += '<button class="sess2 hisn" id="bHisn"><svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="118" cy="104" r="60" fill="#F2C462" opacity=".08"/><path d="M70 160V92h12v-14h12v14h12V78h12v14h12v-14h12v14h12v68z" fill="rgba(255,255,255,.08)" stroke="#F2C462" stroke-width="4" stroke-linejoin="round"/><path d="M108 160v-26a10 10 0 0 1 20 0v26" fill="#F2C462" opacity=".85"/><path d="M124 40a16 16 0 1 0 12 26 13 13 0 0 1-12-26z" fill="#F2C462"/></svg><span class="s-top"><span></span></span>'
+    + '<span class="s-t"><span class="s-ar" lang="ar">حِصْنُ الْمُسْلِمِ</span><span class="s-fr">La Citadelle du musulman</span></span>'
+    + '<span class="s-bot"><span class="s-st"><b>Toutes les invocations</b><small>133 chapitres · 283 invocations</small></span><span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   s += '<p class="credit"><span lang="ar">وِرْدِي</span> · Wirdî<br><small>Conçu par <b>Alatec</b></small></p></div>';
   main.innerHTML = s;
   main.querySelectorAll(".sess2[data-k]").forEach(b => b.onclick = () => openSession(b.dataset.k));
+  $("bHisn").onclick = () => openHisn();
 
 }
 
+
+// ---------- Citadelle du musulman (Hisn al-Muslim complet, chargé à la demande) ----------
+let HISN = null, hisnP = null;
+const hv = {mode: "list", c: 0, filter: ""};
+const hisnCounts = {};
+function loadHisn(){
+  if (HISN) return Promise.resolve(HISN);
+  if (!hisnP) hisnP = fetch("citadelle.json").then(r => { if (!r.ok) throw 0; return r.json(); }).then(d => (HISN = d)).catch(e => { hisnP = null; throw e; });
+  return hisnP;
+}
+function openHisn(c){
+  clearTimeout(advTimer); autoChain = false; stopAudio(); save();
+  cur = "hisn";
+  if (c === undefined) hv.mode = "list"; else { hv.mode = "chap"; hv.c = c; store.set("wirdi-hisn-last", c); }
+  render(); main.scrollTop = 0;
+}
+function renderHisn(){
+  if (!HISN){
+    main.innerHTML = '<div class="qwrap"><p class="qmsg">Chargement de la Citadelle du musulman…</p></div>';
+    loadHisn().then(() => { if (cur === "hisn") render(); }).catch(() => { if (cur === "hisn") main.innerHTML = '<div class="qwrap"><p class="qmsg">La Citadelle du musulman n’est pas disponible pour le moment. Vérifiez votre connexion puis réessayez.</p><button class="btn" id="hRetry">Réessayer</button></div>', $("hRetry").onclick = render; });
+    return;
+  }
+  if (hv.mode === "chap") return renderHisnChap();
+  const last = store.get("wirdi-hisn-last", null);
+  let h = '<div class="qwrap"><div class="sura-head"><span class="sh-ar" lang="ar">حِصْنُ الْمُسْلِمِ</span><span class="sh-fr">Sa‘îd ibn ‘Alî ibn Wahf Al-Qahtânî · ' + HISN.length + ' chapitres · ' + HISN.reduce((s, c) => s + c.d.length, 0) + ' invocations</span></div>';
+  if (last !== null && HISN[last]) h += '<button class="qresume" data-c="' + last + '"><span class="qr-l"><small>Reprendre</small><b>' + (last + 1) + '. ' + esc(HISN[last].t[1]) + '</b></span></button>';
+  h += '<input class="qsearch" id="hSearch" type="search" placeholder="Rechercher (voyage, pluie, colère, numéro…)" value="' + esc(hv.filter) + '"><div class="qlist" id="hList"></div></div>';
+  main.innerHTML = h;
+  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  const inp = $("hSearch"); inp.oninput = () => { hv.filter = inp.value; fillHisnList(); };
+  fillHisnList();
+}
+function fillHisnList(){
+  const box = $("hList"); if (!box) return;
+  const raw = hv.filter.trim(), f = norm(raw), num = /^\d+$/.test(raw) ? +raw : 0;
+  let h = "";
+  HISN.forEach((c, i) => {
+    if (f && !(num && (num === i + 1 || c.d.some(x => x.k === num))) && !norm(c.t[1]).includes(f) && !norm(c.t[0]).includes(f) && !c.d.some(x => norm(x.fr).includes(f) || norm(x.ar).includes(f))) return;
+    h += '<button class="qrow" data-c="' + i + '"><span class="qn">' + (i + 1) + '</span><span class="qt"><b class="ht">' + esc(c.t[1]) + '</b><small>' + (c.d.length > 1 ? c.d.length + ' invocations' : '1 invocation') + '</small></span><span class="qa ha" lang="ar">' + esc(c.t[0]) + '</span></button>';
+  });
+  box.innerHTML = h || '<p class="qmsg">Aucun chapitre trouvé.</p>';
+  box.querySelectorAll(".qrow").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+}
+function renderHisnChap(){
+  const i = hv.c, c = HISN[i];
+  let h = '<div class="qread"><div class="sura-head small"><span class="sh-ar" lang="ar">' + esc(c.t[0]) + '</span><span class="sh-fr">' + (i + 1) + '. ' + esc(c.t[1]) + '</span></div>';
+  c.d.forEach(x => {
+    const done = hisnCounts[x.k] || 0;
+    h += '<article class="card"><div class="meta"><span class="num">' + x.k + '</span>';
+    if (x.n) h += '<button class="pill hcount' + (done >= x.n ? ' ok' : '') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="Compter"><span class="l">' + Math.min(done, x.n) + ' / ' + x.n + '</span></button>';
+    h += '</div>';
+    x.ar.split("\n").forEach(p => { h += '<p class="ar" lang="ar">' + esc(p) + '</p>'; });
+    if (x.tr) h += '<p class="tr">' + esc(x.tr) + '</p>';
+    x.fr.split("\n").forEach(p => { h += '<p class="fr">' + esc(p) + '</p>'; });
+    if (x.src) h += '<div class="src"><span class="l">' + esc(x.src) + '</span></div>';
+    h += '</article>';
+  });
+  h += '<div class="qnav">' + (i > 0 ? '<button class="btn ghost" data-c="' + (i - 1) + '">‹ Précédent</button>' : '<span></span>') + (i < HISN.length - 1 ? '<button class="btn" data-c="' + (i + 1) + '">Suivant ›</button>' : '<span></span>') + '</div></div>';
+  main.innerHTML = h;
+  main.querySelectorAll(".qnav [data-c]").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  main.querySelectorAll(".hcount").forEach(b => b.onclick = () => {
+    const k = +b.dataset.k, n = +b.dataset.n, v = (hisnCounts[k] || 0) >= n ? 0 : (hisnCounts[k] || 0) + 1;
+    hisnCounts[k] = v;
+    b.querySelector(".l").textContent = v + " / " + n; b.classList.toggle("ok", v >= n);
+    if (v) buzz(v >= n);
+  });
+}
 
 // ---------- Audio ----------
 const HM = id => ["https://www.hisnmuslim.com/audio/ar/" + id + ".mp3"];
@@ -1379,8 +1450,9 @@ function setMode(){
   app.classList.toggle("is-quran", cur === "coran");
   app.classList.toggle("is-learn", cur === "learn");
   app.classList.toggle("is-pray", cur === "pray");
+  app.classList.toggle("is-hisn", cur === "hisn");
   const top = home || (cur === "coran" && qv.mode === "list") || (cur === "learn" && lv.mode === "home") || (cur === "pray" && pv.mode === "home");
-  app.classList.toggle("show-tabs", top);
+  app.classList.toggle("show-tabs", top || (cur === "hisn" && hv.mode === "list"));
   app.classList.toggle("top-level", top);
   const tab = home ? "adhkar" : cur === "coran" ? "coran" : cur === "learn" ? "apprendre" : cur === "pray" ? "priere" : "adhkar";
   document.querySelectorAll(".tabbar [data-tab]").forEach(b => b.classList.toggle("on", b.dataset.tab === tab));
@@ -1388,6 +1460,7 @@ function setMode(){
   if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" || qv.mode === "mushaf" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
   else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
+  else if (cur === "hisn"){ $("sTitleA").textContent = "حِصْنُ الْمُسْلِمِ"; $("sTitleF").textContent = hv.mode === "chap" && HISN ? "Chapitre " + (hv.c + 1) : "La Citadelle du musulman"; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
 
@@ -1398,6 +1471,7 @@ function render(){
   if (cur === "coran"){ renderQuran(); return; }
   if (cur === "learn"){ renderLearn(); return; }
   if (cur === "pray"){ renderPray(); return; }
+  if (cur === "hisn"){ renderHisn(); return; }
   const list = items(), n = doneCount();
   $("barFill").style.width = (100 * n / list.length) + "%";
   $("progTxt").textContent = (Math.min(idx, list.length - 1) + 1) + " / " + list.length;
@@ -1472,7 +1546,7 @@ function buzz(strong){
 }
 
 function tap(){
-  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || idx >= items().length) return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn" || idx >= items().length) return;
   const it = items()[idx];
   if (doneOf(idx) >= it.n){ go(idx + 1); return; }
   prog().counts[idx] = doneOf(idx) + 1;
@@ -1492,7 +1566,7 @@ function tap(){
 
 let cardDir = 0;
 function go(i){
-  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray") return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn") return;
   cardDir = Math.sign(i - idx);
   clearTimeout(advTimer);
   const chain = autoChain && prefs.auto; autoChain = false;
@@ -1525,7 +1599,7 @@ if (IOS_HAPTIC){
 const HOLD_DELAY = 350, HOLD_MS = 4000;
 let hold = null, holdSkipClick = 0;
 function holdable(){
-  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || idx >= items().length) return false;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn" || idx >= items().length) return false;
   const it = items()[idx]; return it.n > 1 && doneOf(idx) < it.n;
 }
 function holdPaint(f){ const r = $("holdRing"); r.style.strokeDasharray = C; r.style.strokeDashoffset = C * (1 - f); }
@@ -1581,6 +1655,7 @@ $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
   if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse" || qv.mode === "mushaf")){ closeSignets(); lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "pray" && pv.mode !== "home"){ stopCompass(); openPray("home"); }
+  else if (cur === "hisn" && hv.mode === "chap"){ hv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "learn" && lv.mode !== "home"){ const back = lv.mode === "letter" ? "alpha" : "home"; openLearn(back); }
   else goHome();
 }
@@ -1611,7 +1686,7 @@ main.addEventListener("touchend", e => {
     if (step && np >= 1 && np <= pageCount()) (qv.mode === "mushaf" ? openMushaf : openPage)(np);
     qv.vert = false; sx = sy = null; return;
   }
-  if (sx === null || cur === null || cur === "coran" || cur === "learn" || cur === "pray") { sx = sy = null; return; }
+  if (sx === null || cur === null || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn") { sx = sy = null; return; }
   const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
   if (Math.abs(dx) > 60 && Math.abs(dx) > Math.abs(dy) * 1.5) go(idx + (dx < 0 ? 1 : -1));
   sx = sy = null;
@@ -1619,7 +1694,7 @@ main.addEventListener("touchend", e => {
 document.addEventListener("keydown", e => {
   if (document.body.classList.contains("open")) { if (e.key === "Escape") closeSheets(); return; }
   if (cur === null) return;
-  if (cur === "coran" || cur === "learn" || cur === "pray"){ if (e.key === "Escape"){ if ($("sigOv")) closeSignets(); else backAction(); } return; }
+  if (cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn"){ if (e.key === "Escape"){ if ($("sigOv")) closeSignets(); else backAction(); } return; }
   if (e.key === "ArrowRight") go(idx + 1);
   else if (e.key === "ArrowLeft") go(idx - 1);
   else if (e.key === "Escape") goHome();
@@ -1631,7 +1706,7 @@ $("sheetBg").onclick = closeSheets;
 document.querySelectorAll("[data-close]").forEach(b => b.onclick = closeSheets);
 
 $("bList").onclick = () => {
-  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray") return;
+  if (cur === null || cur === "coran" || cur === "learn" || cur === "pray" || cur === "hisn") return;
   let h = "";
   items().forEach((it, i) => {
     const label = it.title ? it.title[0] : it.ar;

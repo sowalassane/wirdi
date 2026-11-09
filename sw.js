@@ -1,10 +1,10 @@
-const CACHE = 'wirdi-v38';
+const CACHE = 'wirdi-v41';
 // Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
 const DATA = 'wirdi-data';
 // Pages du mushaf (images) : cache à part aussi, rempli page par page ou par le bouton « Télécharger »
 const MUSHAF = 'wirdi-mushaf';
 const DATA_FILES = ['/quran-uthmani.txt', '/fr.hamidullah.txt', '/en.transliteration.txt'];
-const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png'];
+const ASSETS = ['./', './index.html', './app.js', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-180.png', './icon-32.png', './maskable-512.png', './citadelle.json'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
