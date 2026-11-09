@@ -154,7 +154,7 @@ function renderHisnChap(){
     const done = hisnCounts[x.k] || 0;
     h += '<article class="card"><div class="meta"><span class="num">' + x.k + '</span>';
     if (x.n) h += '<button class="pill hcount' + (done >= x.n ? ' ok' : '') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="Compter"><span class="l">' + Math.min(done, x.n) + ' / ' + x.n + '</span></button>';
-    h += '</div>';
+    h += '<button class="share" data-share="' + x.k + '" aria-label="Partager"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button></div>';
     x.ar.split("\n").forEach(p => { h += '<p class="ar" lang="ar">' + esc(p) + '</p>'; });
     if (x.tr) h += '<p class="tr">' + esc(x.tr) + '</p>';
     x.fr.split("\n").forEach(p => { h += '<p class="fr">' + esc(p) + '</p>'; });
@@ -164,6 +164,7 @@ function renderHisnChap(){
   h += '<div class="qnav">' + (i > 0 ? '<button class="btn ghost" data-c="' + (i - 1) + '">‹ Précédent</button>' : '<span></span>') + (i < HISN.length - 1 ? '<button class="btn" data-c="' + (i + 1) + '">Suivant ›</button>' : '<span></span>') + '</div></div>';
   main.innerHTML = h;
   main.querySelectorAll(".qnav [data-c]").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  main.querySelectorAll("[data-share]").forEach(b => b.onclick = () => { const x = c.d.find(y => y.k === +b.dataset.share); if (x) shareDua({title: c.t, ar: x.ar, tr: x.tr, fr: x.fr, src: x.src}); });
   main.querySelectorAll(".hcount").forEach(b => b.onclick = () => {
     const k = +b.dataset.k, n = +b.dataset.n, v = (hisnCounts[k] || 0) >= n ? 0 : (hisnCounts[k] || 0) + 1;
     hisnCounts[k] = v;
@@ -249,7 +250,7 @@ function renderCard(i){
   h += '<div class="meta"><span class="num">' + (i + 1) + '</span>';
   if (it.nl) h += '<span class="pill"><span class="a">' + esc(it.nl[0]) + '</span><span class="l">× ' + esc(it.nl[1]) + '</span></span>';
   if (it.a) h += '<button class="play idle" id="bPlay" aria-label="Écouter"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"></svg><span>Écouter</span></button>';
-  h += '</div>';
+  h += '<button class="share" data-share aria-label="Partager"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button></div>';
   if (it.title) h += '<div class="title" dir="rtl">' + esc(it.title[0]) + '<small dir="ltr">' + esc(it.title[1]) + '</small></div>';
   if (it.pre && !(it.qs && Q && it.qs.every(([s, a]) => Q[s] && Q[s][a - 1]))) h += '<p class="pre-ar" lang="ar">' + esc(it.pre) + '</p>';
   if (it.qs && Q && it.qs.every(([s, a]) => Q[s] && Q[s][a - 1])){
@@ -1497,6 +1498,7 @@ function render(){
   main.scrollTop = 0;
   const bp = $("bPlay");
   if (bp) { paintPlay(bp, pl.k === curKey() ? pl.state : "idle"); bp.onclick = toggleAudio; }
+  { const sb = main.querySelector("[data-share]"); if (sb) sb.onclick = () => { const it = list[idx]; shareDua({title: it.title, ar: (it.pre ? it.pre + " " : "") + it.ar, tr: it.tr, fr: it.fr, src: it.src}); }; }
   updateCounter();
   $("bPrev").disabled = idx === 0;
   $("bNext").disabled = false;
@@ -1735,6 +1737,15 @@ $("bShare").onclick = async () => {
   try { await navigator.clipboard.writeText(text); qToast("Lien copié, collez-le pour le partager"); }
   catch (e){ window.open(PLAY_URL, "_blank", "noopener"); }
 };
+// Partage d'une invocation : arabe, translittération, traduction, source et lien vers Wirdî
+async function shareDua(d){
+  const src = Array.isArray(d.src) ? d.src[1] : d.src;
+  const head = d.title ? (Array.isArray(d.title) ? d.title[1] + " · " + d.title[0] : d.title) : "";
+  const text = [head, d.ar, d.tr, d.fr ? "« " + d.fr + " »" : "", src ? "(" + src + ")" : "", "Partagé depuis Wirdî · " + SITE_URL].filter(Boolean).join("\n\n");
+  if (navigator.share){ try { await navigator.share({ title: "Wirdî", text }); return; } catch (e){ if (e.name === "AbortError") return; } }
+  try { await navigator.clipboard.writeText(text); qToast("Invocation copiée, collez-la pour la partager"); }
+  catch (e){ qToast("Partage indisponible sur cet appareil"); }
+}
 $("swTr").onclick = () => { prefs.tr = !prefs.tr; savePrefs(); applyPrefs(); };
 $("swFr").onclick = () => { prefs.fr = !prefs.fr; savePrefs(); applyPrefs(); };
 $("swVib").onclick = () => { prefs.vib = !prefs.vib; savePrefs(); applyPrefs(); syncHaptic(); if (prefs.vib) buzz(false); };
