@@ -940,7 +940,7 @@ function renderVerse(){
       + (prefs.fr && FR && FR[s][i] ? '<p class="vc-fr">' + esc(FR[s][i]) + '</p>' : '')
       + '</div>';
   });
-  h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : ' + esc(recName()) + ' (Islamic Network)</p></div>';
+  h += '<p class="qcredit">Texte, translittération et traduction (Muhammad Hamidullah) : Tanzil · tanzil.net<br>Récitation : ' + esc(recName()) + ' (' + recSrc() + ')</p></div>';
   main.innerHTML = h;
   bindModeBar();
   main.querySelectorAll(".qretry").forEach(b => b.onclick = retryTrans);
@@ -959,6 +959,7 @@ function renderVerse(){
 // ---------- Écoute du Coran (récitateurs, lecture continue) ----------
 const RECITERS = [
  ["ar.alafasy", "Mishary Rashid Al-Afasy"],
+ ["ea.dossari", "Yasser Ad-Dossari", "Yasser_Ad-Dussary_128kbps"],
  ["ar.abdurrahmaansudais", "Abdurrahmane As-Sudais"],
  ["ar.saoodshuraym", "Saoud Ash-Shuraym"],
  ["ar.mahermuaiqly", "Maher Al-Muaiqly"],
@@ -971,8 +972,14 @@ const RECITERS = [
 ];
 const recId = () => prefs.reciter && RECITERS.some(r => r[0] === prefs.reciter) ? prefs.reciter : "ar.alafasy";
 const recName = () => (RECITERS.find(r => r[0] === recId()) || RECITERS[0])[1];
-function recUrls(n){
-  const id = recId(), out = [];
+const recSrc = () => (RECITERS.find(r => r[0] === recId()) || RECITERS[0])[2] ? "EveryAyah" : "Islamic Network";
+function recUrls(n, s, a){
+  const id = recId(), out = [], ea = (RECITERS.find(r => r[0] === id) || [])[2];
+  if (ea){
+    // Récitateurs absents d'Islamic Network : fichiers verset par verset d'EveryAyah (SSSAAA.mp3), avec miroir.
+    const f = String(s).padStart(3, "0") + String(a).padStart(3, "0") + ".mp3";
+    return ["https://everyayah.com/data/" + ea + "/" + f, "https://mirrors.quranicaudio.com/everyayah/" + ea + "/" + f];
+  }
   [128, 64, 192, 48, 40, 32].forEach(b => out.push("https://cdn.islamic.network/quran/audio/" + b + "/" + id + "/" + n + ".mp3"));
   if (id === "ar.alafasy") out.unshift("https://cdn.islamic.app/quran/audio/ar.alafasy/" + n + ".mp3");
   return out;
@@ -981,7 +988,7 @@ const qp = new Audio(); qp.preload = "auto";
 const QS = {on: false, s: 1, a: 1, urls: [], k: 0, playing: false};
 function qpStopOthers(){ try { stopAudio(); } catch(e){} try { lpReset(); } catch(e){} }
 function qpLoad(){
-  QS.urls = recUrls(gAyah(QS.s, QS.a)); QS.k = 0;
+  QS.urls = recUrls(gAyah(QS.s, QS.a), QS.s, QS.a); QS.k = 0;
   qp.src = QS.urls[0]; qp.playbackRate = prefs.rate;
   const p = qp.play(); if (p && p.catch) p.catch(e => { if (e && e.name === "NotAllowedError"){ QS.playing = false; qpUI(); } });
   QS.playing = true; qpUI(); qpFollow();

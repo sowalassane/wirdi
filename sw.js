@@ -1,4 +1,4 @@
-const CACHE = 'wirdi-v38';
+const CACHE = 'wirdi-v40';
 // Textes du Coran, traduction et translittération : cache à part, conservé quand CACHE change de version
 const DATA = 'wirdi-data';
 // Pages du mushaf (images) : cache à part aussi, rempli page par page ou par le bouton « Télécharger »
