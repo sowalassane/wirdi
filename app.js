@@ -94,7 +94,9 @@ function renderHome(){
       + '<span class="s-st"><b>' + status + '</b><small>' + n + ' / ' + tot + ' invocations</small></span>'
       + '<span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   }
-  s += '<button class="hisn-card" id="bHisn"><span class="hc-ar" lang="ar">حِصْنُ الْمُسْلِمِ</span><span class="hc-t"><b>La Citadelle du musulman</b><small>Toutes les invocations du quotidien · 133 chapitres</small></span><span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></button>';
+  s += '<button class="sess2 hisn" id="bHisn"><svg class="art" viewBox="0 0 200 200" aria-hidden="true"><circle cx="118" cy="104" r="60" fill="#F2C462" opacity=".08"/><path d="M70 160V92h12v-14h12v14h12V78h12v14h12v-14h12v14h12v68z" fill="rgba(255,255,255,.08)" stroke="#F2C462" stroke-width="4" stroke-linejoin="round"/><path d="M108 160v-26a10 10 0 0 1 20 0v26" fill="#F2C462" opacity=".85"/><path d="M124 40a16 16 0 1 0 12 26 13 13 0 0 1-12-26z" fill="#F2C462"/></svg><span class="s-top"><span></span></span>'
+    + '<span class="s-t"><span class="s-ar" lang="ar">حِصْنُ الْمُسْلِمِ</span><span class="s-fr">La Citadelle du musulman</span></span>'
+    + '<span class="s-bot"><span class="s-st"><b>Toutes les invocations</b><small>133 chapitres · 283 invocations</small></span><span class="go"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></span></span></button>';
   s += '<p class="credit"><span lang="ar">وِرْدِي</span> · Wirdî<br><small>Conçu par <b>Alatec</b></small></p></div>';
   main.innerHTML = s;
   main.querySelectorAll(".sess2[data-k]").forEach(b => b.onclick = () => openSession(b.dataset.k));
