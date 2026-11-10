@@ -161,19 +161,18 @@ function toggleHisnFav(k){
 }
 function hisnCard(x, ci){
   const done = hisnCounts[x.k] || 0, fav = hisnFav().includes(x.k);
-  let h = '<article class="card" data-card="' + x.k + '"><div class="meta"><span class="num">' + x.k + '</span>';
-  if (x.n) h += '<span class="pill hfois" title="À répéter ' + x.n + ' fois"><span class="l">' + x.n + ' fois</span></span>';
+  let h = '<article class="card" data-card="' + x.k + '"><div class="meta' + (x.n ? ' hcm' : '') + '"><span class="num">' + x.k + '</span>';
+  if (x.n){
+    const d = Math.min(done, x.n), left = x.n - d;
+    h += '<span class="hcz"><button class="counter hc' + (left ? '' : ' done') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="' + (left ? 'Compter, ' + left + ' restant' : 'Terminé') + '"><svg viewBox="0 0 112 112" width="64" height="64"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="8"/><circle class="ring" cx="56" cy="56" r="52" fill="none" stroke-width="8" stroke-linecap="round" style="stroke-dasharray:' + C + ';stroke-dashoffset:' + C * (1 - d / x.n) + '"/></svg><span class="face"><span class="big">' + (left ? left : '✓') + '</span><span class="sm">' + (left ? 'sur ' + x.n : 'fini') + '</span></span></button>' + (IOS_HAPTIC ? '<input type="checkbox" switch class="hapt" tabindex="-1" aria-hidden="true"' + (prefs.vib ? '' : ' hidden') + '>' : '') + '</span>';
+    h += '<button class="hreset"' + (d ? '' : ' hidden') + ' data-k="' + x.k + '" aria-label="Recommencer le comptage">↺</button>';
+  }
   h += '<button class="fav' + (fav ? ' on' : '') + '" data-fav="' + x.k + '" aria-pressed="' + fav + '" aria-label="' + (fav ? 'Retirer des favoris' : 'Ajouter aux favoris') + '">' + STAR(fav) + '</button>';
   h += '<button class="share" data-share="' + x.k + '" data-c="' + ci + '" aria-label="Partager"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button></div>';
   x.ar.split("\n").forEach(p => { h += '<p class="ar" lang="ar">' + esc(p) + '</p>'; });
   if (x.tr) h += '<p class="tr">' + esc(x.tr) + '</p>';
   x.fr.split("\n").forEach(p => { h += '<p class="fr">' + esc(p) + '</p>'; });
   if (x.src) h += '<div class="src"><span class="l">' + esc(x.src) + '</span></div>';
-  if (x.n){
-    const d = Math.min(done, x.n), left = x.n - d;
-    h += '<div class="hcbox"><span class="hcz"><button class="counter hc' + (left ? '' : ' done') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="' + (left ? 'Compter, ' + left + ' restant' : 'Terminé') + '"><svg viewBox="0 0 112 112" width="112" height="112"><circle class="ring-bg" cx="56" cy="56" r="52" fill="none" stroke-width="6"/><circle class="ring" cx="56" cy="56" r="52" fill="none" stroke-width="6" stroke-linecap="round" style="stroke-dasharray:' + C + ';stroke-dashoffset:' + C * (1 - d / x.n) + '"/></svg><span class="face"><span class="big">' + (left ? left : '✓') + '</span><span class="sm">' + (left ? 'sur ' + x.n : 'Terminé') + '</span></span></button>' + (IOS_HAPTIC ? '<input type="checkbox" switch class="hapt" tabindex="-1" aria-hidden="true"' + (prefs.vib ? '' : ' hidden') + '>' : '') + '</span>';
-    h += '<button class="hreset"' + (d ? '' : ' hidden') + ' data-k="' + x.k + '">↺ Recommencer</button></div>';
-  }
   return h + '</article>';
 }
 function bindHisnCards(onUnfav){
@@ -184,13 +183,13 @@ function bindHisnCards(onUnfav){
     buzz(on);
     if (!on && onUnfav) onUnfav(b);
   });
-  main.querySelectorAll(".hcbox").forEach(box => {
+  main.querySelectorAll(".hcm").forEach(box => {
     const b = box.querySelector(".counter"), sw = box.querySelector(".hapt"), rs = box.querySelector(".hreset"), k = +b.dataset.k, n = +b.dataset.n;
     const paint = () => {
       const d = Math.min(hisnCounts[k] || 0, n), left = n - d;
       b.querySelector(".ring").style.strokeDashoffset = C * (1 - d / n);
       b.querySelector(".big").textContent = left ? left : "✓";
-      b.querySelector(".sm").textContent = left ? "sur " + n : "Terminé";
+      b.querySelector(".sm").textContent = left ? "sur " + n : "fini";
       b.classList.toggle("done", !left); b.setAttribute("aria-label", left ? "Compter, " + left + " restant" : "Terminé");
       rs.hidden = !d;
     };
