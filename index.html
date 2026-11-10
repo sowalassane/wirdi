@@ -213,6 +213,12 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .meta .share{margin-left:auto;width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--line);color:var(--green);display:flex;align-items:center;justify-content:center;background:transparent}
 .meta .share:active{background:var(--virtue-bg)}
 .meta .play + .share{margin-left:0}
+.meta .fav{margin-left:auto;width:38px;height:38px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--line);color:var(--gold);display:flex;align-items:center;justify-content:center;background:transparent}
+.meta .fav.on{border-color:var(--gold);background:var(--virtue-bg)}
+.meta .fav + .share{margin-left:0}
+.qresume.mark svg{color:var(--gold);flex-shrink:0}
+.qmsg svg{vertical-align:-3px;color:var(--gold)}
+.favchap{align-self:flex-start;margin:6px 0 -6px;padding:4px 2px;font-size:13px;font-weight:600;color:var(--gold);background:none;text-align:left}
 .step{width:auto;min-width:42px;padding:0 8px}
 .step.on{background:var(--green);color:var(--green-ink);border-color:var(--green)}
 .is-quran footer,.is-quran .hint,.is-quran .prog,.is-quran #bList{display:none}
@@ -466,8 +472,25 @@ footer{padding:10px 16px 14px;border-top:1px solid var(--line);display:flex;alig
 .sess2.hisn .go{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25)}
 .qa.ha{font-size:17px;max-width:38%;text-align:right;line-height:1.5}
 .qt b.ht{font-size:16px;line-height:1.3}
-.hcount{border:0;font-weight:700;cursor:pointer;background:var(--virtue-bg);color:var(--virtue-ink)}
-.hcount.ok{background:var(--green);color:var(--green-ink)}
+.meta.hcm{position:sticky;top:-16px;z-index:2;background:var(--card);margin:-12px -18px 0;padding:8px 18px;border-radius:20px 20px 0 0}
+.hcz{position:relative;display:block;width:64px;height:64px;flex:none}
+.meta.hcm{min-height:80px}
+.meta.hcm .hcz{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%)}
+.meta.hcm .hreset{position:absolute;right:calc(50% + 42px);top:50%;transform:translateY(-50%);width:32px;height:32px;font-size:16px}
+.hcz .counter{width:64px;height:64px;overflow:visible}
+.hcz .counter .face{inset:7px}
+.hcz .counter .big{font-size:20px}
+.hcz .counter .sm{font-size:9px;margin-top:1px}
+.hcz .counter .ripple{inset:7px}
+.hcz .hapt{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;border-radius:50%;clip-path:circle(50%);touch-action:manipulation;-webkit-tap-highlight-color:transparent;cursor:pointer;-webkit-touch-callout:none}
+.hcz:active .counter .face{transform:scale(.94)}
+.favc{align-self:center;display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;border:1.5px solid var(--line);color:var(--gold);font-size:14px;font-weight:600;background:transparent}
+.favc.on{border-color:var(--gold);background:var(--virtue-bg);color:var(--virtue-ink)}
+.favc.on svg{color:var(--gold)}
+.qstar svg{width:14px;height:14px;color:var(--gold);vertical-align:-1px}
+.favh{margin:8px 0 -4px;font-family:var(--lat);font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.hreset{width:38px;height:38px;border-radius:50%;font-size:18px;color:var(--muted);background:none;border:1.5px solid var(--line)}
+.meta .hreset + .fav{margin-left:auto}
 .tabbar button span{white-space:nowrap}
 .pwrap{display:flex;flex-direction:column;gap:12px;padding-bottom:16px}
 .pempty{display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center;padding:26px 18px;border-radius:22px;background:var(--card);border:1px solid var(--line)}
