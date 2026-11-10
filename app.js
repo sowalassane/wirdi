@@ -214,6 +214,7 @@ function bindHisnCards(onUnfav){
     const count = () => {
       const d = hisnCounts[k] || 0; if (d >= n) return;
       hisnCounts[k] = d + 1; paint(); buzz(d + 1 >= n);
+      if (d + 1 >= n) setTimeout(() => hisnNext(b.closest(".card")), 700);
       b.classList.remove("pulse"); void b.offsetWidth; b.classList.add("pulse");
       const rp = document.createElement("span"); rp.className = "ripple"; b.appendChild(rp); setTimeout(() => rp.remove(), 650);
     };
@@ -222,6 +223,15 @@ function bindHisnCards(onUnfav){
     if (sw) sw.addEventListener("click", () => { hapticTap = true; count(); hapticTap = false; });
     rs.onclick = () => { hisnCounts[k] = 0; paint(); };
   });
+}
+// Compteur terminé : on fait défiler jusqu'à l'invocation suivante (ou aux boutons de chapitre)
+function hisnNext(card){
+  if (!card || !card.isConnected) return;
+  let nx = card.nextElementSibling;
+  while (nx && !nx.classList.contains("card") && !nx.classList.contains("qnav")) nx = nx.nextElementSibling;
+  if (!nx) return;
+  const top = main.scrollTop + nx.getBoundingClientRect().top - main.getBoundingClientRect().top - 8;
+  main.scrollTo({top, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth"});
 }
 function renderHisnChap(){
   const i = hv.c, c = HISN[i];
