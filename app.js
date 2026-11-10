@@ -127,12 +127,16 @@ function renderHisn(){
     return;
   }
   if (hv.mode === "chap") return renderHisnChap();
+  if (hv.mode === "fav") return renderHisnFav();
   const last = store.get("wirdi-hisn-last", null);
   let h = '<div class="qwrap"><div class="sura-head"><span class="sh-ar" lang="ar">حِصْنُ الْمُسْلِمِ</span><span class="sh-fr">Sa‘îd ibn ‘Alî ibn Wahf Al-Qahtânî · ' + HISN.length + ' chapitres · ' + HISN.reduce((s, c) => s + c.d.length, 0) + ' invocations</span></div>';
   if (last !== null && HISN[last]) h += '<button class="qresume" data-c="' + last + '"><span class="qr-l"><small>Reprendre</small><b>' + (last + 1) + '. ' + esc(HISN[last].t[1]) + '</b></span></button>';
+  const nf = hisnFavItems().length;
+  h += '<button class="qresume mark" id="hFav"><span class="qr-l"><small>Mes favoris</small><b>' + (nf ? (nf > 1 ? nf + ' invocations' : '1 invocation') : 'Touchez l’étoile d’une invocation') + '</b></span>' + STAR(true) + '</button>';
   h += '<input class="qsearch" id="hSearch" type="search" placeholder="Rechercher (voyage, pluie, colère, numéro…)" value="' + esc(hv.filter) + '"><div class="qlist" id="hList"></div></div>';
   main.innerHTML = h;
-  main.querySelectorAll(".qresume").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  main.querySelectorAll(".qresume[data-c]").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  $("hFav").onclick = openHisnFav;
   const inp = $("hSearch"); inp.oninput = () => { hv.filter = inp.value; fillHisnList(); };
   fillHisnList();
 }
@@ -147,29 +151,74 @@ function fillHisnList(){
   box.innerHTML = h || '<p class="qmsg">Aucun chapitre trouvé.</p>';
   box.querySelectorAll(".qrow").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
 }
-function renderHisnChap(){
-  const i = hv.c, c = HISN[i];
-  let h = '<div class="qread"><div class="sura-head small"><span class="sh-ar" lang="ar">' + esc(c.t[0]) + '</span><span class="sh-fr">' + (i + 1) + '. ' + esc(c.t[1]) + '</span></div>';
-  c.d.forEach(x => {
-    const done = hisnCounts[x.k] || 0;
-    h += '<article class="card"><div class="meta"><span class="num">' + x.k + '</span>';
-    if (x.n) h += '<button class="pill hcount' + (done >= x.n ? ' ok' : '') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="Compter"><span class="l">' + Math.min(done, x.n) + ' / ' + x.n + '</span></button>';
-    h += '<button class="share" data-share="' + x.k + '" aria-label="Partager"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button></div>';
-    x.ar.split("\n").forEach(p => { h += '<p class="ar" lang="ar">' + esc(p) + '</p>'; });
-    if (x.tr) h += '<p class="tr">' + esc(x.tr) + '</p>';
-    x.fr.split("\n").forEach(p => { h += '<p class="fr">' + esc(p) + '</p>'; });
-    if (x.src) h += '<div class="src"><span class="l">' + esc(x.src) + '</span></div>';
-    h += '</article>';
+const STAR = on => '<svg width="18" height="18" viewBox="0 0 24 24" fill="' + (on ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="2.1" stroke-linejoin="round"><path d="M12 3.2l2.7 5.6 6.1.8-4.5 4.2 1.1 6.1L12 17l-5.4 2.9 1.1-6.1-4.5-4.2 6.1-.8z"/></svg>';
+const hisnFav = () => store.get("wirdi-hisn-fav", []);
+function toggleHisnFav(k){
+  const f = hisnFav(), i = f.indexOf(k);
+  if (i < 0) f.unshift(k); else f.splice(i, 1);
+  store.set("wirdi-hisn-fav", f);
+  return i < 0;
+}
+function hisnCard(x, ci){
+  const done = hisnCounts[x.k] || 0, fav = hisnFav().includes(x.k);
+  let h = '<article class="card" data-card="' + x.k + '"><div class="meta"><span class="num">' + x.k + '</span>';
+  if (x.n) h += '<button class="pill hcount' + (done >= x.n ? ' ok' : '') + '" data-k="' + x.k + '" data-n="' + x.n + '" aria-label="Compter"><span class="l">' + Math.min(done, x.n) + ' / ' + x.n + '</span></button>';
+  h += '<button class="fav' + (fav ? ' on' : '') + '" data-fav="' + x.k + '" aria-pressed="' + fav + '" aria-label="' + (fav ? 'Retirer des favoris' : 'Ajouter aux favoris') + '">' + STAR(fav) + '</button>';
+  h += '<button class="share" data-share="' + x.k + '" data-c="' + ci + '" aria-label="Partager"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7.5 7.5L12 3l4.5 4.5"/><path d="M5 13v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6"/></svg></button></div>';
+  x.ar.split("\n").forEach(p => { h += '<p class="ar" lang="ar">' + esc(p) + '</p>'; });
+  if (x.tr) h += '<p class="tr">' + esc(x.tr) + '</p>';
+  x.fr.split("\n").forEach(p => { h += '<p class="fr">' + esc(p) + '</p>'; });
+  if (x.src) h += '<div class="src"><span class="l">' + esc(x.src) + '</span></div>';
+  return h + '</article>';
+}
+function bindHisnCards(onUnfav){
+  main.querySelectorAll("[data-share]").forEach(b => b.onclick = () => { const c = HISN[+b.dataset.c], x = c.d.find(y => y.k === +b.dataset.share); if (x) shareDua({title: c.t, ar: x.ar, tr: x.tr, fr: x.fr, src: x.src}); });
+  main.querySelectorAll("[data-fav]").forEach(b => b.onclick = () => {
+    const on = toggleHisnFav(+b.dataset.fav);
+    b.classList.toggle("on", on); b.setAttribute("aria-pressed", on); b.setAttribute("aria-label", on ? "Retirer des favoris" : "Ajouter aux favoris"); b.innerHTML = STAR(on);
+    buzz(on);
+    if (!on && onUnfav) onUnfav(b);
   });
-  h += '<div class="qnav">' + (i > 0 ? '<button class="btn ghost" data-c="' + (i - 1) + '">‹ Précédent</button>' : '<span></span>') + (i < HISN.length - 1 ? '<button class="btn" data-c="' + (i + 1) + '">Suivant ›</button>' : '<span></span>') + '</div></div>';
-  main.innerHTML = h;
-  main.querySelectorAll(".qnav [data-c]").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
-  main.querySelectorAll("[data-share]").forEach(b => b.onclick = () => { const x = c.d.find(y => y.k === +b.dataset.share); if (x) shareDua({title: c.t, ar: x.ar, tr: x.tr, fr: x.fr, src: x.src}); });
   main.querySelectorAll(".hcount").forEach(b => b.onclick = () => {
     const k = +b.dataset.k, n = +b.dataset.n, v = (hisnCounts[k] || 0) >= n ? 0 : (hisnCounts[k] || 0) + 1;
     hisnCounts[k] = v;
     b.querySelector(".l").textContent = v + " / " + n; b.classList.toggle("ok", v >= n);
     if (v) buzz(v >= n);
+  });
+}
+function renderHisnChap(){
+  const i = hv.c, c = HISN[i];
+  let h = '<div class="qread"><div class="sura-head small"><span class="sh-ar" lang="ar">' + esc(c.t[0]) + '</span><span class="sh-fr">' + (i + 1) + '. ' + esc(c.t[1]) + '</span></div>';
+  c.d.forEach(x => { h += hisnCard(x, i); });
+  h += '<div class="qnav">' + (i > 0 ? '<button class="btn ghost" data-c="' + (i - 1) + '">‹ Précédent</button>' : '<span></span>') + (i < HISN.length - 1 ? '<button class="btn" data-c="' + (i + 1) + '">Suivant ›</button>' : '<span></span>') + '</div></div>';
+  main.innerHTML = h;
+  main.querySelectorAll(".qnav [data-c]").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  bindHisnCards();
+}
+// Favoris : invocations repérées par leur numéro (k), du plus récent au plus ancien
+function hisnFavItems(){
+  const at = {};
+  HISN.forEach((c, ci) => c.d.forEach(x => { at[x.k] = [x, ci]; }));
+  return hisnFav().filter(k => at[k]).map(k => at[k]);
+}
+function openHisnFav(){
+  clearTimeout(advTimer); autoChain = false; stopAudio();
+  cur = "hisn"; hv.mode = "fav";
+  render(); main.scrollTop = 0;
+}
+function renderHisnFav(){
+  const items = hisnFavItems();
+  let h = '<div class="qread"><div class="sura-head small"><span class="sh-ar" lang="ar">الْمُفَضَّلَةُ</span><span class="sh-fr">Mes favoris · ' + (items.length > 1 ? items.length + ' invocations' : items.length + ' invocation') + '</span></div>';
+  if (!items.length) h += '<p class="qmsg">Aucun favori pour le moment. Touchez l’étoile ' + STAR(false) + ' sur une invocation pour la retrouver ici.</p>';
+  items.forEach(([x, ci]) => { h += '<button class="favchap" data-c="' + ci + '">' + (ci + 1) + '. ' + esc(HISN[ci].t[1]) + ' ›</button>' + hisnCard(x, ci); });
+  main.innerHTML = h + '</div>';
+  main.querySelectorAll(".favchap").forEach(b => b.onclick = () => openHisn(+b.dataset.c));
+  bindHisnCards(b => {
+    const card = b.closest(".card"), lab = card.previousElementSibling;
+    card.remove(); if (lab && lab.classList.contains("favchap")) lab.remove();
+    const n = hisnFav().length, sf = main.querySelector(".sura-head .sh-fr");
+    if (sf) sf.textContent = "Mes favoris · " + n + (n > 1 ? " invocations" : " invocation");
+    if (!main.querySelector(".card")) renderHisnFav();
   });
 }
 
@@ -1468,7 +1517,7 @@ function setMode(){
   if (cur === "coran"){ $("sTitleA").textContent = "الْقُرْآنُ الْكَرِيمُ"; $("sTitleF").textContent = qv.mode === "read" ? SURA_TR[qv.s - 1] : qv.mode === "page" || qv.mode === "mushaf" ? "Page " + qv.p : qv.mode === "verse" ? SURA_TR[qv.s - 1] : "Le Coran"; }
   else if (cur === "pray"){ $("sTitleA").textContent = "مَوَاقِيتُ الصَّلَاةِ"; $("sTitleF").textContent = pv.mode === "qibla" ? "Direction de la qibla" : pv.mode === "settings" ? "Réglages des horaires" : pv.mode === "city" ? "Choisir une ville" : "Horaires de prière"; }
   else if (cur === "learn"){ $("sTitleA").textContent = "تَعَلُّمُ الْعَرَبِيَّةِ"; $("sTitleF").textContent = lv.mode === "phr" ? PHR[lv.p][0] : LTITLE[lv.mode]; }
-  else if (cur === "hisn"){ $("sTitleA").textContent = "حِصْنُ الْمُسْلِمِ"; $("sTitleF").textContent = hv.mode === "chap" && HISN ? "Chapitre " + (hv.c + 1) : "La Citadelle du musulman"; }
+  else if (cur === "hisn"){ $("sTitleA").textContent = "حِصْنُ الْمُسْلِمِ"; $("sTitleF").textContent = hv.mode === "chap" && HISN ? "Chapitre " + (hv.c + 1) : hv.mode === "fav" ? "Mes favoris" : "La Citadelle du musulman"; }
   else if (!home){ $("sTitleA").textContent = SESS[cur].ar; $("sTitleF").textContent = SESS[cur].fr; }
 }
 
@@ -1664,7 +1713,7 @@ $("bPrev").addEventListener("click", () => go(idx - 1));
 function backAction(){
   if (cur === "coran" && (qv.mode === "read" || qv.mode === "page" || qv.mode === "verse" || qv.mode === "mushaf")){ closeSignets(); lpReset(); stopAudio(); qv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "pray" && pv.mode !== "home"){ stopCompass(); openPray("home"); }
-  else if (cur === "hisn" && hv.mode === "chap"){ hv.mode = "list"; render(); main.scrollTop = 0; }
+  else if (cur === "hisn" && hv.mode !== "list"){ hv.mode = "list"; render(); main.scrollTop = 0; }
   else if (cur === "learn" && lv.mode !== "home"){ const back = lv.mode === "letter" ? "alpha" : "home"; openLearn(back); }
   else goHome();
 }
