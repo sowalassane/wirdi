@@ -939,6 +939,18 @@ const mImg = p => "mushaf/" + String(p).padStart(3, "0") + ".png";
 const md = {busy: false, stop: false, done: 0};
 // Animation du changement de page : latérale (glissé gauche/droite, boutons) ou verticale (glissé haut/bas)
 function slideCls(){ const v = qv.vert; qv.vert = false; return qv.dir > 0 ? (v ? ' slide-up' : ' slide-next') : qv.dir < 0 ? (v ? ' slide-down' : ' slide-prev') : ''; }
+// Garde en mémoire les images préchargées (sinon le navigateur peut les jeter avant usage) et les décode d'avance
+const mPre = new Map();
+function mPreload(p){
+  const want = [p + 1, p + 2, p + 3, p - 1, p - 2].filter(n => n >= 1 && n <= MP);
+  want.forEach(n => {
+    if (mPre.has(n)) return;
+    const im = new Image(); im.decoding = "async"; im.src = mImg(n);
+    if (im.decode) im.decode().catch(() => {});
+    mPre.set(n, im);
+  });
+  for (const n of mPre.keys()) if (n !== p && !want.includes(n)) mPre.delete(n);
+}
 function openMushaf(p){
   const np = Math.max(1, Math.min(MP, p || 1));
   qv.dir = qv.mode === "mushaf" && qv.p ? Math.sign(np - qv.p) : 0;
@@ -965,8 +977,8 @@ function renderMushaf(){
     $("mMark").textContent = "🔖 Page marquée";
     qToast("🔖 Marque-page : page " + p + " (" + SURA_TR[s0 - 1] + ")");
   };
-  // Pages voisines préchargées pour tourner sans attente
-  [p + 1, p - 1].forEach(n => { if (n >= 1 && n <= MP){ const im = new Image(); im.src = mImg(n); } });
+  // Pages voisines préchargées et décodées à l'avance pour tourner sans attente (retour testeur : défilement lent)
+  mPreload(p);
   store.set("wirdi-quran-last", {s: R[0][0], a: R[0][1], p});
   $("sTitleF").textContent = SURA_TR[s0 - 1] + " · page " + p;
 }
@@ -1315,8 +1327,49 @@ const CITIES = [
  ["Bamako", 12.639, -8.003, "Africa/Bamako"], ["Nouakchott", 18.079, -15.965, "Africa/Nouakchott"], ["Conakry", 9.641, -13.578, "Africa/Conakry"],
  ["Abidjan", 5.360, -4.008, "Africa/Abidjan"], ["Casablanca", 33.573, -7.590, "Africa/Casablanca"], ["Rabat", 34.020, -6.841, "Africa/Casablanca"],
  ["Alger", 36.754, 3.059, "Africa/Algiers"], ["Tunis", 36.806, 10.181, "Africa/Tunis"], ["La Mecque", 21.423, 39.826, "Asia/Riyadh"],
- ["Médine", 24.467, 39.611, "Asia/Riyadh"]
+ ["Médine", 24.467, 39.611, "Asia/Riyadh"],
+ ["Pikine", 14.755, -17.390, "Africa/Dakar"], ["Guédiawaye", 14.777, -17.399, "Africa/Dakar"], ["Rufisque", 14.716, -17.273, "Africa/Dakar"],
+ ["Mbour", 14.420, -16.964, "Africa/Dakar"], ["Tivaouane", 14.951, -16.817, "Africa/Dakar"], ["Mbacké", 14.791, -15.908, "Africa/Dakar"],
+ ["Diourbel", 14.655, -16.231, "Africa/Dakar"], ["Louga", 15.619, -16.224, "Africa/Dakar"], ["Fatick", 14.339, -16.411, "Africa/Dakar"],
+ ["Kaffrine", 14.106, -15.550, "Africa/Dakar"], ["Tambacounda", 13.771, -13.668, "Africa/Dakar"], ["Kolda", 12.894, -14.941, "Africa/Dakar"],
+ ["Sédhiou", 12.708, -15.557, "Africa/Dakar"], ["Kédougou", 12.557, -12.175, "Africa/Dakar"], ["Matam", 15.656, -13.255, "Africa/Dakar"],
+ ["Richard-Toll", 16.462, -15.700, "Africa/Dakar"], ["Podor", 16.652, -14.959, "Africa/Dakar"], ["Médina Baye (Kaolack)", 14.155, -16.085, "Africa/Dakar"],
+ ["Ndiassane", 14.930, -16.810, "Africa/Dakar"], ["Darou Mousty", 15.050, -16.050, "Africa/Dakar"], ["Banjul", 13.454, -16.579, "Africa/Banjul"],
+ ["Serekunda", 13.438, -16.678, "Africa/Banjul"], ["Bissau", 11.864, -15.598, "Africa/Bissau"], ["Praia", 14.933, -23.513, "Atlantic/Cape_Verde"],
+ ["Nouadhibou", 20.942, -17.038, "Africa/Nouakchott"], ["Kaédi", 16.150, -13.505, "Africa/Nouakchott"], ["Rosso", 16.513, -15.805, "Africa/Nouakchott"],
+ ["Kiffa", 16.620, -11.404, "Africa/Nouakchott"], ["Kayes", 14.447, -11.445, "Africa/Bamako"], ["Ségou", 13.431, -6.259, "Africa/Bamako"],
+ ["Sikasso", 11.317, -5.666, "Africa/Bamako"], ["Mopti", 14.494, -4.182, "Africa/Bamako"], ["Tombouctou", 16.773, -3.007, "Africa/Bamako"],
+ ["Gao", 16.272, -0.044, "Africa/Bamako"], ["Koulikoro", 12.863, -7.560, "Africa/Bamako"], ["Labé", 11.318, -12.283, "Africa/Conakry"],
+ ["Kankan", 10.385, -9.306, "Africa/Conakry"], ["Kindia", 10.057, -12.865, "Africa/Conakry"], ["Nzérékoré", 7.756, -8.818, "Africa/Conakry"],
+ ["Freetown", 8.484, -13.234, "Africa/Freetown"], ["Monrovia", 6.301, -10.797, "Africa/Monrovia"], ["Bouaké", 7.690, -5.031, "Africa/Abidjan"],
+ ["Yamoussoukro", 6.828, -5.290, "Africa/Abidjan"], ["Korhogo", 9.458, -5.630, "Africa/Abidjan"], ["Daloa", 6.877, -6.450, "Africa/Abidjan"],
+ ["San-Pédro", 4.748, -6.636, "Africa/Abidjan"], ["Ouagadougou", 12.371, -1.520, "Africa/Ouagadougou"], ["Bobo-Dioulasso", 11.177, -4.297, "Africa/Ouagadougou"],
+ ["Niamey", 13.512, 2.112, "Africa/Niamey"], ["Zinder", 13.806, 8.988, "Africa/Niamey"], ["Maradi", 13.500, 7.102, "Africa/Niamey"],
+ ["Agadez", 16.974, 7.991, "Africa/Niamey"], ["Accra", 5.604, -0.187, "Africa/Accra"], ["Kumasi", 6.688, -1.624, "Africa/Accra"],
+ ["Tamale", 9.403, -0.843, "Africa/Accra"], ["Lomé", 6.131, 1.223, "Africa/Lome"], ["Sokodé", 8.983, 1.133, "Africa/Lome"],
+ ["Cotonou", 6.366, 2.418, "Africa/Porto-Novo"], ["Porto-Novo", 6.497, 2.605, "Africa/Porto-Novo"], ["Parakou", 9.337, 2.630, "Africa/Porto-Novo"],
+ ["Lagos", 6.524, 3.379, "Africa/Lagos"], ["Abuja", 9.076, 7.398, "Africa/Lagos"], ["Kano", 12.002, 8.592, "Africa/Lagos"],
+ ["Sokoto", 13.006, 5.247, "Africa/Lagos"], ["Maiduguri", 11.833, 13.151, "Africa/Lagos"], ["Douala", 4.051, 9.768, "Africa/Douala"],
+ ["Yaoundé", 3.848, 11.502, "Africa/Douala"], ["Garoua", 9.301, 13.397, "Africa/Douala"], ["Maroua", 10.591, 14.316, "Africa/Douala"],
+ ["Ngaoundéré", 7.323, 13.584, "Africa/Douala"], ["N’Djamena", 12.134, 15.056, "Africa/Ndjamena"], ["Abéché", 13.829, 20.832, "Africa/Ndjamena"],
+ ["Bangui", 4.394, 18.558, "Africa/Bangui"], ["Libreville", 0.416, 9.467, "Africa/Libreville"], ["Brazzaville", -4.263, 15.242, "Africa/Brazzaville"],
+ ["Pointe-Noire", -4.778, 11.863, "Africa/Brazzaville"], ["Kinshasa", -4.441, 15.266, "Africa/Kinshasa"], ["Lubumbashi", -11.664, 27.483, "Africa/Lubumbashi"],
+ ["Kigali", -1.944, 30.062, "Africa/Kigali"], ["Bujumbura", -3.382, 29.361, "Africa/Bujumbura"], ["Marrakech", 31.629, -7.981, "Africa/Casablanca"],
+ ["Fès", 34.033, -5.000, "Africa/Casablanca"], ["Tanger", 35.759, -5.834, "Africa/Casablanca"], ["Agadir", 30.428, -9.598, "Africa/Casablanca"],
+ ["Oujda", 34.682, -1.908, "Africa/Casablanca"], ["Meknès", 33.895, -5.555, "Africa/Casablanca"], ["Laâyoune", 27.125, -13.163, "Africa/El_Aaiun"],
+ ["Oran", 35.697, -0.633, "Africa/Algiers"], ["Constantine", 36.365, 6.615, "Africa/Algiers"], ["Annaba", 36.900, 7.767, "Africa/Algiers"],
+ ["Tlemcen", 34.878, -1.315, "Africa/Algiers"], ["Sfax", 34.740, 10.760, "Africa/Tunis"], ["Sousse", 35.826, 10.637, "Africa/Tunis"],
+ ["Kairouan", 35.678, 10.096, "Africa/Tunis"], ["Tripoli", 32.887, 13.191, "Africa/Tripoli"], ["Benghazi", 32.117, 20.067, "Africa/Tripoli"],
+ ["Le Caire", 30.044, 31.236, "Africa/Cairo"], ["Alexandrie", 31.201, 29.919, "Africa/Cairo"], ["Khartoum", 15.501, 32.560, "Africa/Khartoum"],
+ ["Addis-Abeba", 9.005, 38.763, "Africa/Addis_Ababa"], ["Djibouti", 11.589, 43.145, "Africa/Djibouti"], ["Mogadiscio", 2.047, 45.318, "Africa/Mogadishu"],
+ ["Hargeisa", 9.560, 44.065, "Africa/Mogadishu"], ["Nairobi", -1.286, 36.817, "Africa/Nairobi"], ["Mombasa", -4.043, 39.668, "Africa/Nairobi"],
+ ["Kampala", 0.347, 32.582, "Africa/Kampala"], ["Dar es Salaam", -6.792, 39.208, "Africa/Dar_es_Salaam"], ["Zanzibar", -6.165, 39.199, "Africa/Dar_es_Salaam"],
+ ["Moroni", -11.702, 43.256, "Indian/Comoro"], ["Mamoudzou", -12.781, 45.228, "Indian/Mayotte"], ["Antananarivo", -18.879, 47.508, "Indian/Antananarivo"],
+ ["Port-Louis", -20.161, 57.499, "Indian/Mauritius"], ["Saint-Denis (La Réunion)", -20.882, 55.451, "Indian/Reunion"], ["Maputo", -25.966, 32.573, "Africa/Maputo"],
+ ["Johannesburg", -26.204, 28.047, "Africa/Johannesburg"], ["Le Cap", -33.925, 18.424, "Africa/Johannesburg"]
 ];
+const COUNTRY = {"Europe/Paris": "France", "Europe/Brussels": "Belgique", "Europe/Zurich": "Suisse", "America/Toronto": "Canada", "Asia/Riyadh": "Arabie saoudite", "Africa/Dakar": "Sénégal", "Africa/Banjul": "Gambie", "Africa/Bissau": "Guinée-Bissau", "Atlantic/Cape_Verde": "Cap-Vert", "Africa/Nouakchott": "Mauritanie", "Africa/Bamako": "Mali", "Africa/Conakry": "Guinée", "Africa/Freetown": "Sierra Leone", "Africa/Monrovia": "Liberia", "Africa/Abidjan": "Côte d’Ivoire", "Africa/Ouagadougou": "Burkina Faso", "Africa/Niamey": "Niger", "Africa/Accra": "Ghana", "Africa/Lome": "Togo", "Africa/Porto-Novo": "Bénin", "Africa/Lagos": "Nigeria", "Africa/Douala": "Cameroun", "Africa/Ndjamena": "Tchad", "Africa/Bangui": "Centrafrique", "Africa/Libreville": "Gabon", "Africa/Brazzaville": "Congo", "Africa/Kinshasa": "RD Congo", "Africa/Lubumbashi": "RD Congo", "Africa/Kigali": "Rwanda", "Africa/Bujumbura": "Burundi", "Africa/Casablanca": "Maroc", "Africa/El_Aaiun": "Maroc", "Africa/Algiers": "Algérie", "Africa/Tunis": "Tunisie", "Africa/Tripoli": "Libye", "Africa/Cairo": "Égypte", "Africa/Khartoum": "Soudan", "Africa/Addis_Ababa": "Éthiopie", "Africa/Djibouti": "Djibouti", "Africa/Mogadishu": "Somalie", "Africa/Nairobi": "Kenya", "Africa/Kampala": "Ouganda", "Africa/Dar_es_Salaam": "Tanzanie", "Indian/Comoro": "Comores", "Indian/Mayotte": "Mayotte", "Indian/Antananarivo": "Madagascar", "Indian/Mauritius": "Maurice", "Indian/Reunion": "La Réunion", "Africa/Maputo": "Mozambique", "Africa/Johannesburg": "Afrique du Sud"};
+const cityCountry = c => COUNTRY[c[3]] || "";
 const KAABA = [21.4225, 39.8262];
 const PT_DEF = {method: "custom", fajr: 18, isha: 15, asr: 1, adj: {fajr: 0, sunrise: 0, dhuhr: 1, asr: 0, maghrib: 3, isha: 0}, ishaMinTime: "19:20", iqama: false, iq: {fajr: 20, dhuhr: 10, asr: 10, maghrib: 5, isha: 0}};
 function ptGet(){ const s = store.get("wirdi-pt", {}); return Object.assign({}, PT_DEF, s, {adj: Object.assign({}, PT_DEF.adj, s.adj || {}), iq: Object.assign({}, PT_DEF.iq, s.iq || {})}); }
@@ -1469,12 +1522,12 @@ function geoLocate(){
   }, {enableHighAccuracy: false, timeout: 15000, maximumAge: 600000});
 }
 function prayCity(){
-  let h = '<div class="pwrap"><button class="btn" id="pGeo2">📍 Utiliser ma position actuelle</button><input class="qsearch" id="pQ" type="search" placeholder="Rechercher une ville" value="' + esc(pv.q) + '"><div class="qlist" id="pCities"></div></div>';
+  let h = '<div class="pwrap"><button class="btn" id="pGeo2">📍 Utiliser ma position actuelle</button><input class="qsearch" id="pQ" type="search" placeholder="Rechercher une ville ou un pays" value="' + esc(pv.q) + '"><div class="qlist" id="pCities"></div></div>';
   main.innerHTML = h;
   $("pGeo2").onclick = geoLocate;
   const fill = () => {
     const f = norm(pv.q.trim()); let s = "";
-    CITIES.forEach((c, i) => { if (!f || norm(c[0]).includes(f)) s += '<button class="qrow" data-c="' + i + '"><span class="qt"><b>' + esc(c[0]) + '</b><small>' + ({"Europe/Paris": "France", "Europe/Brussels": "Belgique", "Europe/Zurich": "Suisse", "America/Toronto": "Canada", "Africa/Dakar": "Sénégal", "Africa/Bamako": "Mali", "Africa/Nouakchott": "Mauritanie", "Africa/Conakry": "Guinée", "Africa/Abidjan": "Côte d’Ivoire", "Africa/Casablanca": "Maroc", "Africa/Algiers": "Algérie", "Africa/Tunis": "Tunisie", "Asia/Riyadh": "Arabie saoudite"}[c[3]] || "") + '</small></span><span class="lgo">›</span></button>'; });
+    CITIES.forEach((c, i) => { if (!f || norm(c[0]).includes(f) || (" " + norm(cityCountry(c))).includes(" " + f)) s += '<button class="qrow" data-c="' + i + '"><span class="qt"><b>' + esc(c[0]) + '</b><small>' + cityCountry(c) + '</small></span><span class="lgo">›</span></button>'; });
     $("pCities").innerHTML = s || '<p class="qmsg">Ville absente de la liste : utilisez « Ma position ».</p>';
     $("pCities").querySelectorAll("[data-c]").forEach(b => b.onclick = () => { const c = CITIES[+b.dataset.c]; locSet({name: c[0], lat: c[1], lng: c[2], tz: c[3]}); pv.mode = "home"; pv.day = 0; render(); });
   };
