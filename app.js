@@ -939,6 +939,18 @@ const mImg = p => "mushaf/" + String(p).padStart(3, "0") + ".png";
 const md = {busy: false, stop: false, done: 0};
 // Animation du changement de page : latérale (glissé gauche/droite, boutons) ou verticale (glissé haut/bas)
 function slideCls(){ const v = qv.vert; qv.vert = false; return qv.dir > 0 ? (v ? ' slide-up' : ' slide-next') : qv.dir < 0 ? (v ? ' slide-down' : ' slide-prev') : ''; }
+// Garde en mémoire les images préchargées (sinon le navigateur peut les jeter avant usage) et les décode d'avance
+const mPre = new Map();
+function mPreload(p){
+  const want = [p + 1, p + 2, p + 3, p - 1, p - 2].filter(n => n >= 1 && n <= MP);
+  want.forEach(n => {
+    if (mPre.has(n)) return;
+    const im = new Image(); im.decoding = "async"; im.src = mImg(n);
+    if (im.decode) im.decode().catch(() => {});
+    mPre.set(n, im);
+  });
+  for (const n of mPre.keys()) if (n !== p && !want.includes(n)) mPre.delete(n);
+}
 function openMushaf(p){
   const np = Math.max(1, Math.min(MP, p || 1));
   qv.dir = qv.mode === "mushaf" && qv.p ? Math.sign(np - qv.p) : 0;
@@ -965,8 +977,8 @@ function renderMushaf(){
     $("mMark").textContent = "🔖 Page marquée";
     qToast("🔖 Marque-page : page " + p + " (" + SURA_TR[s0 - 1] + ")");
   };
-  // Pages voisines préchargées pour tourner sans attente
-  [p + 1, p - 1].forEach(n => { if (n >= 1 && n <= MP){ const im = new Image(); im.src = mImg(n); } });
+  // Pages voisines préchargées et décodées à l'avance pour tourner sans attente (retour testeur : défilement lent)
+  mPreload(p);
   store.set("wirdi-quran-last", {s: R[0][0], a: R[0][1], p});
   $("sTitleF").textContent = SURA_TR[s0 - 1] + " · page " + p;
 }
